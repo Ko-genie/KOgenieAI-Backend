@@ -5,6 +5,8 @@ import {
   errorResponse,
   generateMailKey,
   hashedPassword,
+  paginatioOptions,
+  paginationMetaData,
   processException,
   successResponse,
 } from 'src/shared/helpers/functions';
@@ -20,6 +22,7 @@ import { SignupVerificationMailNotification } from 'src/notifications/user/signu
 import { ResponseModel } from 'src/shared/models/response.model';
 import { use } from 'passport';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { isNumber } from 'class-validator';
 
 // export type User = any;
 @Injectable()
@@ -145,8 +148,33 @@ export class UsersService {
   }
 
   // get user list
-  async userList() {
-    return this.prisma.user.findMany();
+  async userList(payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const userList = await this.prisma.user.findMany({
+        ...paginate,
+      });
+
+      const userListWithoutPassword = userList.map((user) => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+
+      const total = await this.prisma.user.count();
+      const lastPage = Math.ceil(total / paginate.take);
+
+      const paginationMeta = await paginationMetaData('user', payload);
+      console.log(paginationMeta)
+
+      const data = {
+        list: userListWithoutPassword,
+        meta: paginationMeta
+      };
+      return successResponse('User List', data);
+    } catch (error) {
+      processException(error);
+    }
   }
 
   // send forgot password email
@@ -200,12 +228,6 @@ export class UsersService {
           email: user.email,
         },
         data: {
-          // first_name: payload.first_name,
-          // last_name: payload.last_name,
-          // phone: payload.phone,
-          // country: payload.country,
-          // birth_date: new Date(payload.birth_date),
-          // gender: Number(payload.gender),
           ...payload,
           birth_date: new Date(payload.birth_date),
           gender: Number(payload.gender),

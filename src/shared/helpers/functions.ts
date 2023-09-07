@@ -5,6 +5,7 @@ import { Prisma } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
 import { MyLogger } from '../../../src/modules/logger/logger.service';
+import { async } from 'rxjs';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;
@@ -104,4 +105,57 @@ export async function appName(): Promise<string> {
 export async function emailAppName(): Promise<string> {
   const app_name = await appName();
   return app_name ? '[' + app_name + ']' : '';
+}
+
+export async function formatLimitOffset(payload: any)
+{
+  let limit = payload.limit ? Math.abs(parseInt(payload.limit)) : 10;
+  let offset = payload.offset ? Math.abs(parseInt(payload.offset)) : 1;
+
+  limit = isNaN(limit) ? 10 : limit;
+  limit = limit > 0 ? limit : 10;
+
+  offset = isNaN(offset) ? 1 : offset;
+  offset = offset > 0 ? offset : 1;
+
+  return {
+    limit,
+    offset
+  }
+}
+
+export async function paginatioOptions(payload: any) {
+  
+  const limitOffset = await formatLimitOffset(payload);
+  const limit = limitOffset.limit;
+  const offset = limitOffset.offset;
+  let skip = 0;
+  if (limit > 0 && offset > 0) {
+    skip = (offset - 1) * limit;
+  }
+
+  const data = {
+    skip,
+    take:limit
+  }
+
+  return data;
+}
+
+export async function paginationMetaData(model :string, payload:any) {
+  const total = await PrismaClient[model].count();
+
+  const limitOffset = await formatLimitOffset(payload);
+
+  const lastPage = Math.ceil(total / limitOffset.limit);
+  const data = {
+    total: total,
+    lastPage: lastPage,
+    currentPage: limitOffset.offset,
+    perPage: limitOffset.limit,
+    prev: limitOffset.offset > 1 ? limitOffset.offset - 1 : null,
+    next: (limitOffset.offset < lastPage)? limitOffset.offset + 1 : null,
+  };
+  
+  return data;
 }

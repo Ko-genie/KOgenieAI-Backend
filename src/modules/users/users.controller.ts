@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +18,7 @@ import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { query } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -51,8 +54,9 @@ export class UserController {
   // get all user list
   @IsAdmin()
   @Get('user-list')
-  list(): Promise<any> {
-    return this.userService.userList();
+  list(@Query() payload: any): Promise<ResponseModel> {
+    
+    return this.userService.userList(payload);
   }
 
   @Post('update-profile')
@@ -66,8 +70,9 @@ export class UserController {
   @Post('check-user-name')
   checkUserNameIsUnique(
     @UserInfo() user: User,
-    @Body() payload: {
-      user_name: string
+    @Body()
+    payload: {
+      user_name: string;
     },
   ): Promise<ResponseModel> {
     return this.userService.checkUserNameIsUnique(user, payload);
