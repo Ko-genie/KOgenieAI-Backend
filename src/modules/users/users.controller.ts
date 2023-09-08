@@ -19,6 +19,8 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { query } from 'express';
+import { userInfo } from 'os';
+import { use } from 'passport';
 
 @Controller('user')
 export class UserController {
@@ -55,7 +57,6 @@ export class UserController {
   @IsAdmin()
   @Get('user-list')
   list(@Query() payload: any): Promise<ResponseModel> {
-    
     return this.userService.userList(payload);
   }
 
@@ -78,13 +79,34 @@ export class UserController {
     return this.userService.checkUserNameIsUnique(user, payload);
   }
 
-  @Get('change-status')
-  changeStatus(@UserInfo() user: User): Promise<ResponseModel> {
-    return this.userService.changeStatus(user);
+  @IsAdmin()
+  @Post('change-status')
+  changeStatus(@Body() payload: { user_id: number }): Promise<ResponseModel> {
+    return this.userService.changeStatus(payload);
   }
 
   @Get('user-list-by-country')
   userListByCountryWise(): Promise<ResponseModel> {
     return this.userService.userListByCountryWise();
+  }
+
+  @IsAdmin()
+  @Get('user-profile-details')
+  userProfileDetails(
+    @Query() payload: { user_id: number },
+  ): Promise<ResponseModel> {
+    return this.userService.userProfileDetails(payload);
+  }
+
+  @IsAdmin()
+  @Post('update-email')
+  updateEmail(
+    @UserInfo() user: User,
+    @Body()
+    payload: {
+      email: string;
+    },
+  ): Promise<ResponseModel> {
+    return this.userService.updateEmail(user, payload);
   }
 }

@@ -268,22 +268,40 @@ export class UsersService {
     }
   }
 
-  async changeStatus(user: User) {
+  async changeStatus(payload: { user_id: number }) {
     try {
-      const status =
-        user.status == coreConstant.STATUS_ACTIVE
-          ? coreConstant.STATUS_INACTIVE
-          : coreConstant.STATUS_ACTIVE;
-      const userDetails = await this.prisma.user.update({
+      if (!payload.user_id) {
+        return errorResponse('User Id field is required!');
+      }
+
+      const user_id = Number(payload.user_id);
+      const userDetails = await this.prisma.user.findFirst({
         where: {
-          email: user.email,
-        },
-        data: {
-          status: status,
+          id: user_id,
         },
       });
+      if (userDetails) {
+        const status =
+          coreConstant.STATUS_ACTIVE == userDetails.status
+            ? coreConstant.STATUS_INACTIVE
+            : coreConstant.STATUS_ACTIVE;
 
-      return successResponse('Status is updated successfully!', userDetails);
+        const updateUserDetails = await this.prisma.user.update({
+          where: {
+            id: Number(payload.user_id),
+          },
+          data: {
+            status: status,
+          },
+        });
+        delete updateUserDetails.password;
+        return successResponse(
+          'Status is updated successfully!',
+          updateUserDetails,
+        );
+      } else {
+        return errorResponse('User is not found!');
+      }
     } catch (error) {
       processException(error);
     }
@@ -293,17 +311,78 @@ export class UsersService {
     try {
       const userList = await this.prisma.user.groupBy({
         by: ['country'],
-        _count: {
-          country: true,
+        _count: true,
+      });
+
+      console.log(userList);
+
+      return successResponse('Country wise user list', userList);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async userProfileDetails(payload: { user_id: number }) {
+    try {
+      if (!payload.user_id) {
+        return errorResponse('User Id field is required!');
+      }
+
+      const user_id = Number(payload.user_id);
+      const userDetails = await this.prisma.user.findFirst({
+        where: {
+          id: user_id,
         },
-        orderBy: {
-          _count: {
-            country: 'desc',
+      });
+
+      if (userDetails) {
+        delete userDetails.password;
+
+        return successResponse('User Details', userDetails);
+      } else {
+        return errorResponse('User is not found!');
+      }
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async updateEmail(
+    user: User,
+    payload: {
+      email: string;
+    },
+  ) {
+    try {
+      if (!payload.email) {
+        return errorResponse('Email field is required!');
+      }
+
+      const checkEmailExists = await this.prisma.user.findFirst({
+        where: {
+          email: {
+            not: {
+              equals: user.email,
+            },
+            equals: payload.email,
           },
         },
       });
 
-      return successResponse('Country wise user list', userList);
+      if (checkEmailExists) {
+        return errorResponse('This email has been already taken!');
+      } else {
+        const userDetails = await this.prisma.user.update({
+          where: {
+            email: user.email,
+          },
+          data: {
+            email: payload.email,
+          },
+        });
+        delete userDetails.password;
+
+        return successResponse('Email is updated successfully!', userDetails);
+      }
     } catch (error) {
       processException(error);
     }
