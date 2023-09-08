@@ -87,4 +87,9 @@ export class UserController {
   userListByCountryWise(): Promise<ResponseModel> {
     return this.userService.userListByCountryWise();
   }
+  @IsAdmin()
+  @Get('user-profile-details')
+  userProfileDetails(@Query() payload: { user_id: number }) {
+    return this.userService.userProfileDetails(payload);
+  }
 }

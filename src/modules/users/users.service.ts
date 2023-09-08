@@ -281,7 +281,6 @@ export class UsersService {
         },
       });
       if (userDetails) {
-        console.log(userDetails);
         const status =
           coreConstant.STATUS_ACTIVE == userDetails.status
             ? coreConstant.STATUS_INACTIVE
@@ -318,6 +317,31 @@ export class UsersService {
       console.log(userList);
 
       return successResponse('Country wise user list', userList);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async userProfileDetails(payload: { user_id: number }) {
+    try {
+      if (!payload.user_id) {
+        return errorResponse('User Id field is required!');
+      }
+
+      const user_id = Number(payload.user_id);
+      const userDetails = await this.prisma.user.findFirst({
+        where: {
+          id: user_id,
+        },
+      });
+
+      if (userDetails) {
+        delete userDetails.password;
+        
+        return successResponse('User Details', userDetails);
+      } else {
+        return errorResponse('User is not found!');
+      }
     } catch (error) {
       processException(error);
     }
