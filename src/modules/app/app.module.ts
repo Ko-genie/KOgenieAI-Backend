@@ -10,7 +10,6 @@ import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { MailConfig } from 'src/shared/configs/mail.config';
 import { UsersModule } from '../users/users.module';
 import { MailModule } from 'src/shared/mail/mail.module';
-import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { AdminModule } from '../admin/admin.module';
     AuthModule,
     UsersModule,
     MailModule,
-    AdminModule,
   ],
   providers: [
     {
