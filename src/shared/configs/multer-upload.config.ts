@@ -29,7 +29,6 @@ export const multerUploadConfig: MulterOptions = {
     filename: (request, file, callback) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       const user: any = request.user;
-      console.log(request.user, 'request');
       const { originalname, mimetype, path } = file;
 
       const fileName = `${uniqueSuffix}-${file.originalname}`;

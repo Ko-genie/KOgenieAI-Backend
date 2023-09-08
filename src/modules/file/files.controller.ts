@@ -27,7 +27,6 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file', multerUploadConfig))
   // @Public()
   uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log('file', file);
     return 'done';
   }
 
@@ -39,7 +38,6 @@ export class FilesController {
   @Get(':filename')
   @Public()
   serveFile(@Param('filename') filename: string, @Res() res: Response) {
-    console.log('Calling');
     return res.sendFile(filename, {
       root: path.resolve(`./{${coreConstant.FILE_DESTINATION}}`),
     });
