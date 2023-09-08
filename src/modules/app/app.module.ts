@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, RequestMethod } from '@nestjs/common';
 import { MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { PrismaModule } from '../prisma/prisma.module';
-import { LoggerMiddleware } from '../../shared/middlewares/logger.middleware';
 import { AuthModule } from '../auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { MailConfig } from 'src/shared/configs/mail.config';
 import { UsersModule } from '../users/users.module';
 import { MailModule } from 'src/shared/mail/mail.module';
+import { ApiSecretCheckMiddleware } from 'src/shared/middlewares/apisecret.middleware';
+import { FilesModule } from '../file/files.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MailModule } from 'src/shared/mail/mail.module';
     AuthModule,
     UsersModule,
     MailModule,
+    FilesModule,
   ],
   providers: [
     {
@@ -29,4 +31,11 @@ import { MailModule } from 'src/shared/mail/mail.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ApiSecretCheckMiddleware)
+      .exclude({ path: '/uploads/*', method: RequestMethod.ALL })
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

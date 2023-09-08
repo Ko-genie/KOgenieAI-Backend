@@ -34,6 +34,7 @@ model User {
   UserVerificationCodes UserVerificationCodes[]
   UserPurchase          UserPurchasedPackage[]
   MyDocuments           MyDocuments[]
+  MyUploads             MyUploads[]
 }
 
 model PackageType {
@@ -128,11 +129,11 @@ model TemplateCategory {
 }
 
 model Template {
-  id          Int     @id @default(autoincrement())
-  title       String  @db.VarChar(255)
-  description String?
-  prompt      String  @db.Text()
-
+  id               Int              @id @default(autoincrement())
+  title            String           @db.VarChar(255)
+  description      String?
+  prompt           String           @db.Text()
+  premium          Boolean          @default(true)
   templateCategory TemplateCategory @relation(fields: [sub_category_id], references: [id])
   sub_category_id  Int
   TemplateField    TemplateField[]
@@ -162,6 +163,17 @@ model MyDocuments {
   template_id        Int
   user               User     @relation(fields: [user_id], references: [id])
   user_id            Int
+}
+
+model MyUploads {
+  id           Int    @id @default(autoincrement())
+  fieldname    String @db.VarChar(255)
+  originalname String @db.VarChar(255)
+  mimetype     String @db.VarChar(255)
+  file_path    String @db.VarChar(255)
+  filename     String @db.VarChar(255)
+  user         User   @relation(fields: [user_id], references: [id])
+  user_id      Int
 }
 
 model AdminSettings {
