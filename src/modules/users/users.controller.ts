@@ -82,4 +82,9 @@ export class UserController {
   changeStatus(@UserInfo() user: User): Promise<ResponseModel> {
     return this.userService.changeStatus(user);
   }
+
+  @Get('user-list-by-country')
+  userListByCountryWise(): Promise<ResponseModel> {
+    return this.userService.userListByCountryWise();
+  }
 }

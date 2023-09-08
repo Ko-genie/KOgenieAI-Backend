@@ -288,4 +288,24 @@ export class UsersService {
       processException(error);
     }
   }
+
+  async userListByCountryWise() {
+    try {
+      const userList = await this.prisma.user.groupBy({
+        by: ['country'],
+        _count: {
+          country: true,
+        },
+        orderBy: {
+          _count: {
+            country: 'desc',
+          },
+        },
+      });
+
+      return successResponse('Country wise user list', userList);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
