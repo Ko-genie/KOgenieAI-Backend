@@ -3,6 +3,7 @@ import { diskStorage } from 'multer';
 import path from 'path';
 import fs from 'fs'; // Import the 'fs' module for file system operations
 import { PrismaClient } from '../helpers/functions';
+import { coreConstant } from '../helpers/coreConstant';
 
 /** Constant containing a Regular Expression
  * with the valid image upload types
@@ -13,7 +14,7 @@ export const validImageUploadTypesRegex = /jpeg|jpg|png/;
 export const maxImageUploadSize = 3 * 1024 * 1024; // 3MB
 
 // Create the 'uploads' directory if it doesn't exist
-const uploadDirectory = './uploads';
+const uploadDirectory = `./${coreConstant.FILE_DESTINATION}`;
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory);
 }
@@ -42,7 +43,7 @@ export const multerUploadConfig: MulterOptions = {
             fieldname: originalname,
             mimetype: mimetype,
             originalname: originalname,
-            file_path: `/uploads/${fileName}`,
+            file_path: `/${coreConstant.FILE_DESTINATION}/${fileName}`,
             filename: fileName,
           },
         })

@@ -17,6 +17,7 @@ import { Response } from 'express';
 import { FilesService } from './files.service';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
+import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 @Controller('file')
 export class FilesController {
@@ -39,6 +40,8 @@ export class FilesController {
   @Public()
   serveFile(@Param('filename') filename: string, @Res() res: Response) {
     console.log('Calling');
-    return res.sendFile(filename, { root: path.resolve('./uploads') });
+    return res.sendFile(filename, {
+      root: path.resolve(`./{${coreConstant.FILE_DESTINATION}}`),
+    });
   }
 }

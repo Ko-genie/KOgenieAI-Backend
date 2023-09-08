@@ -11,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 import { MailModule } from 'src/shared/mail/mail.module';
 import { ApiSecretCheckMiddleware } from 'src/shared/middlewares/apisecret.middleware';
 import { FilesModule } from '../file/files.module';
+import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 @Module({
   imports: [
@@ -35,7 +36,10 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ApiSecretCheckMiddleware)
-      .exclude({ path: '/uploads/*', method: RequestMethod.ALL })
+      .exclude({
+        path: `/${coreConstant.FILE_DESTINATION}/*`,
+        method: RequestMethod.ALL,
+      })
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

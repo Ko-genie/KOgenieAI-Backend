@@ -8,6 +8,7 @@ import { AppModule } from './modules/app/app.module';
 import { API_PREFIX } from './shared/constants/global.constants';
 import { setApp } from './shared/helpers/functions';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { coreConstant } from './shared/helpers/coreConstant';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -22,9 +23,12 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  app.useStaticAssets(path.join(__dirname, '../../uploads'), {
-    prefix: '/uploads',
-  });
+  app.useStaticAssets(
+    path.join(__dirname, `../../${coreConstant.FILE_DESTINATION}`),
+    {
+      prefix: `/${coreConstant.FILE_DESTINATION}`,
+    },
+  );
   // setApp(app);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -35,9 +39,9 @@ async function bootstrap() {
   );
   console.log(
     'Static assets directory:',
-    path.join(__dirname, '../../uploads'),
+    path.join(__dirname, `../../${coreConstant.FILE_DESTINATION}`),
   );
-  console.log('Serving at:', '/uploads');
+  console.log('Serving at:', `/${coreConstant.FILE_DESTINATION}`);
   await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();

@@ -43,6 +43,8 @@ model PackageType {
   description String?
   status      Int       @default(1) @db.SmallInt()
   Package     Package[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 }
 
 model Package {
@@ -126,6 +128,8 @@ model TemplateCategory {
   status          Int        @default(1) @db.SmallInt()
   is_sub_category Int        @default(0) @db.SmallInt()
   Template        Template[]
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
 }
 
 model Template {
@@ -138,6 +142,8 @@ model Template {
   sub_category_id  Int
   TemplateField    TemplateField[]
   MyDocuments      MyDocuments[]
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
 }
 
 model TemplateField {
@@ -148,6 +154,8 @@ model TemplateField {
   option_value Json?
   template     Template @relation(fields: [template_id], references: [id])
   template_id  Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model MyDocuments {
@@ -163,17 +171,21 @@ model MyDocuments {
   template_id        Int
   user               User     @relation(fields: [user_id], references: [id])
   user_id            Int
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 }
 
 model MyUploads {
-  id           Int    @id @default(autoincrement())
-  fieldname    String @db.VarChar(255)
-  originalname String @db.VarChar(255)
-  mimetype     String @db.VarChar(255)
-  file_path    String @db.VarChar(255)
-  filename     String @db.VarChar(255)
-  user         User   @relation(fields: [user_id], references: [id])
+  id           Int      @id @default(autoincrement())
+  fieldname    String   @db.VarChar(255)
+  originalname String   @db.VarChar(255)
+  mimetype     String   @db.VarChar(255)
+  file_path    String   @db.VarChar(255)
+  filename     String   @db.VarChar(255)
+  user         User     @relation(fields: [user_id], references: [id])
   user_id      Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model AdminSettings {
