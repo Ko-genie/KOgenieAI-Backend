@@ -1,20 +1,17 @@
 import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import * as path from 'path';
 
 import { AppModule } from './modules/app/app.module';
 import { API_PREFIX } from './shared/constants/global.constants';
-import { GLOBAL_CONFIG } from './shared/configs/global.config';
 import { setApp } from './shared/helpers/functions';
-import { PrismaService } from './modules/prisma/prisma.service';
-import { InvalidFormExceptionFilter } from './shared/filters/invalid.form.exception.filter';
-import { SwaggerConfig } from './shared/configs/config.interface';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { coreConstant } from './shared/helpers/coreConstant';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   setApp(app);
   app.setGlobalPrefix(API_PREFIX);
   app.use(
@@ -24,6 +21,14 @@ async function bootstrap() {
       credentials: true,
     }),
   );
+  app.use(cookieParser());
+
+  app.useStaticAssets(
+    path.join(__dirname, `../../${coreConstant.FILE_DESTINATION}`),
+    {
+      prefix: `/${coreConstant.FILE_DESTINATION}`,
+    },
+  );
   // setApp(app);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -32,7 +37,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-
+  console.log(
+    'Static assets directory:',
+    path.join(__dirname, `../../${coreConstant.FILE_DESTINATION}`),
+  );
+  console.log('Serving at:', `/${coreConstant.FILE_DESTINATION}`);
   await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();

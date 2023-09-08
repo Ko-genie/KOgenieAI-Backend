@@ -37,10 +37,8 @@ export class UserVerificationCodeService {
           expired_at: addDayWithCurrentDate(5),
         },
       });
-      console.log('Email send successfully');
       return successResponse('Success', createData);
     } catch (err) {
-      console.log(err);
       return errorResponse('Something went wrong');
     }
   }

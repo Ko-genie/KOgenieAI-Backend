@@ -8,4 +8,5 @@ export const coreConstant = {
   IS_VERIFIED: 1,
   IS_NOT_VERIFIED: 0,
   VERIFICATION_TYPE_EMAIL: 1,
+  FILE_DESTINATION: 'uploads',
 };
