@@ -27,8 +27,8 @@ model User {
   phone_verified Int @default(0) @db.SmallInt
   gender         Int @default(1) @db.SmallInt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   UserTokens            UserTokens[]
   UserVerificationCodes UserVerificationCodes[]
@@ -192,6 +192,9 @@ model AdminSettings {
   id    Int    @id @default(autoincrement())
   slug  String @unique
   value String @db.Text()
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model UserTokens {
@@ -202,8 +205,8 @@ model UserTokens {
   browserInfo  String?
   expiresAt    DateTime
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -216,8 +219,8 @@ model UserVerificationCodes {
   type       Int      @default(1) @db.SmallInt
   expired_at DateTime
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
