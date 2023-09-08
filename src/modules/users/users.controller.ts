@@ -19,6 +19,8 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { query } from 'express';
+import { userInfo } from 'os';
+import { use } from 'passport';
 
 @Controller('user')
 export class UserController {
@@ -87,9 +89,24 @@ export class UserController {
   userListByCountryWise(): Promise<ResponseModel> {
     return this.userService.userListByCountryWise();
   }
+
   @IsAdmin()
   @Get('user-profile-details')
-  userProfileDetails(@Query() payload: { user_id: number }) {
+  userProfileDetails(
+    @Query() payload: { user_id: number },
+  ): Promise<ResponseModel> {
     return this.userService.userProfileDetails(payload);
+  }
+
+  @IsAdmin()
+  @Post('update-email')
+  updateEmail(
+    @UserInfo() user: User,
+    @Body()
+    payload: {
+      email: string;
+    },
+  ): Promise<ResponseModel> {
+    return this.userService.updateEmail(user, payload);
   }
 }

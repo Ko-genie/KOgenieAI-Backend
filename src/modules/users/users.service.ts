@@ -337,10 +337,51 @@ export class UsersService {
 
       if (userDetails) {
         delete userDetails.password;
-        
+
         return successResponse('User Details', userDetails);
       } else {
         return errorResponse('User is not found!');
+      }
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async updateEmail(
+    user: User,
+    payload: {
+      email: string;
+    },
+  ) {
+    try {
+      if (!payload.email) {
+        return errorResponse('Email field is required!');
+      }
+
+      const checkEmailExists = await this.prisma.user.findFirst({
+        where: {
+          email: {
+            not: {
+              equals: user.email,
+            },
+            equals: payload.email,
+          },
+        },
+      });
+
+      if (checkEmailExists) {
+        return errorResponse('This email has been already taken!');
+      } else {
+        const userDetails = await this.prisma.user.update({
+          where: {
+            email: user.email,
+          },
+          data: {
+            email: payload.email,
+          },
+        });
+        delete userDetails.password;
+
+        return successResponse('Email is updated successfully!', userDetails);
       }
     } catch (error) {
       processException(error);
