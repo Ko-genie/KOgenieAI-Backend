@@ -77,4 +77,9 @@ export class UserController {
   ): Promise<ResponseModel> {
     return this.userService.checkUserNameIsUnique(user, payload);
   }
+
+  @Get('change-status')
+  changeStatus(@UserInfo() user: User): Promise<ResponseModel> {
+    return this.userService.changeStatus(user);
+  }
 }

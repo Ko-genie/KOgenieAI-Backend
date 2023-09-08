@@ -165,11 +165,11 @@ export class UsersService {
       const lastPage = Math.ceil(total / paginate.take);
 
       const paginationMeta = await paginationMetaData('user', payload);
-      console.log(paginationMeta)
+      console.log(paginationMeta);
 
       const data = {
         list: userListWithoutPassword,
-        meta: paginationMeta
+        meta: paginationMeta,
       };
       return successResponse('User List', data);
     } catch (error) {
@@ -263,6 +263,27 @@ export class UsersService {
       } else {
         return successResponse('This name is unique!');
       }
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async changeStatus(user: User) {
+    try {
+      const status =
+        user.status == coreConstant.STATUS_ACTIVE
+          ? coreConstant.STATUS_INACTIVE
+          : coreConstant.STATUS_ACTIVE;
+      const userDetails = await this.prisma.user.update({
+        where: {
+          email: user.email,
+        },
+        data: {
+          status: status,
+        },
+      });
+
+      return successResponse('Status is updated successfully!', userDetails);
     } catch (error) {
       processException(error);
     }
