@@ -268,22 +268,41 @@ export class UsersService {
     }
   }
 
-  async changeStatus(user: User) {
+  async changeStatus(payload: { user_id: number }) {
     try {
-      const status =
-        user.status == coreConstant.STATUS_ACTIVE
-          ? coreConstant.STATUS_INACTIVE
-          : coreConstant.STATUS_ACTIVE;
-      const userDetails = await this.prisma.user.update({
+      if (!payload.user_id) {
+        return errorResponse('User Id field is required!');
+      }
+
+      const user_id = Number(payload.user_id);
+      const userDetails = await this.prisma.user.findFirst({
         where: {
-          email: user.email,
-        },
-        data: {
-          status: status,
+          id: user_id,
         },
       });
+      if (userDetails) {
+        console.log(userDetails);
+        const status =
+          coreConstant.STATUS_ACTIVE == userDetails.status
+            ? coreConstant.STATUS_INACTIVE
+            : coreConstant.STATUS_ACTIVE;
 
-      return successResponse('Status is updated successfully!', userDetails);
+        const updateUserDetails = await this.prisma.user.update({
+          where: {
+            id: Number(payload.user_id),
+          },
+          data: {
+            status: status,
+          },
+        });
+        delete updateUserDetails.password;
+        return successResponse(
+          'Status is updated successfully!',
+          updateUserDetails,
+        );
+      } else {
+        return errorResponse('User is not found!');
+      }
     } catch (error) {
       processException(error);
     }

@@ -55,7 +55,6 @@ export class UserController {
   @IsAdmin()
   @Get('user-list')
   list(@Query() payload: any): Promise<ResponseModel> {
-    
     return this.userService.userList(payload);
   }
 
@@ -78,9 +77,10 @@ export class UserController {
     return this.userService.checkUserNameIsUnique(user, payload);
   }
 
-  @Get('change-status')
-  changeStatus(@UserInfo() user: User): Promise<ResponseModel> {
-    return this.userService.changeStatus(user);
+  @IsAdmin()
+  @Post('change-status')
+  changeStatus(@Body() payload: { user_id: number }): Promise<ResponseModel> {
+    return this.userService.changeStatus(payload);
   }
 
   @Get('user-list-by-country')
