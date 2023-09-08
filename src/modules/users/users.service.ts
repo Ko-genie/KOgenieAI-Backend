@@ -291,19 +291,12 @@ export class UsersService {
 
   async userListByCountryWise() {
     try {
-      const userList = await this.prisma.user.groupBy({
-        by: ['country'],
-        _count: {
-          country: true,
-        },
-        orderBy: {
-          _count: {
-            country: 'desc',
-          },
-        },
-      });
+      const userList = await this.prisma
+        .$queryRaw`SELECT *, COUNT(country) as totalCount FROM User GROUP BY Country`;
 
-      return successResponse('Country wise user list', userList);
+      console.log(userList);
+
+      return successResponse('Country wise user list');
     } catch (error) {
       processException(error);
     }
