@@ -8,6 +8,7 @@ import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { error } from 'console';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { generalSettingsData } from 'src/shared/constants/array.constants';
 
 @Injectable()
 export class SettingService {
@@ -117,7 +118,7 @@ export class SettingService {
 
   async getGeneralSettingsData() {
     try {
-      const slugs: any = ['site_name', 'site_url'];
+      const slugs: any = generalSettingsData;
       const data = await getAdminSettingsData(slugs);
 
       return successResponse('General settings  data', data);
