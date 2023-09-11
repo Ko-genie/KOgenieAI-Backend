@@ -31,4 +31,9 @@ export class SettingController {
   ): Promise<ResponseModel> {
     return this.settingService.updateSMTPSettings(payload);
   }
+
+  @Get('smtp-settings-data')
+  getSMTPSettingsData(): Promise<ResponseModel>{
+    return this.settingService.getSMTPSettingsData();
+  }
 }
