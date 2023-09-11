@@ -1,5 +1,6 @@
 import {
   errorResponse,
+  getAdminSettingsData,
   processException,
   successResponse,
 } from 'src/shared/helpers/functions';
@@ -84,7 +85,7 @@ export class SettingService {
           var site_fav_icon_path = siteFavIconDetails.file_path;
         }
       }
-      
+
       const keyValuePairs = Object.keys(payload).map((key) => {
         const obj = {
           key,
@@ -109,6 +110,17 @@ export class SettingService {
       const settings = await this.getAllSettings();
 
       return successResponse('Setting updated successfully', settings);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneralSettingsData() {
+    try {
+      const slugs: any = ['site_name', 'site_url'];
+      const data = await getAdminSettingsData(slugs);
+
+      return successResponse('General settings  data', data);
     } catch (error) {
       processException(error);
     }

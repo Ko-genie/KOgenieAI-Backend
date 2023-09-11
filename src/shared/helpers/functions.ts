@@ -107,8 +107,7 @@ export async function emailAppName(): Promise<string> {
   return app_name ? '[' + app_name + ']' : '';
 }
 
-export async function formatLimitOffset(payload: any)
-{
+export async function formatLimitOffset(payload: any) {
   let limit = payload.limit ? Math.abs(parseInt(payload.limit)) : 10;
   let offset = payload.offset ? Math.abs(parseInt(payload.offset)) : 1;
 
@@ -120,12 +119,11 @@ export async function formatLimitOffset(payload: any)
 
   return {
     limit,
-    offset
-  }
+    offset,
+  };
 }
 
 export async function paginatioOptions(payload: any) {
-  
   const limitOffset = await formatLimitOffset(payload);
   const limit = limitOffset.limit;
   const offset = limitOffset.offset;
@@ -136,13 +134,13 @@ export async function paginatioOptions(payload: any) {
 
   const data = {
     skip,
-    take:limit
-  }
+    take: limit,
+  };
 
   return data;
 }
 
-export async function paginationMetaData(model :string, payload:any) {
+export async function paginationMetaData(model: string, payload: any) {
   const total = await PrismaClient[model].count();
 
   const limitOffset = await formatLimitOffset(payload);
@@ -154,8 +152,39 @@ export async function paginationMetaData(model :string, payload:any) {
     currentPage: limitOffset.offset,
     perPage: limitOffset.limit,
     prev: limitOffset.offset > 1 ? limitOffset.offset - 1 : null,
-    next: (limitOffset.offset < lastPage)? limitOffset.offset + 1 : null,
+    next: limitOffset.offset < lastPage ? limitOffset.offset + 1 : null,
   };
-  
+
   return data;
+}
+
+export async function getAdminSettingsData(slugs?: any) {
+  try {
+    var data = {};
+    if (slugs) {
+      await Promise.all(
+        slugs.map(async (slug) => {
+          const slufInfo = await PrismaClient.adminSettings.findFirst({
+            where: {
+              slug: slug,
+            },
+          });
+
+          if (slufInfo) {
+            data[slug] = slufInfo.value;
+          } else {
+            data[slug] = null;
+          }
+        }),
+      );
+    } else {
+      const slufInfoList = await PrismaClient.adminSettings.findMany();
+      slufInfoList.map((item) => {
+        data[item.slug] = item.value;
+      });
+    }
+    return data;
+  } catch (error) {
+    processException(error);
+  }
 }

@@ -18,4 +18,9 @@ export class SettingController {
   ): Promise<ResponseModel> {
     return this.settingService.updateGeneralSettings(payload);
   }
+
+  @Get('general-settings-data')
+  getGeneralSettingsData(): Promise<ResponseModel>{
+    return this.settingService.getGeneralSettingsData();
+  }
 }
