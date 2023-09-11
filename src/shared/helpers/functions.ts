@@ -22,7 +22,10 @@ export function createUniqueCode() {
   const data = id + date;
   return data;
 }
-
+export function addPhotoPrefix(inputString: string): string {
+  let prefix: string = process.env.BACKEND_URL;
+  return `${prefix}${inputString}`;
+}
 export async function hashedPassword(password: string) {
   const saltOrRounds = 10;
   const hashPassword = await bcrypt.hash(password, saltOrRounds);
