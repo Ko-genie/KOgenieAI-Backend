@@ -68,4 +68,12 @@ export class UpdateGeneralSettingsDto {
   @IsNotEmpty()
   @IsString()
   meta_keywords: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  site_logo: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  site_fav_icon: number;
 }

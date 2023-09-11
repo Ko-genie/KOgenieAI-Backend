@@ -61,10 +61,44 @@ export class SettingService {
   }
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
     try {
-      const keyValuePairs = Object.keys(payload).map((key) => ({
-        key,
-        value: payload[key],
-      }));
+      if (payload.site_logo) {
+        const siteLogoDetails = await this.prisma.myUploads.findFirst({
+          where: {
+            id: payload.site_logo,
+          },
+        });
+
+        if (siteLogoDetails) {
+          var site_logo_path = siteLogoDetails.file_path;
+        }
+      }
+
+      if (payload.site_fav_icon) {
+        const siteFavIconDetails = await this.prisma.myUploads.findFirst({
+          where: {
+            id: payload.site_fav_icon,
+          },
+        });
+
+        if (siteFavIconDetails) {
+          var site_fav_icon_path = siteFavIconDetails.file_path;
+        }
+      }
+      
+      const keyValuePairs = Object.keys(payload).map((key) => {
+        const obj = {
+          key,
+          value: payload[key],
+        };
+
+        if (key === 'site_logo') {
+          obj.value = site_logo_path;
+        } else if (key === 'site_fav_icon') {
+          obj.value = site_fav_icon_path;
+        }
+
+        return obj;
+      });
 
       await Promise.all(
         keyValuePairs.map(async (element) => {
