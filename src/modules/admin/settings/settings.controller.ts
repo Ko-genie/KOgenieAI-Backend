@@ -3,7 +3,10 @@ import { SettingService } from './settings.service';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
+import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
+import { Public } from 'src/shared/decorators/public.decorator';
 
+@IsAdmin()
 @Controller('admin-settings')
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}
