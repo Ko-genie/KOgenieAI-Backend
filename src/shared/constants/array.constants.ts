@@ -16,3 +16,13 @@ export const generalSettingsData = [
   'site_logo',
   'site_fav_icon',
 ];
+
+export const smtpSettingsData = [
+  'smtp_host',
+  'smtp_port',
+  'smtp_user_name',
+  'smtp_password',
+  'smtp_sender_email',
+  'smtp_sender_name',
+  'smtp_encryption',
+];

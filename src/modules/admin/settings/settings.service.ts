@@ -8,7 +8,8 @@ import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { error } from 'console';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { generalSettingsData } from 'src/shared/constants/array.constants';
+import { generalSettingsData, smtpSettingsData } from 'src/shared/constants/array.constants';
+import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
 
 @Injectable()
 export class SettingService {
@@ -122,6 +123,28 @@ export class SettingService {
       const data = await getAdminSettingsData(slugs);
 
       return successResponse('General settings  data', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateSMTPSettings(payload: updateSMTPSettingsDto) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const slugs: any = smtpSettingsData;
+      const data = await getAdminSettingsData(slugs);
+
+      return successResponse('SMTP settings is updated!', data);
     } catch (error) {
       processException(error);
     }
