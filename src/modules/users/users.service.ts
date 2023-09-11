@@ -1,6 +1,6 @@
 import { Injectable, Request } from '@nestjs/common';
-import { User } from '@prisma/client';
 import {
+  addPhotoPrefix,
   createUniqueCode,
   errorResponse,
   generateMailKey,
@@ -12,6 +12,7 @@ import {
 } from 'src/shared/helpers/functions';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponse } from './dto/user-response';
+import { User } from '@prisma/client';
 
 import { ForgotPassMailNotification } from 'src/notifications/user/forgot-pass-mail-notification';
 import { PrismaService } from '../prisma/prisma.service';
@@ -23,6 +24,7 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { use } from 'passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { isNumber } from 'class-validator';
+import { User as UserEntity } from './entities/user.entity';
 
 // export type User = any;
 @Injectable()
@@ -33,28 +35,21 @@ export class UsersService {
     private readonly notificationService: NotificationService,
   ) {}
 
-  //   private readonly users = [
-  //     {
-  //       userId: 1,
-  //       email: 'john',
-  //       password: 'changeme',
-  //     },
-  //     {
-  //       userId: 2,
-  //       email: 'maria',
-  //       password: 'guess',
-  //     },
-  //   ];
+  async getProfile(user: UserEntity): Promise<ResponseModel> {
+    if (!user) {
+      return errorResponse('Please login inorder to get profile data');
+    }
+    user.photo = addPhotoPrefix(user.photo);
 
-  //     async findOne(email: string): Promise<User | undefined> {
-  //         console.log(email);
-  //     return this.users.find((user) => user.email === email);
-  //   }
-  /** Finds user by email and returns the user with password.
-   * Used mainly in login to compare if the inputted password matches
-   * the hashed one.
-   */
-
+    if (user.role === coreConstant.USER_ROLE_ADMIN) {
+      const admin = {
+        ...user,
+        is_admin: true,
+      };
+      return successResponse('Admin Response successfully', admin);
+    }
+    return successResponse('Response successfully', user);
+  }
   // unique check email and nick name
   async checkEmailNickName(email: string, nickName: string) {
     const checkUniqueEmail = await this.prisma.user.findUnique({

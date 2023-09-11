@@ -22,7 +22,10 @@ export function createUniqueCode() {
   const data = id + date;
   return data;
 }
-
+export function addPhotoPrefix(inputString: string): string {
+  let prefix: string = process.env.BACKEND_URL;
+  return `${prefix}${inputString}`;
+}
 export async function hashedPassword(password: string) {
   const saltOrRounds = 10;
   const hashPassword = await bcrypt.hash(password, saltOrRounds);
@@ -107,8 +110,7 @@ export async function emailAppName(): Promise<string> {
   return app_name ? '[' + app_name + ']' : '';
 }
 
-export async function formatLimitOffset(payload: any)
-{
+export async function formatLimitOffset(payload: any) {
   let limit = payload.limit ? Math.abs(parseInt(payload.limit)) : 10;
   let offset = payload.offset ? Math.abs(parseInt(payload.offset)) : 1;
 
@@ -120,12 +122,11 @@ export async function formatLimitOffset(payload: any)
 
   return {
     limit,
-    offset
-  }
+    offset,
+  };
 }
 
 export async function paginatioOptions(payload: any) {
-  
   const limitOffset = await formatLimitOffset(payload);
   const limit = limitOffset.limit;
   const offset = limitOffset.offset;
@@ -136,13 +137,13 @@ export async function paginatioOptions(payload: any) {
 
   const data = {
     skip,
-    take:limit
-  }
+    take: limit,
+  };
 
   return data;
 }
 
-export async function paginationMetaData(model :string, payload:any) {
+export async function paginationMetaData(model: string, payload: any) {
   const total = await PrismaClient[model].count();
 
   const limitOffset = await formatLimitOffset(payload);
@@ -154,8 +155,8 @@ export async function paginationMetaData(model :string, payload:any) {
     currentPage: limitOffset.offset,
     perPage: limitOffset.limit,
     prev: limitOffset.offset > 1 ? limitOffset.offset - 1 : null,
-    next: (limitOffset.offset < lastPage)? limitOffset.offset + 1 : null,
+    next: limitOffset.offset < lastPage ? limitOffset.offset + 1 : null,
   };
-  
+
   return data;
 }

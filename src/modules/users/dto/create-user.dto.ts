@@ -9,7 +9,7 @@ import {
 import { User } from '../entities/user.entity';
 
 /** Describes the fields needed to create an User */
-export class CreateUserDto implements User {
+export class CreateUserDto {
   /**
    * User name
    * @example "John Doe"

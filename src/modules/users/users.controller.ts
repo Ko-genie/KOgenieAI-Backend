@@ -21,6 +21,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { query } from 'express';
 import { userInfo } from 'os';
 import { use } from 'passport';
+import { User as UserEntity } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -31,19 +32,8 @@ export class UserController {
   constructor(private readonly userService: UsersService) {}
   // @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    let user = req.user;
-    if (!user) {
-      return errorResponse('Please login inorder to get profile data');
-    }
-    if (user.role === coreConstant.USER_ROLE_ADMIN) {
-      const admin = {
-        ...user,
-        is_admin: true,
-      };
-      return successResponse('Admin Response successfully', admin);
-    }
-    return successResponse('Response successfully', user);
+  async getProfile(@Request() req, @UserInfo() user: UserEntity) {
+    return this.userService.getProfile(user);
   }
 
   /** Creates a new user */
