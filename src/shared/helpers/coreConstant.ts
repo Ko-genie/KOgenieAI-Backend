@@ -9,4 +9,16 @@ export const coreConstant = {
   IS_NOT_VERIFIED: 0,
   VERIFICATION_TYPE_EMAIL: 1,
   FILE_DESTINATION: 'uploads',
+  ACTIVE: 1,
+  INACTIVE: 0,
+  PENDING: 2,
+  PACKAGE_TYPES: {
+    PREMIUM: 'PREMIUM',
+    REGULAR: 'REGULAR',
+  },
+  PACKAGE_DURATION: {
+    WEEKLY: 'WEEKLY',
+    MONTHLY: 'MONTHLY',
+    YEARLY: 'YEARLY',
+  },
 };

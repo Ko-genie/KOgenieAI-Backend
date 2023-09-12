@@ -13,6 +13,7 @@ import { ApiSecretCheckMiddleware } from 'src/shared/middlewares/apisecret.middl
 import { FilesModule } from '../file/files.module';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { SettingsModule } from '../admin/settings/settings.module';
+import { PaymentsModule } from '../payments/payments.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { SettingsModule } from '../admin/settings/settings.module';
     UsersModule,
     MailModule,
     FilesModule,
-    SettingsModule
+    SettingsModule,
+    PaymentsModule,
   ],
   providers: [
     {

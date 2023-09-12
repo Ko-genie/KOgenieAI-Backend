@@ -37,37 +37,23 @@ model User {
   MyUploads             MyUploads[]
 }
 
-model PackageType {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  status      Int       @default(1) @db.SmallInt()
-  Package     Package[]
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-}
-
 model Package {
-  id                       Int      @id @default(autoincrement())
-  name                     String   @db.VarChar(255)
-  description              String?
-  price                    Decimal  @db.Decimal(19, 2)
-  currency                 String   @default("USD") @db.VarChar(20)
-  duration                 Int
-  type                     Int      @default(1) @db.SmallInt()
-  word_tokens              BigInt   @db.BigInt()
-  image_tokens             BigInt   @db.BigInt()
-  status                   Int      @default(1) @db.SmallInt()
-  image_url                String?  @db.VarChar(255)
-  total_purchase           BigInt   @default(0)
-  token_word_tokens_limit  BigInt   @db.BigInt()
-  token_image_tokens_limit BigInt   @db.BigInt()
-  created_at               DateTime @default(now())
-  updated_at               DateTime @updatedAt
-
-  packageType     PackageType            @relation(fields: [package_type_id], references: [id])
-  package_type_id Int
-  UserPurchase    UserPurchasedPackage[]
+  id                 Int                    @id @default(autoincrement())
+  name               String                 @db.VarChar(255)
+  description        String?
+  price              Decimal                @db.Decimal(19, 2)
+  currency           String                 @default("USD") @db.VarChar(20)
+  duration           String                 @default("MONTHLY")
+  type               String                 @default("REGULAR")
+  total_words        BigInt                 @db.BigInt()
+  total_images       BigInt                 @db.BigInt()
+  status             Int                    @default(1) @db.SmallInt()
+  image_url          String?                @db.VarChar(255)
+  total_purchase     BigInt                 @default(0)
+  total_tokens_limit BigInt                 @db.BigInt()
+  created_at         DateTime               @default(now())
+  updated_at         DateTime               @updatedAt
+  UserPurchase       UserPurchasedPackage[]
 }
 
 model ExtendedPackage {
