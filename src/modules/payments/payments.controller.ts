@@ -26,6 +26,10 @@ export class PaymentsController {
   getAllPackages(@Query('type') type: string): Promise<ResponseModel> {
     return this.paymentsService.getAllSubcriptionPackages(type);
   }
+  @Get('check-subscription-status')
+  checkSubscriptionStatus(@UserInfo() user: User): Promise<ResponseModel> {
+    return this.paymentsService.checkSubscriptionStatus(user);
+  }
 
   @IsAdmin()
   @Post('create-package')
@@ -45,7 +49,7 @@ export class PaymentsController {
     @UserInfo() user: User,
     @Body()
     payload: {
-      packageId: string
+      packageId: string;
     },
   ): Promise<ResponseModel> {
     return this.paymentsService.subscribeToPackage(user, payload.packageId);

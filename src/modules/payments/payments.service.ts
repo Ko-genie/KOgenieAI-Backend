@@ -112,6 +112,10 @@ export class PaymentsService {
       if (!package_id) {
         return errorResponse('No package id provided');
       }
+      const { isValid } = await this.getUserPackage(user);
+      if (isValid) {
+        return errorResponse('User already subscribed to a package');
+      }
       const packageData: Package = await this.prisma.package.findUnique({
         where: {
           id: Number(package_id),
@@ -148,6 +152,44 @@ export class PaymentsService {
         return errorResponse("Package can't be purchased");
       }
       return successResponse('Package purchased successfully', purchedPackage);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getUserPackage(
+    user: User,
+  ): Promise<{ package: UserPurchasedPackage | null; isValid: boolean }> {
+    const userPackage = await this.prisma.userPurchasedPackage.findFirst({
+      where: {
+        user_id: user.id,
+        status: coreConstant.ACTIVE,
+      },
+      orderBy: {
+        end_date: 'desc', // Use "desc" for descending order
+      },
+      include: {
+        package: true,
+      },
+    });
+
+    if (!userPackage) {
+      return { package: null, isValid: false };
+    }
+
+    const currentDate = new Date();
+    const endDate = new Date(userPackage.end_date);
+    const isValid = currentDate <= endDate;
+
+    return { package: userPackage, isValid };
+  }
+
+  async checkSubscriptionStatus(user: User): Promise<ResponseModel> {
+    try {
+      const { isValid, package: myPackage } = await this.getUserPackage(user);
+      if (!isValid) {
+        return errorResponse('Package expired please purchase again');
+      }
+      return successResponse('Subcribstion is valid', myPackage);
     } catch (error) {
       processException(error);
     }
