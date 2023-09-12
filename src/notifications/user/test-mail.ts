@@ -13,7 +13,7 @@ export class SendTestMail {
     return [MailChannel];
   }
 
-  async toMail(notifiable: User): Promise<MessageInterface> {
+  async toMail(notifiable: User, data:any): Promise<MessageInterface> {
     return (
       await NotificationTemplate.toEmail('test_mail.html', {
         subject: (await emailAppName()) + ' ' + 'Email Test',
@@ -21,7 +21,7 @@ export class SendTestMail {
         name: `${notifiable.user_name}`,
         email: notifiable.email,
       })
-    ).to(notifiable.email);
+    ).to(data.email);
   }
 
   queueable(): boolean {

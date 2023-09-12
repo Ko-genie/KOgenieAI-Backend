@@ -45,9 +45,11 @@ export class SettingController {
     return this.settingService.getSMTPSettingsData();
   }
 
-  @Get('test-mail')
-  sendTestMail(@UserInfo() user: User): Promise<ResponseModel> {
-    return this.settingService.sendTestMail(user);
+  @Post('test-mail')
+  sendTestMail(@UserInfo() user: User, @Body() payload: {
+    email:string
+  }): Promise<ResponseModel> {
+    return this.settingService.sendTestMail(user,payload);
   }
 
   @Post('update-terms-privacy')

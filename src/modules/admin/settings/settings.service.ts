@@ -81,7 +81,6 @@ export class SettingService {
 
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
     try {
-      
       const site_logo_path = payload.site_logo
         ? await fetchMyUploadFilePathById(payload.site_logo)
         : await adminSettingsValueBySlug('site_logo');
@@ -156,9 +155,16 @@ export class SettingService {
     }
   }
 
-  async sendTestMail(user: User) {
+  async sendTestMail(
+    user: User,
+    payload: {
+      email: string;
+    },
+  ) {
     try {
-      const mailData = {};
+      const mailData = {
+        email:payload.email
+      };
       this.notificationService.send(new SendTestMail(mailData), user);
       return successResponse('Mail is sent successfully!');
     } catch (error) {
@@ -230,11 +236,13 @@ export class SettingService {
 
       return successResponse('Open AI settings data!', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 
-  async updatePaymentStripeSettings(payload: UpdatePaymentMethodStripeSettingsDto) {
+  async updatePaymentStripeSettings(
+    payload: UpdatePaymentMethodStripeSettingsDto,
+  ) {
     try {
       const keyValuePairs = Object.keys(payload).map((key) => ({
         key,
@@ -249,7 +257,10 @@ export class SettingService {
 
       const data = await getAdminSettingsData(PaymentMethodStripeSettingsSlugs);
 
-      return successResponse('Stripe payment method settings is updated successfully!', data);
+      return successResponse(
+        'Stripe payment method settings is updated successfully!',
+        data,
+      );
     } catch (error) {
       processException(error);
     }
@@ -259,12 +270,9 @@ export class SettingService {
     try {
       const data = await getAdminSettingsData(PaymentMethodStripeSettingsSlugs);
 
-      return successResponse(
-        'Stripe payment method settings data!',
-        data,
-      );
+      return successResponse('Stripe payment method settings data!', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 }
