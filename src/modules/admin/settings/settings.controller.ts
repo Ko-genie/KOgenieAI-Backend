@@ -52,4 +52,9 @@ export class SettingController {
   updateTermsPrivacy(@Body() payload: UpdateTermsPrivacyDto):Promise<ResponseModel> {
     return this.settingService.updateTermsPrivacy(payload);
   };
+
+  @Get('get-terms-privacy-data')
+  getTermsPrivacyData():Promise<ResponseModel> {
+    return this.settingService.getTermsPrivacyData();
+  }
 }

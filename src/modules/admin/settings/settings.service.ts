@@ -11,7 +11,11 @@ import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
 import { NotificationService } from 'src/shared/notification/notification.service';
 import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
-import { GeneralSettingsSlugs, SMTPSettingsSlugs } from 'src/shared/constants/array.constants';
+import {
+  GeneralSettingsSlugs,
+  SMTPSettingsSlugs,
+  TermsConditionSlugs,
+} from 'src/shared/constants/array.constants';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 
 @Injectable()
@@ -170,10 +174,7 @@ export class SettingService {
   async sendTestMail(user: User) {
     try {
       const mailData = {};
-      this.notificationService.send(
-        new SendTestMail(mailData),
-        user,
-      );
+      this.notificationService.send(new SendTestMail(mailData), user);
       return successResponse('Mail is sent successfully!');
     } catch (error) {
       processException(error);
@@ -193,10 +194,27 @@ export class SettingService {
         }),
       );
 
-      const slugs: any = SMTPSettingsSlugs;
+      const slugs: any = TermsConditionSlugs;
       const data = await getAdminSettingsData(slugs);
-      
-      return successResponse('Privacy policy and Terms condition is updated successfully!');
+
+      return successResponse(
+        'Privacy policy and Terms condition is updated successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getTermsPrivacyData() {
+    try {
+      const slugs: any = TermsConditionSlugs;
+      const data = await getAdminSettingsData(slugs);
+
+      return successResponse(
+        'Privacy policy and Terms condition data!',
+        data,
+      );
     } catch (error) {
       processException(error)
     }
