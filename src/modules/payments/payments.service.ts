@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { Package, UserPurchasedPackage } from '@prisma/client';
+import { Package, User, UserPurchasedPackage } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import {
@@ -10,6 +10,7 @@ import {
   successResponse,
 } from 'src/shared/helpers/functions';
 import { ResponseModel } from 'src/shared/models/response.model';
+import { IsNotEmpty } from 'class-validator';
 
 @Injectable()
 export class PaymentsService {
@@ -83,11 +84,16 @@ export class PaymentsService {
       processException(error);
     }
   }
-  async getAllSubcriptionPackages(): Promise<ResponseModel> {
+  async getAllSubcriptionPackages(type: string): Promise<ResponseModel> {
     try {
+      const queryType =
+        Number(type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+          ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+          : coreConstant.PACKAGE_TYPES.PACKAGE;
+
       const packages: Package[] = await this.prisma.package.findMany({
         where: {
-          type: coreConstant.PACKAGE_TYPES.SUBSCRIPTION,
+          type: queryType,
         },
       });
 
@@ -98,27 +104,52 @@ export class PaymentsService {
     }
   }
 
-  async createUserPurchasePackage(
-    userPurchasePackageInfo: UserPurchasedPackage,
-    package_id: number,
-    payment_method_id: number,
-  ): Promise<UserPurchasedPackage> {
-    return await this.prisma.userPurchasedPackage.create({
-      data: {
-        start_date: userPurchasePackageInfo.start_date,
-        end_date: userPurchasePackageInfo.end_date,
-        status:
-          userPurchasePackageInfo.status == coreConstant.ACTIVE
-            ? coreConstant.ACTIVE
-            : coreConstant.INACTIVE,
-        word_tokens: userPurchasePackageInfo.word_tokens,
-        image_tokens: userPurchasePackageInfo.image_tokens,
-        used_word_tokens: userPurchasePackageInfo.used_word_tokens,
-        used_image_tokens: userPurchasePackageInfo.used_image_tokens,
-        user_id: userPurchasePackageInfo.user_id,
-        package_id: package_id,
-        payment_method_id: payment_method_id,
-      },
-    });
+  async subscribeToPackage(
+    user: User,
+    package_id: string,
+  ): Promise<ResponseModel> {
+    try {
+      if (!package_id) {
+        return errorResponse('No package id provided');
+      }
+      const packageData: Package = await this.prisma.package.findUnique({
+        where: {
+          id: Number(package_id),
+        },
+      });
+      if (!packageData) {
+        return errorResponse("Package can't be found");
+      }
+      const duration =
+        packageData.duration === coreConstant.PACKAGE_DURATION.WEEKLY
+          ? 7
+          : packageData.duration === coreConstant.PACKAGE_DURATION.MONTHLY
+          ? 30
+          : 365;
+      const start_date = new Date(),
+        end_date = new Date(
+          start_date.setDate(start_date.getDate() + duration),
+        );
+
+      const purchedPackage = await this.prisma.userPurchasedPackage.create({
+        data: {
+          start_date: start_date,
+          end_date: end_date,
+          status: coreConstant.ACTIVE,
+          total_words: packageData.total_words,
+          total_images: packageData.total_images,
+          user_id: user.id,
+          package_id: packageData.id,
+          payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
+          total_tokens_limit: packageData.total_tokens_limit,
+        },
+      });
+      if (!purchedPackage) {
+        return errorResponse("Package can't be purchased");
+      }
+      return successResponse('Package purchased successfully', purchedPackage);
+    } catch (error) {
+      processException(error);
+    }
   }
 }
