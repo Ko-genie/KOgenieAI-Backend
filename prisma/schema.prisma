@@ -43,8 +43,8 @@ model Package {
   description        String?
   price              Decimal                @db.Decimal(19, 2)
   currency           String                 @default("USD") @db.VarChar(20)
-  duration           String                 @default("MONTHLY")
-  type               String                 @default("REGULAR")
+  duration           Int                    @default(2) @db.SmallInt()
+  type               Int                    @default(2) @db.SmallInt()
   total_words        BigInt                 @db.BigInt()
   total_images       BigInt                 @db.BigInt()
   status             Int                    @default(1) @db.SmallInt()
@@ -56,23 +56,7 @@ model Package {
   UserPurchase       UserPurchasedPackage[]
 }
 
-model ExtendedPackage {
-  id                        Int                   @id @default(autoincrement())
-  name                      String                @db.VarChar(255)
-  description               String?
-  price                     Decimal               @db.Decimal(19, 2)
-  currency                  String                @default("USD") @db.VarChar(20)
-  type                      Int                   @default(1) @db.SmallInt()
-  word_tokens               BigInt                @db.BigInt()
-  image_tokens              BigInt                @db.BigInt()
-  status                    Int                   @default(1) @db.SmallInt()
-  image_url                 String?               @db.VarChar(255)
-  total_purchase            BigInt                @default(0)
-  created_at                DateTime              @default(now())
-  updated_at                DateTime              @updatedAt
-  user_purchased_package    UserPurchasedPackage? @relation(fields: [user_purchased_package_id], references: [id])
-  user_purchased_package_id Int?
-}
+
 
 model PaymentMethod {
   id                   Int                    @id @default(autoincrement())
@@ -103,7 +87,6 @@ model UserPurchasedPackage {
   user_id           Int
   package_id        Int
   payment_method_id Int
-  extended_package  ExtendedPackage[]
 }
 
 model TemplateCategory {

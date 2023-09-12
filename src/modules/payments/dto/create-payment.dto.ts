@@ -22,18 +22,18 @@ export class CreatePaymentDto {
   @IsNotEmpty()
   price: number;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   @IsIn([
     coreConstant.PACKAGE_DURATION.MONTHLY,
     coreConstant.PACKAGE_DURATION.WEEKLY,
     coreConstant.PACKAGE_DURATION.YEARLY,
   ])
-  duration: string;
+  duration: number;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  type: string;
+  type: number;
 
   @IsNumber()
   @IsNotEmpty()

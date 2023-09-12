@@ -13,12 +13,12 @@ export const coreConstant = {
   INACTIVE: 0,
   PENDING: 2,
   PACKAGE_TYPES: {
-    PREMIUM: 'PREMIUM',
-    REGULAR: 'REGULAR',
+    SUBSCRIPTION: 1,
+    PACKAGE: 2,
   },
   PACKAGE_DURATION: {
-    WEEKLY: 'WEEKLY',
-    MONTHLY: 'MONTHLY',
-    YEARLY: 'YEARLY',
+    WEEKLY: 1,
+    MONTHLY: 2,
+    YEARLY: 3,
   },
 };

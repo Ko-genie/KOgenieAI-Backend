@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { MailConfig } from 'src/shared/configs/mail.config';
 import { UsersModule } from '../users/users.module';
@@ -14,6 +14,7 @@ import { FilesModule } from '../file/files.module';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { SettingsModule } from '../admin/settings/settings.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { BigIntTransformInterceptor } from 'src/shared/utils/transform.interseptor';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PaymentsModule } from '../payments/payments.module';
       isGlobal: true,
       load: [MailConfig],
     }),
+
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -33,6 +35,10 @@ import { PaymentsModule } from '../payments/payments.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: BigIntTransformInterceptor,
     },
   ],
 })

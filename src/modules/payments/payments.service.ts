@@ -24,11 +24,22 @@ export class PaymentsService {
           name: packageInfo.name,
           description: packageInfo.description,
           price: packageInfo.price,
-          duration: packageInfo.duration,
-          type: packageInfo.type,
+          duration:
+            packageInfo.duration === coreConstant.PACKAGE_DURATION.MONTHLY
+              ? coreConstant.PACKAGE_DURATION.MONTHLY
+              : packageInfo.duration === coreConstant.PACKAGE_DURATION.YEARLY
+              ? coreConstant.PACKAGE_DURATION.YEARLY
+              : coreConstant.PACKAGE_DURATION.WEEKLY,
+          type:
+            packageInfo.type === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+              ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+              : coreConstant.PACKAGE_TYPES.PACKAGE,
           total_words: packageInfo.total_words,
           total_images: packageInfo.total_images,
-          status: packageInfo.status,
+          status:
+            packageInfo.status === coreConstant.ACTIVE
+              ? coreConstant.ACTIVE
+              : coreConstant.INACTIVE,
           image_url: packageInfo.image_url,
           total_tokens_limit: packageInfo.total_tokens_limit,
         },
@@ -48,6 +59,20 @@ export class PaymentsService {
       };
 
       return successResponse('Package created successfully', packageData);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getAllSubcriptionPackages(): Promise<ResponseModel> {
+    try {
+      const packages: Package[] = await this.prisma.package.findMany({
+        where: {
+          type: coreConstant.PACKAGE_TYPES.SUBSCRIPTION,
+        },
+      });
+
+      if (!packages) return errorResponse('Packages not found');
+      return successResponse('Packages fetched successfully', packages);
     } catch (error) {
       processException(error);
     }
