@@ -47,19 +47,19 @@ export class UpdateGeneralSettingsDto {
   @IsIn([coreConstant.STATUS_ACTIVE, coreConstant.STATUS_INACTIVE])
   social_login_google_status: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   google_analytics_tracking_id: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   meta_title: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   meta_description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   meta_keywords: string;
 
