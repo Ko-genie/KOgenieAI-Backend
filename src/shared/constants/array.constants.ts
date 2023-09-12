@@ -18,6 +18,7 @@ export const generalSettingsData = [
 ];
 
 export const smtpSettingsData = [
+  'mail_driver',
   'smtp_host',
   'smtp_port',
   'smtp_user_name',

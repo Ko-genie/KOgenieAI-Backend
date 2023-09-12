@@ -4,6 +4,10 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class updateSMTPSettingsDto {
   @IsNotEmpty()
   @IsString()
+  mail_driver: string;
+
+  @IsNotEmpty()
+  @IsString()
   smtp_host: string;
 
   @IsNotEmpty()
