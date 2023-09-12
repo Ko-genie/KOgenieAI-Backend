@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Prisma } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
+import { count } from 'console';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;
@@ -162,7 +163,8 @@ export async function paginationMetaData(model: string, payload: any) {
 export async function getAdminSettingsData(slugs?: any) {
   try {
     var data = {};
-    if (slugs) {
+
+    if (Array.isArray(slugs)) {
       await Promise.all(
         slugs.map(async (slug) => {
           const slufInfo = await PrismaClient.adminSettings.findFirst({
@@ -178,9 +180,16 @@ export async function getAdminSettingsData(slugs?: any) {
           }
         }),
       );
+    } else if (typeof slugs === 'string') {
+      const slufInfo = await PrismaClient.adminSettings.findFirst({
+        where: {
+          slug: slugs,
+        },
+      });
+      data[slugs] = slufInfo.value;
     } else {
-      const slufInfoList = await PrismaClient.adminSettings.findMany();
-      slufInfoList.map((item) => {
+      const slugInfoList = await PrismaClient.adminSettings.findMany();
+      slugInfoList.map((item) => {
         data[item.slug] = item.value;
       });
     }
@@ -189,3 +198,20 @@ export async function getAdminSettingsData(slugs?: any) {
     processException(error);
   }
 }
+
+export const fetchMyUploadFilePathById = async (uploadId: number) => {
+  const uploadDetails = await PrismaClient.myUploads.findFirst({
+    where: { id: uploadId },
+  });
+  return uploadDetails?.file_path || '';
+};
+
+export const adminSettingsValueBySlug = async (slug: string) => {
+  const adminSettingsData = await PrismaClient.adminSettings.findFirst({
+    where: {
+      slug: slug,
+    },
+  });
+
+  return adminSettingsData?.value;
+};

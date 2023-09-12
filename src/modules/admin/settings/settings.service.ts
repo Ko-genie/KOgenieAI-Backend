@@ -1,5 +1,7 @@
 import {
+  adminSettingsValueBySlug,
   errorResponse,
+  fetchMyUploadFilePathById,
   getAdminSettingsData,
   processException,
   successResponse,
@@ -19,6 +21,7 @@ import {
 } from 'src/shared/constants/array.constants';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
+import { async } from 'rxjs';
 
 @Injectable()
 export class SettingService {
@@ -74,57 +77,35 @@ export class SettingService {
     }
     return successResponse('ee');
   }
+
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
     try {
-      console.log(payload);
-      // if (payload.site_logo) {
-      //   const siteLogoDetails = await this.prisma.myUploads.findFirst({
-      //     where: {
-      //       id: payload.site_logo,
-      //     },
-      //   });
+      
+      const site_logo_path = payload.site_logo
+        ? await fetchMyUploadFilePathById(payload.site_logo)
+        : await adminSettingsValueBySlug('site_logo');
+      const site_fav_icon_path = payload.site_fav_icon
+        ? await fetchMyUploadFilePathById(payload.site_fav_icon)
+        : await adminSettingsValueBySlug('site_fav_icon');
 
-      //   if (siteLogoDetails) {
-      //     var site_logo_path = siteLogoDetails.file_path;
-      //   }
-      // }
+      console.log('site_logo_path', site_logo_path);
+      const keyValuePairs = Object.entries(payload).map(([key, value]) => {
+        if (key === 'site_logo') {
+          value = site_logo_path;
+        } else if (key === 'site_fav_icon') {
+          value = site_fav_icon_path;
+        }
+        return { key, value };
+      });
 
-      // if (payload.site_fav_icon) {
-      //   const siteFavIconDetails = await this.prisma.myUploads.findFirst({
-      //     where: {
-      //       id: payload.site_fav_icon,
-      //     },
-      //   });
+      await Promise.all(
+        keyValuePairs.map((element) =>
+          this.updateOrCreate(element.key, element.value),
+        ),
+      );
 
-      //   if (siteFavIconDetails) {
-      //     var site_fav_icon_path = siteFavIconDetails.file_path;
-      //   }
-      // }
-
-      // const keyValuePairs = Object.keys(payload).map((key) => {
-      //   const obj = {
-      //     key,
-      //     value: payload[key],
-      //   };
-
-      //   if (key === 'site_logo') {
-      //     obj.value = site_logo_path;
-      //   } else if (key === 'site_fav_icon') {
-      //     obj.value = site_fav_icon_path;
-      //   }
-
-      //   return obj;
-      // });
-
-      // await Promise.all(
-      //   keyValuePairs.map(async (element) => {
-      //     await this.updateOrCreate(element.key, element.value);
-      //   }),
-      // );
-
-      // const settings = await this.getAllSettings();
-
-      return successResponse('Setting updated successfully');
+      const settings = await getAdminSettingsData(GeneralSettingsSlugs);
+      return successResponse('Setting updated successfully', settings);
     } catch (error) {
       processException(error);
     }
@@ -214,12 +195,9 @@ export class SettingService {
       const slugs: any = TermsConditionSlugs;
       const data = await getAdminSettingsData(slugs);
 
-      return successResponse(
-        'Privacy policy and Terms condition data!',
-        data,
-      );
+      return successResponse('Privacy policy and Terms condition data!', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 
@@ -239,12 +217,9 @@ export class SettingService {
       const slugs: any = OpenAISettingSlugs;
       const data = await getAdminSettingsData(slugs);
 
-      return successResponse(
-        'Open AI settings is updated successfully!',
-        data,
-      );
+      return successResponse('Open AI settings is updated successfully!', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 }
