@@ -5,6 +5,8 @@ import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
+import { User } from '@prisma/client';
+import { UserInfo } from 'src/shared/decorators/user.decorators';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -36,7 +38,12 @@ export class SettingController {
   }
 
   @Get('smtp-settings-data')
-  getSMTPSettingsData(): Promise<ResponseModel>{
+  getSMTPSettingsData(): Promise<ResponseModel> {
     return this.settingService.getSMTPSettingsData();
+  }
+
+  @Get('test-mail')
+  sendTestMail(@UserInfo() user: User): Promise<ResponseModel> {
+    return this.settingService.sendTestMail(user);
   }
 }

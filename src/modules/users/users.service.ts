@@ -118,6 +118,7 @@ export class UsersService {
           verification_code: mailKey,
         };
         await this.userCodeService.createUserCode(codeData);
+        
         this.notificationService.send(
           new SignupVerificationMailNotification(mailData),
           user,

@@ -5,7 +5,6 @@ import {
   successResponse,
 } from 'src/shared/helpers/functions';
 import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
-import { error } from 'console';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import {
@@ -13,10 +12,16 @@ import {
   smtpSettingsData,
 } from 'src/shared/constants/array.constants';
 import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
+import { NotificationService } from 'src/shared/notification/notification.service';
+import { User } from '@prisma/client';
+import { SendTestMail } from 'src/notifications/user/test-mail';
 
 @Injectable()
 export class SettingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async getAllSettings() {
     try {
@@ -159,6 +164,21 @@ export class SettingService {
       const data = await getAdminSettingsData(slugs);
 
       return successResponse('SMTP settings data!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async sendTestMail(user: User) {
+    try {
+      const mailData = {
+        verification_code: 1233,
+      };
+      this.notificationService.send(
+        new SendTestMail(mailData),
+        user,
+      );
+      return successResponse('Mail is sent successfully!');
     } catch (error) {
       processException(error);
     }
