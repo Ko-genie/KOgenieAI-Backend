@@ -63,4 +63,9 @@ export class SettingController {
   updateOpenAISettings(@Body() payload: UpdateOpenAISettingsDto) {
     return this.settingService.updateOpenAISettings(payload);
   }
+
+  @Get('get-open-ai-settings-data')
+  getOpenAiSettingsData(): Promise<ResponseModel>{
+    return this.settingService.getOpenAiSettingsData();
+  }
 }

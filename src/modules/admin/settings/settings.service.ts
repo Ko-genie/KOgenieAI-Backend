@@ -221,4 +221,15 @@ export class SettingService {
       processException(error);
     }
   }
+
+  async getOpenAiSettingsData() {
+    try {
+      const slugs: any = OpenAISettingSlugs;
+      const data = await getAdminSettingsData(slugs);
+
+      return successResponse('Open AI settings data!', data);
+    } catch (error) {
+      processException(error)
+    }
+  }
 }
