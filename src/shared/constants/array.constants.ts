@@ -1,4 +1,5 @@
 import {
+  creativityConstant,
   openAiModelConstant,
   openAiToneOfVoiceConstant,
 } from '../helpers/coreConstant';
@@ -66,4 +67,11 @@ export const OpenAiToneOfVoiceKeyArray = [
   openAiToneOfVoiceConstant.DRAMATIC,
   openAiToneOfVoiceConstant.GRUMPY,
   openAiToneOfVoiceConstant.SECRETIVE,
+];
+
+export const CreativityKeyArray = [
+  creativityConstant.ECONOMIC,
+  creativityConstant.AVERAGE,
+  creativityConstant.GOOD,
+  creativityConstant.PREMIUM
 ];

@@ -32,3 +32,10 @@ export const openAiToneOfVoiceConstant = {
   GRUMPY: 'Grumpy',
   SECRETIVE: 'Secretive',
 };
+
+export const creativityConstant = {
+  ECONOMIC:0.25,
+  AVERAGE: 0.50,
+  GOOD: 0.75,
+  PREMIUM: 1,
+};
