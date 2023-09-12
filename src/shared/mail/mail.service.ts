@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { MessageInterface } from './messages/message.interface';
 import { TransportInterface } from './transports/transport.interface';
 import { transports } from './transports';
-import { smtpSettingsData } from '../constants/array.constants';
+import { SMTPSettingsSlugs } from '../constants/array.constants';
 import { getAdminSettingsData } from '../helpers/functions';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class MailService {
   }
 
   async send(message: MessageInterface) {
-    const slugs: any = smtpSettingsData;
+    const slugs: any = SMTPSettingsSlugs;
     const mailConfigDataFromDB: any = await getAdminSettingsData(slugs);
 
     const defaultMailer =

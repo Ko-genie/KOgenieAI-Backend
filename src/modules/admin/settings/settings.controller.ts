@@ -7,6 +7,7 @@ import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { User } from '@prisma/client';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
+import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -46,4 +47,9 @@ export class SettingController {
   sendTestMail(@UserInfo() user: User): Promise<ResponseModel> {
     return this.settingService.sendTestMail(user);
   }
+
+  @Post('update-terms-privacy')
+  updateTermsPrivacy(@Body() payload: UpdateTermsPrivacyDto):Promise<ResponseModel> {
+    return this.settingService.updateTermsPrivacy(payload);
+  };
 }

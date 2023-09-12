@@ -1,4 +1,4 @@
-export const generalSettingsData = [
+export const GeneralSettingsSlugs = [
   'site_name',
   'site_url',
   'site_email',
@@ -17,7 +17,7 @@ export const generalSettingsData = [
   'site_fav_icon',
 ];
 
-export const smtpSettingsData = [
+export const SMTPSettingsSlugs = [
   'mail_driver',
   'smtp_host',
   'smtp_port',
@@ -27,3 +27,5 @@ export const smtpSettingsData = [
   'smtp_sender_name',
   'smtp_encryption',
 ];
+
+export const TermsConditionSlug = ['privacy_policy', 'terms_condition'];

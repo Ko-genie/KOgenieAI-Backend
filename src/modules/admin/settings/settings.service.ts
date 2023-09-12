@@ -8,13 +8,14 @@ import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import {
-  generalSettingsData,
-  smtpSettingsData,
+  GeneralSettingsSlugs,
+  SMTPSettingsSlugs,
 } from 'src/shared/constants/array.constants';
 import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
 import { NotificationService } from 'src/shared/notification/notification.service';
 import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
+import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 
 @Injectable()
 export class SettingService {
@@ -127,7 +128,7 @@ export class SettingService {
 
   async getGeneralSettingsData() {
     try {
-      const slugs: any = generalSettingsData;
+      const slugs: any = GeneralSettingsSlugs;
       const data = await getAdminSettingsData(slugs);
 
       return successResponse('General settings  data', data);
@@ -149,7 +150,7 @@ export class SettingService {
         }),
       );
 
-      const slugs: any = smtpSettingsData;
+      const slugs: any = SMTPSettingsSlugs;
       const data = await getAdminSettingsData(slugs);
 
       return successResponse('SMTP settings is updated!', data);
@@ -160,7 +161,7 @@ export class SettingService {
 
   async getSMTPSettingsData() {
     try {
-      const slugs: any = smtpSettingsData;
+      const slugs: any = SMTPSettingsSlugs;
       const data = await getAdminSettingsData(slugs);
 
       return successResponse('SMTP settings data!', data);
@@ -171,9 +172,7 @@ export class SettingService {
 
   async sendTestMail(user: User) {
     try {
-      const mailData = {
-        verification_code: 1233,
-      };
+      const mailData = {};
       this.notificationService.send(
         new SendTestMail(mailData),
         user,
@@ -181,6 +180,28 @@ export class SettingService {
       return successResponse('Mail is sent successfully!');
     } catch (error) {
       processException(error);
+    }
+  }
+
+  async updateTermsPrivacy(payload: UpdateTermsPrivacyDto) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const slugs: any = SMTPSettingsSlugs;
+      const data = await getAdminSettingsData(slugs);
+      
+      return successResponse('Privacy policy and Terms condition is updated successfully!');
+    } catch (error) {
+      processException(error)
     }
   }
 }
