@@ -9,6 +9,7 @@ import { User } from '@prisma/client';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
+import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -50,12 +51,14 @@ export class SettingController {
   }
 
   @Post('update-terms-privacy')
-  updateTermsPrivacy(@Body() payload: UpdateTermsPrivacyDto):Promise<ResponseModel> {
+  updateTermsPrivacy(
+    @Body() payload: UpdateTermsPrivacyDto,
+  ): Promise<ResponseModel> {
     return this.settingService.updateTermsPrivacy(payload);
-  };
+  }
 
   @Get('get-terms-privacy-data')
-  getTermsPrivacyData():Promise<ResponseModel> {
+  getTermsPrivacyData(): Promise<ResponseModel> {
     return this.settingService.getTermsPrivacyData();
   }
 
@@ -65,7 +68,17 @@ export class SettingController {
   }
 
   @Get('get-open-ai-settings-data')
-  getOpenAiSettingsData(): Promise<ResponseModel>{
+  getOpenAiSettingsData(): Promise<ResponseModel> {
     return this.settingService.getOpenAiSettingsData();
+  }
+
+  @Post('update-payment-stripe-settings')
+  updatePaymentStripeSettings(@Body() payload: UpdatePaymentMethodStripeSettingsDto) {
+    return this.settingService.updatePaymentStripeSettings(payload);
+  }
+
+  @Get('get-payment-stripe-settings-data')
+  getPaymentMethodStripeSettingsData(): Promise<ResponseModel>{
+    return this.settingService.getPaymentMethodStripeSettingsData();
   }
 }

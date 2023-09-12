@@ -16,12 +16,14 @@ import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
   GeneralSettingsSlugs,
   OpenAISettingSlugs,
+  PaymentMethodStripeSettingsSlugs,
   SMTPSettingsSlugs,
   TermsConditionSlugs,
 } from 'src/shared/constants/array.constants';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 import { async } from 'rxjs';
+import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 
 @Injectable()
 export class SettingService {
@@ -224,10 +226,43 @@ export class SettingService {
 
   async getOpenAiSettingsData() {
     try {
-      const slugs: any = OpenAISettingSlugs;
-      const data = await getAdminSettingsData(slugs);
+      const data = await getAdminSettingsData(OpenAISettingSlugs);
 
       return successResponse('Open AI settings data!', data);
+    } catch (error) {
+      processException(error)
+    }
+  }
+
+  async updatePaymentStripeSettings(payload: UpdatePaymentMethodStripeSettingsDto) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(PaymentMethodStripeSettingsSlugs);
+
+      return successResponse('Stripe payment method settings is updated successfully!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getPaymentMethodStripeSettingsData() {
+    try {
+      const data = await getAdminSettingsData(PaymentMethodStripeSettingsSlugs);
+
+      return successResponse(
+        'Stripe payment method settings data!',
+        data,
+      );
     } catch (error) {
       processException(error)
     }

@@ -73,5 +73,10 @@ export const CreativityKeyArray = [
   creativityConstant.ECONOMIC,
   creativityConstant.AVERAGE,
   creativityConstant.GOOD,
-  creativityConstant.PREMIUM
+  creativityConstant.PREMIUM,
+];
+
+export const PaymentMethodStripeSettingsSlugs = [
+  'pm_stripe_public_key',
+  'pm_stripe_secret_key'
 ];
