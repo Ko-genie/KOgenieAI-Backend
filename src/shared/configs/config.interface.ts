@@ -1,3 +1,5 @@
+import { type } from "os";
+
 export interface Config {
   nest: NestConfig;
   cors: CorsConfig;

@@ -4,8 +4,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Prisma } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
-import { MyLogger } from '../../../src/modules/logger/logger.service';
-import { async } from 'rxjs';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;

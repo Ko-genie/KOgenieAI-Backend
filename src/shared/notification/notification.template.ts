@@ -13,13 +13,15 @@ export class NotificationTemplate {
   ): Promise<MessageInterface> {
     try {
       variables['userFrom'] = fromUser;
-      variables = await NotificationTemplate.getOtherVariables(variables);
 
+      variables = await NotificationTemplate.getOtherVariables(variables);
+      
       const { subject, content } = NotificationTemplate.resolve(
         'email',
         template,
         variables,
       );
+      
       return new MailMessage(content).subject(subject);
     } catch (e) {
       console.log(e.stack);
