@@ -75,7 +75,6 @@ export class SettingService {
     } catch (error) {
       processException(error);
     }
-    return successResponse('ee');
   }
 
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
