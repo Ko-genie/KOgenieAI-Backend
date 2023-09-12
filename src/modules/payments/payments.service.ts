@@ -63,6 +63,26 @@ export class PaymentsService {
       processException(error);
     }
   }
+  async updatePackageService(
+    packageInfo: UpdatePaymentDto,
+  ): Promise<ResponseModel> {
+    try {
+      const packageData = await this.prisma.package.update({
+        where: {
+          id: packageInfo.id,
+        },
+        data: {
+          ...packageInfo,
+        },
+      });
+      if (!packageData) {
+        return errorResponse("Package can't be updated");
+      }
+      return successResponse('Package updated successfully', packageData);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getAllSubcriptionPackages(): Promise<ResponseModel> {
     try {
       const packages: Package[] = await this.prisma.package.findMany({

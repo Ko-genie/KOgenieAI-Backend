@@ -17,15 +17,20 @@ import { Public } from 'src/shared/decorators/public.decorator';
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
+  @Public()
+  @Get('get-all-packages')
+  getAllPackages(): Promise<ResponseModel> {
+    return this.paymentsService.getAllSubcriptionPackages();
+  }
 
   @IsAdmin()
   @Post('create-package')
   createPackage(@Body() packageInfo: CreatePaymentDto): Promise<ResponseModel> {
     return this.paymentsService.createPackageService(packageInfo);
   }
-  @Public()
-  @Get('get-all-packages')
-  getAllPackages(): Promise<ResponseModel> {
-    return this.paymentsService.getAllSubcriptionPackages();
+  @IsAdmin()
+  @Post('update-package')
+  updatePackage(@Body() updatedPackageInfo: UpdatePaymentDto): Promise<ResponseModel> {
+    return this.paymentsService.updatePackageService(updatedPackageInfo);
   }
 }
