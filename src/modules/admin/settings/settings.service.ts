@@ -7,14 +7,11 @@ import {
 import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import {
-  GeneralSettingsSlugs,
-  SMTPSettingsSlugs,
-} from 'src/shared/constants/array.constants';
 import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
 import { NotificationService } from 'src/shared/notification/notification.service';
 import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
+import { GeneralSettingsSlugs, SMTPSettingsSlugs } from 'src/shared/constants/array.constants';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { AdminSettings } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 export class UpdateGeneralSettingsDto {
@@ -53,22 +53,28 @@ export class UpdateGeneralSettingsDto {
   @IsIn([coreConstant.STATUS_ACTIVE, coreConstant.STATUS_INACTIVE])
   social_login_google_status: number;
 
+  @IsOptional()
   @IsString()
   google_analytics_tracking_id: string;
 
+  @IsOptional()
   @IsString()
   meta_title: string;
 
+  @IsOptional()
   @IsString()
   meta_description: string;
 
+  @IsOptional()
   @IsString()
   meta_keywords: string;
 
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   site_logo: number;
 
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   site_fav_icon: number;
