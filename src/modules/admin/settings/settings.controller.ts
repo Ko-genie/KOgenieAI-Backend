@@ -8,6 +8,7 @@ import { Public } from 'src/shared/decorators/public.decorator';
 import { User } from '@prisma/client';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
+import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -56,5 +57,10 @@ export class SettingController {
   @Get('get-terms-privacy-data')
   getTermsPrivacyData():Promise<ResponseModel> {
     return this.settingService.getTermsPrivacyData();
+  }
+
+  @Post('update-open-ai-settings')
+  updateOpenAISettings(@Body() payload: UpdateOpenAISettingsDto) {
+    return this.settingService.updateOpenAISettings(payload);
   }
 }

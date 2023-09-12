@@ -1,3 +1,8 @@
+import {
+  openAiModelConstant,
+  openAiToneOfVoiceConstant,
+} from '../helpers/coreConstant';
+
 export const GeneralSettingsSlugs = [
   'site_name',
   'site_url',
@@ -29,3 +34,36 @@ export const SMTPSettingsSlugs = [
 ];
 
 export const TermsConditionSlugs = ['privacy_policy', 'terms_condition'];
+
+export const OpenAISettingSlugs = [
+  'open_ai_secret',
+  'open_ai_model',
+  'open_ai_default_language',
+  'open_ai_default_tone_of_voice',
+  'open_ai_default_creativity',
+  'open_ai_default_stream_server',
+  'open_ai_max_input_length',
+  'open_ai_max_output_length',
+];
+
+export const OpenAiModelKeyArray = [
+  openAiModelConstant.CHAT_GPT_ONE,
+  openAiModelConstant.CHAT_GPT_TWO,
+  openAiModelConstant.CHAT_GPT_THREE,
+  openAiModelConstant.CHAT_GPT_FOUR,
+];
+
+export const OpenAiToneOfVoiceKeyArray = [
+  openAiToneOfVoiceConstant.PROFESSIONAL,
+  openAiToneOfVoiceConstant.FUNNY,
+  openAiToneOfVoiceConstant.CASUAL,
+  openAiToneOfVoiceConstant.EXCITED,
+  openAiToneOfVoiceConstant.WITTY,
+  openAiToneOfVoiceConstant.SARCASTIC,
+  openAiToneOfVoiceConstant.FEMININE,
+  openAiToneOfVoiceConstant.MASCULINE,
+  openAiToneOfVoiceConstant.BOLD,
+  openAiToneOfVoiceConstant.DRAMATIC,
+  openAiToneOfVoiceConstant.GRUMPY,
+  openAiToneOfVoiceConstant.SECRETIVE,
+];

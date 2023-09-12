@@ -10,3 +10,25 @@ export const coreConstant = {
   VERIFICATION_TYPE_EMAIL: 1,
   FILE_DESTINATION: 'uploads',
 };
+
+export const openAiModelConstant = {
+  CHAT_GPT_ONE: 1,
+  CHAT_GPT_TWO: 2,
+  CHAT_GPT_THREE: 3,
+  CHAT_GPT_FOUR: 4,
+};
+
+export const openAiToneOfVoiceConstant = {
+  PROFESSIONAL: 'Professional',
+  FUNNY: 'Funny',
+  CASUAL: 'Casual',
+  EXCITED: 'Excited',
+  WITTY: 'Witty',
+  SARCASTIC: 'Sarcastic',
+  FEMININE: 'Feminine',
+  MASCULINE: 'Masculine',
+  BOLD: 'Bold',
+  DRAMATIC: 'Dramatic',
+  GRUMPY: 'Grumpy',
+  SECRETIVE: 'Secretive',
+};

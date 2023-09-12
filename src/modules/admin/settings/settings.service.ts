@@ -13,10 +13,12 @@ import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
   GeneralSettingsSlugs,
+  OpenAISettingSlugs,
   SMTPSettingsSlugs,
   TermsConditionSlugs,
 } from 'src/shared/constants/array.constants';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
+import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 
 @Injectable()
 export class SettingService {
@@ -74,54 +76,55 @@ export class SettingService {
   }
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
     try {
-      if (payload.site_logo) {
-        const siteLogoDetails = await this.prisma.myUploads.findFirst({
-          where: {
-            id: payload.site_logo,
-          },
-        });
+      console.log(payload);
+      // if (payload.site_logo) {
+      //   const siteLogoDetails = await this.prisma.myUploads.findFirst({
+      //     where: {
+      //       id: payload.site_logo,
+      //     },
+      //   });
 
-        if (siteLogoDetails) {
-          var site_logo_path = siteLogoDetails.file_path;
-        }
-      }
+      //   if (siteLogoDetails) {
+      //     var site_logo_path = siteLogoDetails.file_path;
+      //   }
+      // }
 
-      if (payload.site_fav_icon) {
-        const siteFavIconDetails = await this.prisma.myUploads.findFirst({
-          where: {
-            id: payload.site_fav_icon,
-          },
-        });
+      // if (payload.site_fav_icon) {
+      //   const siteFavIconDetails = await this.prisma.myUploads.findFirst({
+      //     where: {
+      //       id: payload.site_fav_icon,
+      //     },
+      //   });
 
-        if (siteFavIconDetails) {
-          var site_fav_icon_path = siteFavIconDetails.file_path;
-        }
-      }
+      //   if (siteFavIconDetails) {
+      //     var site_fav_icon_path = siteFavIconDetails.file_path;
+      //   }
+      // }
 
-      const keyValuePairs = Object.keys(payload).map((key) => {
-        const obj = {
-          key,
-          value: payload[key],
-        };
+      // const keyValuePairs = Object.keys(payload).map((key) => {
+      //   const obj = {
+      //     key,
+      //     value: payload[key],
+      //   };
 
-        if (key === 'site_logo') {
-          obj.value = site_logo_path;
-        } else if (key === 'site_fav_icon') {
-          obj.value = site_fav_icon_path;
-        }
+      //   if (key === 'site_logo') {
+      //     obj.value = site_logo_path;
+      //   } else if (key === 'site_fav_icon') {
+      //     obj.value = site_fav_icon_path;
+      //   }
 
-        return obj;
-      });
+      //   return obj;
+      // });
 
-      await Promise.all(
-        keyValuePairs.map(async (element) => {
-          await this.updateOrCreate(element.key, element.value);
-        }),
-      );
+      // await Promise.all(
+      //   keyValuePairs.map(async (element) => {
+      //     await this.updateOrCreate(element.key, element.value);
+      //   }),
+      // );
 
-      const settings = await this.getAllSettings();
+      // const settings = await this.getAllSettings();
 
-      return successResponse('Setting updated successfully', settings);
+      return successResponse('Setting updated successfully');
     } catch (error) {
       processException(error);
     }
@@ -213,6 +216,31 @@ export class SettingService {
 
       return successResponse(
         'Privacy policy and Terms condition data!',
+        data,
+      );
+    } catch (error) {
+      processException(error)
+    }
+  }
+
+  async updateOpenAISettings(payload: UpdateOpenAISettingsDto) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const slugs: any = OpenAISettingSlugs;
+      const data = await getAdminSettingsData(slugs);
+
+      return successResponse(
+        'Open AI settings is updated successfully!',
         data,
       );
     } catch (error) {
