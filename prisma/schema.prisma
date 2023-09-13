@@ -37,87 +37,48 @@ model User {
   MyUploads             MyUploads[]
 }
 
-model PackageType {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  status      Int       @default(1) @db.SmallInt()
-  Package     Package[]
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-}
-
 model Package {
-  id                       Int      @id @default(autoincrement())
-  name                     String   @db.VarChar(255)
-  description              String?
-  price                    Decimal  @db.Decimal(19, 2)
-  currency                 String   @default("USD") @db.VarChar(20)
-  duration                 Int
-  type                     Int      @default(1) @db.SmallInt()
-  word_tokens              BigInt   @db.BigInt()
-  image_tokens             BigInt   @db.BigInt()
-  status                   Int      @default(1) @db.SmallInt()
-  image_url                String?  @db.VarChar(255)
-  total_purchase           BigInt   @default(0)
-  token_word_tokens_limit  BigInt   @db.BigInt()
-  token_image_tokens_limit BigInt   @db.BigInt()
-  created_at               DateTime @default(now())
-  updated_at               DateTime @updatedAt
-
-  packageType     PackageType            @relation(fields: [package_type_id], references: [id])
-  package_type_id Int
-  UserPurchase    UserPurchasedPackage[]
-}
-
-model ExtendedPackage {
-  id                        Int                   @id @default(autoincrement())
-  name                      String                @db.VarChar(255)
-  description               String?
-  price                     Decimal               @db.Decimal(19, 2)
-  currency                  String                @default("USD") @db.VarChar(20)
-  type                      Int                   @default(1) @db.SmallInt()
-  word_tokens               BigInt                @db.BigInt()
-  image_tokens              BigInt                @db.BigInt()
-  status                    Int                   @default(1) @db.SmallInt()
-  image_url                 String?               @db.VarChar(255)
-  total_purchase            BigInt                @default(0)
-  created_at                DateTime              @default(now())
-  updated_at                DateTime              @updatedAt
-  user_purchased_package    UserPurchasedPackage? @relation(fields: [user_purchased_package_id], references: [id])
-  user_purchased_package_id Int?
-}
-
-model PaymentMethod {
-  id                   Int                    @id @default(autoincrement())
-  name                 String                 @db.VarChar(255)
-  status               Int
-  image_url            String?                @db.VarChar(255)
-  created_at           DateTime               @default(now())
-  updated_at           DateTime               @updatedAt
-  UserPurchasedPackage UserPurchasedPackage[]
+  id                 Int                    @id @default(autoincrement())
+  name               String                 @db.VarChar(255)
+  description        String?
+  price              Decimal                @db.Decimal(19, 2)
+  currency           String                 @default("USD") @db.VarChar(20)
+  duration           Int                    @default(2) @db.SmallInt()
+  type               Int                    @default(2) @db.SmallInt()
+  total_words        BigInt                 @db.BigInt()
+  total_images       BigInt                 @db.BigInt()
+  status             Int                    @default(1) @db.SmallInt()
+  image_url          String?                @db.VarChar(255)
+  total_purchase     BigInt                 @default(0)
+  total_tokens_limit BigInt                 @db.BigInt()
+  available_features String
+  created_at         DateTime               @default(now())
+  updated_at         DateTime               @updatedAt
+  UserPurchase       UserPurchasedPackage[]
 }
 
 model UserPurchasedPackage {
-  id                Int      @id @default(autoincrement())
-  start_date        DateTime
-  end_date          DateTime
-  status            Int      @default(1)
-  word_tokens       BigInt   @db.BigInt()
-  image_tokens      BigInt   @db.BigInt()
-  used_word_tokens  BigInt   @db.BigInt()
-  used_image_tokens BigInt   @db.BigInt()
+  id                 Int      @id @default(autoincrement())
+  start_date         DateTime
+  end_date           DateTime
+  status             Int      @default(1)
+  total_words        BigInt   @db.BigInt()
+  total_images       BigInt   @db.BigInt()
+  total_tokens_limit BigInt   @db.BigInt()
+
+  used_words         BigInt  @default(0) @db.BigInt()
+  used_images        BigInt  @default(0) @db.BigInt()
+  used_token         BigInt  @default(0) @db.BigInt()
+  available_features String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  package           Package           @relation(fields: [package_id], references: [id])
-  user              User              @relation(fields: [user_id], references: [id])
-  paymentMethod     PaymentMethod     @relation(fields: [payment_method_id], references: [id])
-  user_id           Int
-  package_id        Int
-  payment_method_id Int
-  extended_package  ExtendedPackage[]
+  package        Package @relation(fields: [package_id], references: [id])
+  user           User    @relation(fields: [user_id], references: [id])
+  user_id        Int
+  package_id     Int
+  payment_method Int
 }
 
 model TemplateCategory {

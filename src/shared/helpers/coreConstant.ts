@@ -9,6 +9,26 @@ export const coreConstant = {
   IS_NOT_VERIFIED: 0,
   VERIFICATION_TYPE_EMAIL: 1,
   FILE_DESTINATION: 'uploads',
+  ACTIVE: 1,
+  INACTIVE: 0,
+  PENDING: 2,
+  PACKAGE_TYPES: {
+    SUBSCRIPTION: 1,
+    PACKAGE: 2,
+  },
+  FEATURES_TYPES: {
+    WRITING: 1,
+    IMAGE: 2,
+  },
+  PAYMENT_METHODS: {
+    STRIPE: 1,
+    PAYPAL: 2,
+  },
+  PACKAGE_DURATION: {
+    WEEKLY: 1,
+    MONTHLY: 2,
+    YEARLY: 3,
+  },
 };
 
 export const openAiModelConstant = {
