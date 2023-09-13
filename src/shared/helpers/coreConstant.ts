@@ -16,6 +16,10 @@ export const coreConstant = {
     SUBSCRIPTION: 1,
     PACKAGE: 2,
   },
+  FEATURES_TYPES: {
+    WRITING: 1,
+    IMAGE: 2,
+  },
   PAYMENT_METHODS: {
     STRIPE: 1,
     PAYPAL: 2,

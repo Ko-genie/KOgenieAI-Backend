@@ -43,6 +43,7 @@ export class PaymentsService {
               : coreConstant.INACTIVE,
           image_url: packageInfo.image_url,
           total_tokens_limit: packageInfo.total_tokens_limit,
+          available_features: packageInfo.available_features,
         },
       });
 
@@ -104,36 +105,40 @@ export class PaymentsService {
     }
   }
 
-  async subscribeToPackage(
+  async subscribeToSubcriptionPackage(
     user: User,
-    package_id: string,
+    subcription_package_Id: string,
   ): Promise<ResponseModel> {
     try {
-      if (!package_id) {
+      if (!subcription_package_Id) {
         return errorResponse('No package id provided');
       }
-      const { isValid } = await this.getUserPackage(user);
-      if (isValid) {
+
+      const { package_valid } = await this.getUserPackage(user);
+      if (package_valid) {
         return errorResponse('User already subscribed to a package');
       }
-      const packageData: Package = await this.prisma.package.findUnique({
+
+      const packageData: Package | null = await this.prisma.package.findUnique({
         where: {
-          id: Number(package_id),
+          id: Number(subcription_package_Id),
         },
       });
+
       if (!packageData) {
         return errorResponse("Package can't be found");
       }
+
+      // Calculate the end_date based on the start_date and duration
+      const start_date = new Date();
       const duration =
         packageData.duration === coreConstant.PACKAGE_DURATION.WEEKLY
           ? 7
           : packageData.duration === coreConstant.PACKAGE_DURATION.MONTHLY
           ? 30
           : 365;
-      const start_date = new Date(),
-        end_date = new Date(
-          start_date.setDate(start_date.getDate() + duration),
-        );
+      const end_date = new Date(start_date);
+      end_date.setDate(end_date.getDate() + duration);
 
       const purchedPackage = await this.prisma.userPurchasedPackage.create({
         data: {
@@ -146,52 +151,164 @@ export class PaymentsService {
           package_id: packageData.id,
           payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
           total_tokens_limit: packageData.total_tokens_limit,
+          available_features: packageData.available_features,
         },
       });
+
       if (!purchedPackage) {
         return errorResponse("Package can't be purchased");
       }
+
       return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
       processException(error);
     }
   }
-  async getUserPackage(
+  async addPackageToSubscription(
     user: User,
-  ): Promise<{ package: UserPurchasedPackage | null; isValid: boolean }> {
-    const userPackage = await this.prisma.userPurchasedPackage.findFirst({
+    packageId: string,
+  ): Promise<ResponseModel> {
+    try {
+      if (!packageId) {
+        return errorResponse('Invalid data please provide packageId');
+      }
+      const { package_valid, package: SubcribedPackage } =
+        await this.getUserPackage(user);
+      if (!package_valid) {
+        return errorResponse(
+          'Package is not valid or expired! Please buy a new package',
+        );
+      }
+      const getPackageToAdd = await this.prisma.package.findFirst({
+        where: {
+          id: Number(packageId),
+          type: coreConstant.PACKAGE_TYPES.PACKAGE,
+        },
+      });
+      if (!getPackageToAdd) {
+        return errorResponse('Package not found!');
+      }
+      const userUpdatedPackage = await this.prisma.userPurchasedPackage.update({
+        where: {
+          id: Number(SubcribedPackage.id),
+        },
+        data: {
+          total_words:
+            Number(SubcribedPackage.total_words) +
+            Number(getPackageToAdd.total_words),
+          total_images:
+            Number(SubcribedPackage.total_images) +
+            Number(getPackageToAdd.total_images),
+          total_tokens_limit:
+            Number(SubcribedPackage.total_tokens_limit) +
+            Number(getPackageToAdd.total_tokens_limit),
+        },
+      });
+      if (!userUpdatedPackage) {
+        return errorResponse('Purchase failed!');
+      }
+      return successResponse('Purchased successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getUserPackage(user: User): Promise<{
+    package: UserPurchasedPackage | null;
+    package_valid: boolean;
+    word_limit_exceed: boolean;
+    image_limit_exceed: boolean;
+  }> {
+    let userPackage = await this.prisma.userPurchasedPackage.findFirst({
       where: {
         user_id: user.id,
         status: coreConstant.ACTIVE,
       },
       orderBy: {
-        end_date: 'desc', // Use "desc" for descending order
-      },
-      include: {
-        package: true,
+        end_date: 'desc',
       },
     });
-
+    const packageRef = userPackage;
     if (!userPackage) {
-      return { package: null, isValid: false };
+      return {
+        package: null,
+        package_valid: false,
+        image_limit_exceed: true,
+        word_limit_exceed: true,
+      };
     }
+
+    const image_limit_exceed =
+      userPackage.used_images >= userPackage.total_images ? true : false;
+    const word_limit_exceed =
+      userPackage.used_words >= userPackage.total_words ? true : false;
 
     const currentDate = new Date();
     const endDate = new Date(userPackage.end_date);
-    const isValid = currentDate <= endDate;
+    if (currentDate > endDate) {
+      userPackage = await this.changeUserPackageStatus(
+        packageRef.id,
+        coreConstant.INACTIVE,
+      );
+    } else if (image_limit_exceed && word_limit_exceed) {
+      userPackage = await this.changeUserPackageStatus(
+        packageRef.id,
+        coreConstant.INACTIVE,
+      );
+    } else if (packageRef.used_token >= packageRef.total_tokens_limit) {
+      userPackage = await this.changeUserPackageStatus(
+        packageRef.id,
+        coreConstant.INACTIVE,
+      );
+    }
+    const package_valid =
+      userPackage.status === coreConstant.ACTIVE ? true : false;
 
-    return { package: userPackage, isValid };
+    return {
+      package: userPackage,
+      package_valid,
+      image_limit_exceed,
+      word_limit_exceed,
+    };
   }
 
   async checkSubscriptionStatus(user: User): Promise<ResponseModel> {
     try {
-      const { isValid, package: myPackage } = await this.getUserPackage(user);
-      if (!isValid) {
+      const {
+        package_valid,
+        package: myPackage,
+        image_limit_exceed,
+        word_limit_exceed,
+      }: any = await this.getUserPackage(user);
+      if (!myPackage) {
+        return errorResponse('Not Subscribed to any package"');
+      }
+      const available_features = myPackage.available_features
+        .split(',')
+        .map(Number);
+      const response = {
+        ...myPackage,
+        package_valid,
+        image_limit_exceed,
+        word_limit_exceed,
+        available_features,
+      };
+      if (!package_valid) {
         return errorResponse('Package expired please purchase again');
       }
-      return successResponse('Subcribstion is valid', myPackage);
+      return successResponse('Subcribstion is valid', response);
     } catch (error) {
       processException(error);
     }
+  }
+  changeUserPackageStatus(id: number, status: number) {
+    return this.prisma.userPurchasedPackage.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: status,
+      },
+    });
   }
 }

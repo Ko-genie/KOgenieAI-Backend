@@ -44,14 +44,30 @@ export class PaymentsController {
     return this.paymentsService.updatePackageService(updatedPackageInfo);
   }
 
-  @Post('subscribe-to-package')
+  @Post('subscribe')
   subscribeToPackage(
+    @UserInfo() user: User,
+    @Body()
+    payload: {
+      subcription_package_Id: string;
+    },
+  ): Promise<ResponseModel> {
+    return this.paymentsService.subscribeToSubcriptionPackage(
+      user,
+      payload.subcription_package_Id,
+    );
+  }
+  @Post('add-package-to-subscription')
+  addPackageToSubscription(
     @UserInfo() user: User,
     @Body()
     payload: {
       packageId: string;
     },
   ): Promise<ResponseModel> {
-    return this.paymentsService.subscribeToPackage(user, payload.packageId);
+    return this.paymentsService.addPackageToSubscription(
+      user,
+      payload.packageId,
+    );
   }
 }

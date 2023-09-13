@@ -51,22 +51,28 @@ model Package {
   image_url          String?                @db.VarChar(255)
   total_purchase     BigInt                 @default(0)
   total_tokens_limit BigInt                 @db.BigInt()
+  available_features String
   created_at         DateTime               @default(now())
   updated_at         DateTime               @updatedAt
   UserPurchase       UserPurchasedPackage[]
 }
 
 model UserPurchasedPackage {
-  id           Int      @id @default(autoincrement())
-  start_date   DateTime
-  end_date     DateTime
-  status       Int      @default(1)
-  total_words  BigInt   @db.BigInt()
-  total_images BigInt   @db.BigInt()
-
+  id                 Int      @id @default(autoincrement())
+  start_date         DateTime
+  end_date           DateTime
+  status             Int      @default(1)
+  total_words        BigInt   @db.BigInt()
+  total_images       BigInt   @db.BigInt()
   total_tokens_limit BigInt   @db.BigInt()
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+
+  used_words         BigInt  @default(0) @db.BigInt()
+  used_images        BigInt  @default(0) @db.BigInt()
+  used_token         BigInt  @default(0) @db.BigInt()
+  available_features String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   package        Package @relation(fields: [package_id], references: [id])
   user           User    @relation(fields: [user_id], references: [id])
