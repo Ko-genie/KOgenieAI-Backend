@@ -30,3 +30,32 @@ export const coreConstant = {
     YEARLY: 3,
   },
 };
+
+export const openAiModelConstant = {
+  CHAT_GPT_ONE: 1,
+  CHAT_GPT_TWO: 2,
+  CHAT_GPT_THREE: 3,
+  CHAT_GPT_FOUR: 4,
+};
+
+export const openAiToneOfVoiceConstant = {
+  PROFESSIONAL: 'Professional',
+  FUNNY: 'Funny',
+  CASUAL: 'Casual',
+  EXCITED: 'Excited',
+  WITTY: 'Witty',
+  SARCASTIC: 'Sarcastic',
+  FEMININE: 'Feminine',
+  MASCULINE: 'Masculine',
+  BOLD: 'Bold',
+  DRAMATIC: 'Dramatic',
+  GRUMPY: 'Grumpy',
+  SECRETIVE: 'Secretive',
+};
+
+export const creativityConstant = {
+  ECONOMIC:0.25,
+  AVERAGE: 0.50,
+  GOOD: 0.75,
+  PREMIUM: 1,
+};
