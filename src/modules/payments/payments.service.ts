@@ -207,7 +207,7 @@ export class PaymentsService {
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }
-      return successResponse('Purchased successfully!');
+      return successResponse('Purchased successfully!', userUpdatedPackage);
     } catch (error) {
       processException(error);
     }
