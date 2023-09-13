@@ -14,7 +14,6 @@ export class SendTestMail {
   }
 
   async toMail(notifiable: User): Promise<MessageInterface> {
-    console.log(this.data)
     return (
       await NotificationTemplate.toEmail('test_mail.html', {
         subject: (await emailAppName()) + ' ' + 'Email Test',

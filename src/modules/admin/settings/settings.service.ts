@@ -165,7 +165,7 @@ export class SettingService {
       const mailData = {
         email:payload.email
       };
-      this.notificationService.send(new SendTestMail(mailData), user);
+      this.notificationService.sendTo(new SendTestMail(mailData), user);
       return successResponse('Mail is sent successfully!');
     } catch (error) {
       processException(error);
