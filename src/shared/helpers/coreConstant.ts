@@ -39,3 +39,8 @@ export const creativityConstant = {
   GOOD: 0.75,
   PREMIUM: 1,
 };
+
+export const modeStatusConstant = {
+  LIVE: 1,
+  SANDBOX:2
+}

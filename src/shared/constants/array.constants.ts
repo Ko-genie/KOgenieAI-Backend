@@ -1,5 +1,6 @@
 import {
   creativityConstant,
+  modeStatusConstant,
   openAiModelConstant,
   openAiToneOfVoiceConstant,
 } from '../helpers/coreConstant';
@@ -77,6 +78,12 @@ export const CreativityKeyArray = [
 ];
 
 export const PaymentMethodStripeSettingsSlugs = [
-  'pm_stripe_public_key',
-  'pm_stripe_secret_key'
+    'pm_stripe_status_mode',
+    'pm_stripe_default_currency',
+    'pm_stripe_client_id_sandbox',
+    'pm_stripe_secret_key_sandbox',
+    'pm_stripe_client_id_live',
+    'pm_stripe_secret_key_live'
 ];
+
+export const ModeStatusArray = [modeStatusConstant.LIVE, modeStatusConstant.SANDBOX];

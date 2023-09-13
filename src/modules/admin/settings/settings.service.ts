@@ -52,19 +52,19 @@ export class SettingService {
       const payload = {
         value: String(values),
       };
-      if (checkData) {
-        await this.prisma.adminSettings.update({
-          where: { slug: slugKey },
-          data: payload,
-        });
-      } else {
-        await this.prisma.adminSettings.create({
-          data: {
-            ...payload,
-            slug: slugKey,
-          },
-        });
-      }
+
+      await this.prisma.adminSettings.upsert({
+        where: { slug: slugKey },
+        create: {
+          // Data to insert if no matching record is found
+          slug: slugKey, // Assuming slug is a required field
+          value: payload.value, // Assuming payload contains the 'value' field
+        },
+        update: {
+          // Data to update if a matching record is found
+          value: payload.value, // Assuming payload contains the 'value' field
+        },
+      });
     } catch (error) {
       processException(error);
     }
@@ -163,7 +163,7 @@ export class SettingService {
   ) {
     try {
       const mailData = {
-        email:payload.email
+        email: payload.email,
       };
       this.notificationService.sendTo(new SendTestMail(mailData), user);
       return successResponse('Mail is sent successfully!');
@@ -244,6 +244,7 @@ export class SettingService {
     payload: UpdatePaymentMethodStripeSettingsDto,
   ) {
     try {
+      payload.pm_stripe_default_currency = 'usdt';
       const keyValuePairs = Object.keys(payload).map((key) => ({
         key,
         value: payload[key],
