@@ -18,6 +18,17 @@ export class NotificationService {
     );
   }
 
+  sendTo(notification: NotificationInterface, notifiable: User): Promise<any> {
+    const channels = notification.broadcastOn();
+    console.log('sendMailTo', notification);
+    return Promise.all(
+      channels.map(async (channel: Type<ChannelInterface>) => {
+        const channelObj: ChannelInterface = await this.resolveChannel(channel);
+        await channelObj.sendTo(notifiable, notification);
+      }),
+    );
+  }
+
   /**
    * Resolve the channel needed to send the Notification
    * @param channel

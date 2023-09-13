@@ -8,6 +8,8 @@ import { Public } from 'src/shared/decorators/public.decorator';
 import { User } from '@prisma/client';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
+import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
+import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -43,13 +45,42 @@ export class SettingController {
     return this.settingService.getSMTPSettingsData();
   }
 
-  @Get('test-mail')
-  sendTestMail(@UserInfo() user: User): Promise<ResponseModel> {
-    return this.settingService.sendTestMail(user);
+  @Post('test-mail')
+  sendTestMail(@UserInfo() user: User, @Body() payload: {
+    email:string
+  }): Promise<ResponseModel> {
+    return this.settingService.sendTestMail(user,payload);
   }
 
   @Post('update-terms-privacy')
-  updateTermsPrivacy(@Body() payload: UpdateTermsPrivacyDto):Promise<ResponseModel> {
+  updateTermsPrivacy(
+    @Body() payload: UpdateTermsPrivacyDto,
+  ): Promise<ResponseModel> {
     return this.settingService.updateTermsPrivacy(payload);
-  };
+  }
+
+  @Get('get-terms-privacy-data')
+  getTermsPrivacyData(): Promise<ResponseModel> {
+    return this.settingService.getTermsPrivacyData();
+  }
+
+  @Post('update-open-ai-settings')
+  updateOpenAISettings(@Body() payload: UpdateOpenAISettingsDto) {
+    return this.settingService.updateOpenAISettings(payload);
+  }
+
+  @Get('get-open-ai-settings-data')
+  getOpenAiSettingsData(): Promise<ResponseModel> {
+    return this.settingService.getOpenAiSettingsData();
+  }
+
+  @Post('update-payment-stripe-settings')
+  updatePaymentStripeSettings(@Body() payload: UpdatePaymentMethodStripeSettingsDto) {
+    return this.settingService.updatePaymentStripeSettings(payload);
+  }
+
+  @Get('get-payment-stripe-settings-data')
+  getPaymentMethodStripeSettingsData(): Promise<ResponseModel>{
+    return this.settingService.getPaymentMethodStripeSettingsData();
+  }
 }

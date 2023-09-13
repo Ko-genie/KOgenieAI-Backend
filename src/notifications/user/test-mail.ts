@@ -17,11 +17,11 @@ export class SendTestMail {
     return (
       await NotificationTemplate.toEmail('test_mail.html', {
         subject: (await emailAppName()) + ' ' + 'Email Test',
-        title: 'Email Verification',
+        title: 'Test Email Check',
         name: `${notifiable.user_name}`,
-        email: notifiable.email,
+        email: this.data.email,
       })
-    ).to(notifiable.email);
+    ).to(this.data.email);
   }
 
   queueable(): boolean {
