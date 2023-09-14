@@ -36,7 +36,6 @@ export class NotificationService {
         try {
           const value: any = await channelObj.sendTo(notifiable, notification);
         } catch (channelError) {
-          console.log(channelError.message);
           results.push(errorResponse(channelError.message));
         }
       }
