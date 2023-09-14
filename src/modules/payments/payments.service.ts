@@ -11,10 +11,12 @@ import {
 } from 'src/shared/helpers/functions';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { IsNotEmpty } from 'class-validator';
+import { StripeService } from './stripe/stripe.service';
 
 @Injectable()
 export class PaymentsService {
   constructor(private readonly prisma: PrismaService) {}
+  stripe = new StripeService();
 
   async createPackageService(
     packageInfo: CreatePaymentDto,
@@ -81,6 +83,87 @@ export class PaymentsService {
         return errorResponse("Package can't be updated");
       }
       return successResponse('Package updated successfully', packageData);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async createStripePaymentIntent(
+    amount: number,
+    user: User,
+  ): Promise<ResponseModel> {
+    try {
+      const { package_valid } = await this.getUserPackage(user);
+      if (package_valid) {
+        return errorResponse('User already subscribed to a package');
+      }
+
+      await this.stripe.init();
+      const intent = await this.stripe.createStripePaymentIntent(amount, 'usd');
+      if (!intent) {
+        return errorResponse('Stripe payment intent can not be created');
+      }
+      return successResponse('Stripe payment intent created successfully', {
+        intent: intent,
+      });
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async verifyPaymentIntent(
+    paymentIntentId: string,
+    subcription_package_Id: string,
+    user: User,
+  ): Promise<ResponseModel> {
+    try {
+      if (!subcription_package_Id) {
+        return errorResponse('No package id provided');
+      }
+      const packageData: Package | null = await this.prisma.package.findUnique({
+        where: {
+          id: Number(subcription_package_Id),
+        },
+      });
+
+      if (!packageData) {
+        return errorResponse("Package can't be found");
+      }
+      await this.stripe.init();
+      const intent = await this.stripe.verifyPaymentIntent(paymentIntentId);
+      if (!intent) {
+        return errorResponse('Stripe payment intent can not be verified');
+      }
+      // Calculate the end_date based on the start_date and duration
+      const start_date = new Date();
+      const duration =
+        packageData.duration === coreConstant.PACKAGE_DURATION.WEEKLY
+          ? 7
+          : packageData.duration === coreConstant.PACKAGE_DURATION.MONTHLY
+          ? 30
+          : 365;
+      const end_date = new Date(start_date);
+      end_date.setDate(end_date.getDate() + duration);
+
+      const purchedPackage = await this.prisma.userPurchasedPackage.create({
+        data: {
+          start_date: start_date,
+          end_date: end_date,
+          status: coreConstant.ACTIVE,
+          total_words: packageData.total_words,
+          total_images: packageData.total_images,
+          user_id: user.id,
+          package_id: packageData.id,
+          payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
+          total_tokens_limit: packageData.total_tokens_limit,
+          available_features: packageData.available_features,
+        },
+      });
+
+      if (!purchedPackage) {
+        return errorResponse("Package can't be purchased");
+      }
+
+      return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
       processException(error);
     }

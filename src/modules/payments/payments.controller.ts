@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
@@ -17,6 +8,7 @@ import { Public } from 'src/shared/decorators/public.decorator';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
 import { IsNotEmpty } from 'class-validator';
+import { createIntentDto } from './dto/create-intent.dto';
 
 @Controller('payments')
 export class PaymentsController {
@@ -42,6 +34,29 @@ export class PaymentsController {
     @Body() updatedPackageInfo: UpdatePaymentDto,
   ): Promise<ResponseModel> {
     return this.paymentsService.updatePackageService(updatedPackageInfo);
+  }
+
+  @Post('create-stripe-intent')
+  createStripePaymentIntent(
+    @Body() payload: createIntentDto,
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.createStripePaymentIntent(payload.amount, user);
+  }
+  @Post('confirm-and-verify-stripe-payment')
+  verifyPaymentIntent(
+    @Body()
+    payload: {
+      payment_intent_id: string;
+      subcription_package_Id: string;
+    },
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.verifyPaymentIntent(
+      payload.payment_intent_id,
+      payload.subcription_package_Id,
+      user,
+    );
   }
 
   @Post('subscribe')
