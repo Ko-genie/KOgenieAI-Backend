@@ -33,24 +33,14 @@ export class MailChannel implements ChannelInterface {
     notifiable: User,
     notification: NotificationInterface,
   ): Promise<any> {
-    const mailMessage: MessageInterface = await this.getDatat(
+    const mailMessage: MessageInterface = await this.getData(
       notifiable,
       notification,
     );
-    console.log('sss', notification['data']);
     return this.mailService.send(mailMessage.to(notification['data'].email));
   }
 
   private async getData(
-    notifiable: User,
-    notification: NotificationInterface,
-  ): Promise<MessageInterface> {
-    if (typeof notification['toMail'] === 'function') {
-      return notification['toMail'](notifiable);
-    }
-    throw new Error('toMail method is missing into Notification class');
-  }
-  private async getDatat(
     notifiable: User,
     notification: NotificationInterface,
   ): Promise<MessageInterface> {

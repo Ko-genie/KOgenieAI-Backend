@@ -1,8 +1,8 @@
-import { Injectable, Type } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
-import { NotificationInterface } from "./notification.interface";
-import { User } from "@prisma/client";
-import { ChannelInterface } from "./chanels/channel.interface";
+import { Injectable, Type } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { NotificationInterface } from './notification.interface';
+import { User } from '@prisma/client';
+import { ChannelInterface } from './chanels/channel.interface';
 
 @Injectable()
 export class NotificationService {
@@ -20,7 +20,6 @@ export class NotificationService {
 
   sendTo(notification: NotificationInterface, notifiable: User): Promise<any> {
     const channels = notification.broadcastOn();
-    console.log('sendMailTo', notification);
     return Promise.all(
       channels.map(async (channel: Type<ChannelInterface>) => {
         const channelObj: ChannelInterface = await this.resolveChannel(channel);
