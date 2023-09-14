@@ -4,6 +4,7 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
 } from 'class-validator';
@@ -13,7 +14,7 @@ import {
 } from 'src/shared/constants/array.constants';
 
 export class UpdateOpenAISettingsDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   open_ai_secret: string;
 
