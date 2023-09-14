@@ -46,10 +46,14 @@ export class SettingController {
   }
 
   @Post('test-mail')
-  sendTestMail(@UserInfo() user: User, @Body() payload: {
-    email:string
-  }): Promise<ResponseModel> {
-    return this.settingService.sendTestMail(user,payload);
+  sendTestMail(
+    @UserInfo() user: User,
+    @Body()
+    payload: {
+      email: string;
+    },
+  ): Promise<Promise<ResponseModel>[]> {
+    return this.settingService.sendTestMail(user, payload);
   }
 
   @Post('update-terms-privacy')
@@ -75,12 +79,14 @@ export class SettingController {
   }
 
   @Post('update-payment-stripe-settings')
-  updatePaymentStripeSettings(@Body() payload: UpdatePaymentMethodStripeSettingsDto) {
+  updatePaymentStripeSettings(
+    @Body() payload: UpdatePaymentMethodStripeSettingsDto,
+  ) {
     return this.settingService.updatePaymentStripeSettings(payload);
   }
 
   @Get('get-payment-stripe-settings-data')
-  getPaymentMethodStripeSettingsData(): Promise<ResponseModel>{
+  getPaymentMethodStripeSettingsData(): Promise<ResponseModel> {
     return this.settingService.getPaymentMethodStripeSettingsData();
   }
 }

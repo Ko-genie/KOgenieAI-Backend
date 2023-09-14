@@ -6,7 +6,11 @@ import { MessageInterface } from './messages/message.interface';
 import { TransportInterface } from './transports/transport.interface';
 import { transports } from './transports';
 import { SMTPSettingsSlugs } from '../constants/array.constants';
-import { getAdminSettingsData } from '../helpers/functions';
+import {
+  errorResponse,
+  getAdminSettingsData,
+  processException,
+} from '../helpers/functions';
 
 @Injectable()
 export class MailService {
@@ -19,40 +23,53 @@ export class MailService {
   }
 
   async send(message: MessageInterface) {
-    const slugs: any = SMTPSettingsSlugs;
-    const mailConfigDataFromDB: any = await getAdminSettingsData(slugs);
+    try {
+      const slugs: any = SMTPSettingsSlugs;
+      const mailConfigDataFromDB: any = await getAdminSettingsData(slugs);
 
-    const defaultMailer =
-      mailConfigDataFromDB.mail_driver || this.mailConfig.defaultMailer;
-    const mailConfig = {
-      host:
-        mailConfigDataFromDB.smtp_host ||
-        this.mailConfig.mailers[defaultMailer].host,
-      port:
-        mailConfigDataFromDB.smtp_port ||
-        Number(this.mailConfig.mailers[defaultMailer].port),
-      username:
-        mailConfigDataFromDB.smtp_user_name ||
-        this.mailConfig.mailers[defaultMailer].username,
-      password:
-        mailConfigDataFromDB.smtp_password ||
-        this.mailConfig.mailers[defaultMailer].password,
-      encryption:
-        mailConfigDataFromDB.smtp_encryption ||
-        this.mailConfig.mailers[defaultMailer].encryption,
-    };
-    const transport: TransportInterface = await this.resolveTransport(
-      defaultMailer,
-    );
-    const data = await message.toTransporter();
-    if (!data.from) {
-      data.from = this.mailConfig.from;
+      const defaultMailer =
+        mailConfigDataFromDB.mail_driver || this.mailConfig.defaultMailer;
+      const mailConfig = {
+        host:
+          mailConfigDataFromDB.smtp_host ||
+          this.mailConfig.mailers[defaultMailer].host,
+        port:
+          mailConfigDataFromDB.smtp_port ||
+          Number(this.mailConfig.mailers[defaultMailer].port),
+        username:
+          mailConfigDataFromDB.smtp_user_name ||
+          this.mailConfig.mailers[defaultMailer].username,
+        password:
+          mailConfigDataFromDB.smtp_password ||
+          this.mailConfig.mailers[defaultMailer].password,
+        encryption:
+          mailConfigDataFromDB.smtp_encryption ||
+          this.mailConfig.mailers[defaultMailer].encryption,
+      };
+      const transport: TransportInterface = await this.resolveTransport(
+        defaultMailer,
+      );
+
+      const data = await message.toTransporter();
+      if (!data.from) {
+        data.from = this.mailConfig.from;
+      }
+      try {
+        return await transport.send(data, mailConfig);
+      } catch (transportError) {
+        throw new Error('Mail credentials are invalid!');
+      }
+    } catch (error) {
+      throw new Error(error.message);
     }
-    return await transport.send(data, mailConfig);
   }
 
-  resolveTransport(defaultMailer) {
-    return this.moduleRef.create(transports[defaultMailer]);
+  async resolveTransport(defaultMailer) {
+    try {
+      return await this.moduleRef.create(transports[defaultMailer]);
+    } catch (error) {
+      throw new Error('Module is not found!');
+    }
   }
 
   // async sendMail(mailData: mailMessageFormat) {

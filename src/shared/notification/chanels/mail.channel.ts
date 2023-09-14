@@ -4,6 +4,7 @@ import { NotificationInterface } from '../notification.interface';
 import { User } from '@prisma/client';
 import { MailService } from 'src/shared/mail/mail.service';
 import { MessageInterface } from 'src/shared/mail/messages/message.interface';
+import { errorResponse, processException } from 'src/shared/helpers/functions';
 
 @Injectable()
 export class MailChannel implements ChannelInterface {
@@ -17,7 +18,6 @@ export class MailChannel implements ChannelInterface {
       notifiable,
       notification,
     );
-    console.log(notification);
     return this.mailService.send(
       mailMessage.to({
         name:
@@ -33,11 +33,20 @@ export class MailChannel implements ChannelInterface {
     notifiable: User,
     notification: NotificationInterface,
   ): Promise<any> {
-    const mailMessage: MessageInterface = await this.getData(
-      notifiable,
-      notification,
-    );
-    return this.mailService.send(mailMessage.to(notification['data'].email));
+    try {
+      const mailMessage: MessageInterface = await this.getData(
+        notifiable,
+        notification,
+      );
+      const response = await this.mailService.send(
+        mailMessage.to(notification['data'].email),
+      );
+
+      return response;
+    } catch (error) {
+      throw new Error(error)
+      // processException(error);
+    }
   }
 
   private async getData(
@@ -47,6 +56,7 @@ export class MailChannel implements ChannelInterface {
     if (typeof notification['toMail'] === 'function') {
       return notification['toMail'](notifiable);
     }
+
     throw new Error('toMail method is missing into Notification class');
   }
 }

@@ -24,6 +24,7 @@ import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 import { async } from 'rxjs';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
+import { ResponseModel } from 'src/shared/models/response.model';
 
 @Injectable()
 export class SettingService {
@@ -160,13 +161,14 @@ export class SettingService {
     payload: {
       email: string;
     },
-  ) {
+  ): Promise<Promise<ResponseModel>[]> {
     try {
       const mailData = {
         email: payload.email,
       };
-      this.notificationService.sendTo(new SendTestMail(mailData), user);
-      return successResponse('Mail is sent successfully!');
+      const response: Promise<ResponseModel>[] =
+        await this.notificationService.sendTo(new SendTestMail(mailData), user);
+      return response;
     } catch (error) {
       processException(error);
     }
