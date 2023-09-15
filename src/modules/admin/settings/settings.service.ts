@@ -15,6 +15,7 @@ import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
   GeneralSettingsSlugs,
+  GoogleAuthCredentialsSlugs,
   OpenAISettingSlugs,
   PaymentMethodStripeSettingsSlugs,
   SMTPSettingsSlugs,
@@ -25,6 +26,7 @@ import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 import { async } from 'rxjs';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 import { ResponseModel } from 'src/shared/models/response.model';
+import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 
 @Injectable()
 export class SettingService {
@@ -276,6 +278,40 @@ export class SettingService {
       return successResponse('Stripe payment method settings data!', data);
     } catch (error) {
       processException(error);
+    }
+  }
+
+  async updateGoogleAuthSettings(payload: UpdateGoogleAuthSettingsDto) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(GoogleAuthCredentialsSlugs);
+
+      return successResponse(
+        'Google auth credentials is update successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGoogleAuthSettingsData() {
+    try {
+      const data = await getAdminSettingsData(GoogleAuthCredentialsSlugs);
+
+      return successResponse('Google auth credentials', data);
+    } catch (error) {
+      processException(error)
     }
   }
 }

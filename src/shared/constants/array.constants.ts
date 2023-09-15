@@ -86,4 +86,9 @@ export const PaymentMethodStripeSettingsSlugs = [
     'pm_stripe_secret_key_live'
 ];
 
+export const GoogleAuthCredentialsSlugs = [
+  'google_auth_client_id',
+  'google_auth_client_secret'
+];
+
 export const ModeStatusArray = [modeStatusConstant.LIVE, modeStatusConstant.SANDBOX];

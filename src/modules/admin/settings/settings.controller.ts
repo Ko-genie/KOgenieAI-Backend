@@ -10,6 +10,7 @@ import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
+import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -88,5 +89,15 @@ export class SettingController {
   @Get('get-payment-stripe-settings-data')
   getPaymentMethodStripeSettingsData(): Promise<ResponseModel> {
     return this.settingService.getPaymentMethodStripeSettingsData();
+  }
+
+  @Post('update-google-auth-settings')
+  updateGoogleAuthSettings(@Body() payload: UpdateGoogleAuthSettingsDto) {
+    return this.settingService.updateGoogleAuthSettings(payload);
+  }
+
+  @Get('get-google-auth-settings-data')
+  getGoogleAuthSettingsData() {
+    return this.settingService.getGoogleAuthSettingsData();
   }
 }
