@@ -41,23 +41,24 @@ model User {
 }
 
 model Package {
-  id                 Int                    @id @default(autoincrement())
-  name               String                 @db.VarChar(255)
-  description        String?
-  price              Decimal                @db.Decimal(19, 2)
-  currency           String                 @default("USD") @db.VarChar(20)
-  duration           Int                    @default(2) @db.SmallInt()
-  type               Int                    @default(2) @db.SmallInt()
-  total_words        BigInt                 @db.BigInt()
-  total_images       BigInt                 @db.BigInt()
-  status             Int                    @default(1) @db.SmallInt()
-  image_url          String?                @db.VarChar(255)
-  total_purchase     BigInt                 @default(0)
-  total_tokens_limit BigInt                 @db.BigInt()
-  available_features String
-  created_at         DateTime               @default(now())
-  updated_at         DateTime               @updatedAt
-  UserPurchase       UserPurchasedPackage[]
+  id                        Int                    @id @default(autoincrement())
+  name                      String                 @db.VarChar(255)
+  description               String?
+  price                     Decimal                @db.Decimal(19, 2)
+  currency                  String                 @default("USD") @db.VarChar(20)
+  duration                  Int                    @default(2) @db.SmallInt()
+  type                      Int                    @default(2) @db.SmallInt()
+  total_words               BigInt                 @db.BigInt()
+  total_images              BigInt                 @db.BigInt()
+  status                    Int                    @default(1) @db.SmallInt()
+  image_url                 String?                @db.VarChar(255)
+  total_purchase            BigInt                 @default(0)
+  total_tokens_limit        BigInt                 @db.BigInt()
+  feature_description_lists String?
+  available_features        String
+  created_at                DateTime               @default(now())
+  updated_at                DateTime               @updatedAt
+  UserPurchase              UserPurchasedPackage[]
 }
 
 model UserPurchasedPackage {
@@ -69,9 +70,9 @@ model UserPurchasedPackage {
   total_images       BigInt   @db.BigInt()
   total_tokens_limit BigInt   @db.BigInt()
 
-  used_words         BigInt  @default(0) @db.BigInt()
-  used_images        BigInt  @default(0) @db.BigInt()
-  used_token         BigInt  @default(0) @db.BigInt()
+  used_words         BigInt @default(0) @db.BigInt()
+  used_images        BigInt @default(0) @db.BigInt()
+  used_token         BigInt @default(0) @db.BigInt()
   available_features String
 
   created_at DateTime @default(now())

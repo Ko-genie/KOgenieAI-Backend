@@ -5,6 +5,7 @@ import {
   IsString,
   IsNumber,
   Validate,
+  IsJSON,
 } from 'class-validator';
 import { IsIn } from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
@@ -62,4 +63,7 @@ export class CreatePaymentDto {
   @IsString()
   @IsNotEmpty()
   available_features: string;
+
+  @IsString()
+  feature_description_lists: string;
 }
