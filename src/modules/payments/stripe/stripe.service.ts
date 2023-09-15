@@ -20,7 +20,7 @@ export class StripeService {
 
   async createStripePaymentIntent(
     amount: number,
-    currency: string = 'usd',
+    currency: string = 'USD',
   ): Promise<Stripe.PaymentIntent> {
     if (!this.stripe) {
       throw new Error('Stripe is not initialized');
@@ -29,7 +29,7 @@ export class StripeService {
 
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount,
-      currency,
+      currency: currency,
     });
 
     return paymentIntent;

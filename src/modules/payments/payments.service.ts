@@ -46,6 +46,7 @@ export class PaymentsService {
           image_url: packageInfo.image_url,
           total_tokens_limit: packageInfo.total_tokens_limit,
           available_features: packageInfo.available_features,
+          feature_description_lists: packageInfo.feature_description_lists,
         },
       });
 
@@ -99,7 +100,7 @@ export class PaymentsService {
       }
 
       await this.stripe.init();
-      const intent = await this.stripe.createStripePaymentIntent(amount, 'usd');
+      const intent = await this.stripe.createStripePaymentIntent(amount, 'USD');
       if (!intent) {
         return errorResponse('Stripe payment intent can not be created');
       }
