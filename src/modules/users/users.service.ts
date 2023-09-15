@@ -25,6 +25,7 @@ import { use } from 'passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { isNumber } from 'class-validator';
 import { User as UserEntity } from './entities/user.entity';
+import { randomUUID } from 'crypto';
 
 // export type User = any;
 @Injectable()
@@ -118,7 +119,7 @@ export class UsersService {
           verification_code: mailKey,
         };
         await this.userCodeService.createUserCode(codeData);
-        
+
         this.notificationService.send(
           new SignupVerificationMailNotification(mailData),
           user,
@@ -379,6 +380,44 @@ export class UsersService {
 
         return successResponse('Email is updated successfully!', userDetails);
       }
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async userRegistrationBySocialMedia(payload: any) {
+    try {
+      const userDetails = await this.prisma.user.findFirst({
+        where: {
+          email: payload.email,
+        },
+      });
+
+      if (userDetails) {
+        return successResponse('User is already registered!', userDetails);
+      } else {
+        const lowerCaseEmail = payload.email.toLocaleLowerCase();
+        const hashPassword = await hashedPassword(randomUUID());
+
+        const userRegistrationData: any = {
+          unique_code: createUniqueCode(),
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          email: lowerCaseEmail,
+          password: hashPassword,
+          email_verified: coreConstant.IS_VERIFIED,
+          provider: payload.provider,
+          provider_id: payload.providerId,
+        };
+
+        const user = await this.prisma.user.create({
+          data: {
+            ...userRegistrationData,
+          },
+        });
+        return successResponse('New user is registered successfully!', user);
+      }
+      
     } catch (error) {
       processException(error);
     }

@@ -18,6 +18,7 @@ import { UsersService } from '../users/users.service';
 import { ResponseModel } from 'src/shared/models/response.model';
 import {
   PrismaClient,
+  createUniqueCode,
   errorResponse,
   hashedPassword,
   processException,
@@ -34,6 +35,7 @@ import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { VerifyEmailCredentialsDto } from './dto/verify-email-credentials.dto';
 import { UserVerificationCodeService } from '../verification_code/user-verify-code.service';
 import { ResetPasswordCredentialsDto } from './dto/reset-password.dto';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +45,16 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userVerificationCodeService: UserVerificationCodeService,
   ) {}
+  async checkEmail(email: string) {
+    const checkUniqueEmail = await this.prisma.user.findUnique({
+      where: { email: email },
+    });
+    if (checkUniqueEmail) {
+      return errorResponse('Email already exists', []);
+    }
 
+    return successResponse('This email is not use in previous!');
+  }
   async checkEmailNickName(email: string, nickName: string) {
     const checkUniqueEmail = await this.prisma.user.findUnique({
       where: { email: email },
@@ -196,7 +207,7 @@ export class AuthService {
     sub: number;
     email: string;
   }): Promise<string> {
-    const accessToken = await this.jwtService.sign(payload, accessJwtConfig);
+    const accessToken = this.jwtService.sign(payload, accessJwtConfig);
 
     return accessToken;
   }
@@ -213,12 +224,12 @@ export class AuthService {
       payload.tokenFamily = uuidV4();
     }
 
-    const refreshToken = await this.jwtService.sign(
+    const refreshToken = this.jwtService.sign(
       { ...payload },
       refreshJwtConfig,
     );
 
-    await this.saveRefreshToken({
+     this.saveRefreshToken({
       userId: payload.sub,
       refreshToken,
       family: payload.tokenFamily,
@@ -388,5 +399,39 @@ export class AuthService {
     } catch (error) {
       return errorResponse('Invalid email', error);
     }
+  }
+
+  async googleLogin(req, browserInfo?) {
+    if (!req.user) {
+      return errorResponse('Access Invalid, try again letter!');
+    }
+    const payload = req.user;
+    
+    const userRegistrationResponse =
+      await this.userService.userRegistrationBySocialMedia(
+        payload,
+      );
+    
+    const user: any = userRegistrationResponse.data;
+    delete user.password;
+    const data = { sub: user.id, email: user.email };
+
+    const accessToken = await this.generateAccessToken(data);
+
+    console.log('usr browserInfo', browserInfo);
+    const refreshToken = await this.createRefreshToken(
+      { sub: data.sub, email: data.email },
+      browserInfo,
+    );
+
+    
+    const userData = {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      user: user,
+      isAdmin: false,
+    };
+
+    return successResponse('Login successful', userData);
   }
 }

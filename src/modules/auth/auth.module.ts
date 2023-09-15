@@ -8,6 +8,7 @@ import { accessJwtConfig } from 'src/shared/configs/jwt.config';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AccessJwtStrategy } from './strategy/access.jwt.strategy';
 import { UserVerificationCodeService } from '../verification_code/user-verify-code.service';
+import { GoogleStrategy } from './strategy/googleauth.strategy';
 // import { LocalStrategy } from "src/common/strategy/local.strategy";
 
 @Module({
@@ -20,7 +21,12 @@ import { UserVerificationCodeService } from '../verification_code/user-verify-co
       signOptions: { expiresIn: accessJwtConfig.expiresIn },
     }),
   ],
-  providers: [AuthService, AccessJwtStrategy, UserVerificationCodeService],
+  providers: [
+    AuthService,
+    AccessJwtStrategy,
+    UserVerificationCodeService,
+    GoogleStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

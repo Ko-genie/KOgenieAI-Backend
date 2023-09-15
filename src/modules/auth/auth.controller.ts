@@ -11,6 +11,8 @@ import { ForgotCredentialsDto } from './dto/forgot-credentials.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { VerifyEmailCredentialsDto } from './dto/verify-email-credentials.dto';
 import { ResetPasswordCredentialsDto } from './dto/reset-password.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { request } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -93,5 +95,22 @@ export class AuthController {
     const { userId } = request.body.user as { userId: number };
 
     return this.authService.findAllTokens(userId);
+  }
+
+  @Public()
+  @Get()
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {}
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() request:Request) {
+    const browserInfo =
+      `${request.ip} ${request.headers['user-agent']} ${request.headers['accept-language']}`.replace(
+        / undefined/g,
+        '',
+      );
+    return this.authService.googleLogin(request,browserInfo);
   }
 }

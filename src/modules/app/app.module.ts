@@ -40,6 +40,10 @@ import { BigIntTransformInterceptor } from 'src/shared/utils/transform.intersept
       provide: APP_INTERCEPTOR,
       useClass: BigIntTransformInterceptor,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: BigIntTransformInterceptor,
+    },
   ],
 })
 export class AppModule implements NestModule {
