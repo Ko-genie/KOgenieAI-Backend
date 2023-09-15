@@ -6,12 +6,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import {
   errorResponse,
+  paginatioOptions,
+  paginationMetaData,
   processException,
   successResponse,
 } from 'src/shared/helpers/functions';
 import { ResponseModel } from 'src/shared/models/response.model';
-import { IsNotEmpty } from 'class-validator';
 import { StripeService } from './stripe/stripe.service';
+import { paginateType } from './dto/query.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -54,7 +56,6 @@ export class PaymentsService {
         return errorResponse("Package can't be created");
       }
 
-      // Convert BigInt fields to strings for serialization
       const packageData = {
         ...CreatedPackage,
         total_words: CreatedPackage.total_words.toString(),
@@ -169,21 +170,41 @@ export class PaymentsService {
       processException(error);
     }
   }
-  async getAllSubcriptionPackages(type: string): Promise<ResponseModel> {
+  async getAllSubcriptionPackages(
+    payload: paginateType,
+  ): Promise<ResponseModel> {
     try {
+      const paginate = await paginatioOptions(payload);
+
       const queryType =
-        Number(type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+        Number(payload.type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
           ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
           : coreConstant.PACKAGE_TYPES.PACKAGE;
 
-      const packages: Package[] = await this.prisma.package.findMany({
-        where: {
-          type: queryType,
-        },
-      });
+      let packages: Package[];
+      if (payload.type) {
+        packages = await this.prisma.package.findMany({
+          where: {
+            type: queryType,
+            status: coreConstant.ACTIVE,
+          },
+          ...paginate,
+        });
+      } else {
+        packages = await this.prisma.package.findMany({
+          where: {
+            type: queryType,
+          },
+          ...paginate,
+        });
+      }
+      const paginationMeta = await paginationMetaData('package', payload);
 
       if (!packages) return errorResponse('Packages not found');
-      return successResponse('Packages fetched successfully', packages);
+      return successResponse('Packages fetched successfully', {
+        packages,
+        meta: paginationMeta,
+      });
     } catch (error) {
       processException(error);
     }

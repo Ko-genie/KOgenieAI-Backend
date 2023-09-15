@@ -9,14 +9,18 @@ import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
 import { IsNotEmpty } from 'class-validator';
 import { createIntentDto } from './dto/create-intent.dto';
+import { paginateType } from './dto/query.dto';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
   @Public()
   @Get('get-all-packages')
-  getAllPackages(@Query('type') type: string): Promise<ResponseModel> {
-    return this.paymentsService.getAllSubcriptionPackages(type);
+  getAllPackages(
+    @Query()
+    payload: paginateType,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.getAllSubcriptionPackages(payload);
   }
   @Get('check-subscription-status')
   checkSubscriptionStatus(@UserInfo() user: User): Promise<ResponseModel> {

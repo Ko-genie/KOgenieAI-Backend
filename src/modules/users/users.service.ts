@@ -118,7 +118,7 @@ export class UsersService {
           verification_code: mailKey,
         };
         await this.userCodeService.createUserCode(codeData);
-        
+
         this.notificationService.send(
           new SignupVerificationMailNotification(mailData),
           user,
@@ -147,7 +147,7 @@ export class UsersService {
   async userList(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
-
+      console.log(paginate, 'paginate');
       const userList = await this.prisma.user.findMany({
         ...paginate,
       });
@@ -157,11 +157,7 @@ export class UsersService {
         return userWithoutPassword;
       });
 
-      const total = await this.prisma.user.count();
-      const lastPage = Math.ceil(total / paginate.take);
-
       const paginationMeta = await paginationMetaData('user', payload);
-      console.log(paginationMeta);
 
       const data = {
         list: userListWithoutPassword,

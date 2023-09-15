@@ -54,10 +54,6 @@ export class CreatePaymentDto {
 
   @IsNumber()
   @IsNotEmpty()
-  total_purchase: number;
-
-  @IsNumber()
-  @IsNotEmpty()
   total_tokens_limit: number;
 
   @IsString()
