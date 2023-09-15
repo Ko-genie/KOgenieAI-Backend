@@ -36,6 +36,7 @@ import { VerifyEmailCredentialsDto } from './dto/verify-email-credentials.dto';
 import { UserVerificationCodeService } from '../verification_code/user-verify-code.service';
 import { ResetPasswordCredentialsDto } from './dto/reset-password.dto';
 import { randomUUID } from 'crypto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -401,7 +402,7 @@ export class AuthService {
     }
   }
 
-  async googleLogin(req, browserInfo?) {
+  async googleLogin(req:Request, browserInfo?:any) {
     if (!req.user) {
       return errorResponse('Access Invalid, try again letter!');
     }
@@ -418,7 +419,6 @@ export class AuthService {
 
     const accessToken = await this.generateAccessToken(data);
 
-    console.log('usr browserInfo', browserInfo);
     const refreshToken = await this.createRefreshToken(
       { sub: data.sub, email: data.email },
       browserInfo,
