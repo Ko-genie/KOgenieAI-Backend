@@ -195,7 +195,7 @@ export async function getAdminSettingsData(slugs?: any) {
     }
     return data;
   } catch (error) {
-    processException(error);
+    // processException(error);
   }
 }
 

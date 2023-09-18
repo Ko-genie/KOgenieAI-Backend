@@ -52,3 +52,8 @@ export interface MailConfig {
     name: string;
   };
 }
+
+export interface GoogleAuthConfig {
+  client_id: string;
+  client_secret: string;
+}
