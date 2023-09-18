@@ -22,6 +22,14 @@ export class PaymentsController {
   ): Promise<ResponseModel> {
     return this.paymentsService.getAllSubcriptionPackages(payload);
   }
+  @IsAdmin()
+  @Get('admin-get-all-packages')
+  getAllPackagesAdmin(
+    @Query()
+    payload: paginateType,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.getAllPackagesAdmin(payload);
+  }
   @Get('check-subscription-status')
   checkSubscriptionStatus(@UserInfo() user: User): Promise<ResponseModel> {
     return this.paymentsService.checkSubscriptionStatus(user);
