@@ -85,6 +85,21 @@ export class PaymentsService {
       processException(error);
     }
   }
+  async getPackageDetails(id: string): Promise<ResponseModel> {
+    try {
+      const packageData = await this.prisma.package.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+      if (!packageData) {
+        return errorResponse('Package not found');
+      }
+      return successResponse('Package details', packageData);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async updatePackageService(
     packageInfo: UpdatePaymentDto,
   ): Promise<ResponseModel> {

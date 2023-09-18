@@ -55,6 +55,12 @@ export class PaymentsController {
     return this.paymentsService.deletePackage(id);
   }
   @IsAdmin()
+  @Get('get-package-details/:id')
+  getPackageDetails(@Param('id') id: string): Promise<ResponseModel> {
+    return this.paymentsService.getPackageDetails(id);
+  }
+
+  @IsAdmin()
   @Post('update-package')
   updatePackage(
     @Body() updatedPackageInfo: UpdatePaymentDto,
