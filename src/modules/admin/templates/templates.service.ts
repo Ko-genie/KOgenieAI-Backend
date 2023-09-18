@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { errorResponse, processException, successResponse } from "src/shared/helpers/functions";
+import { errorResponse, paginatioOptions, paginationMetaData, processException, successResponse } from "src/shared/helpers/functions";
 import { AddNewCategoryDto } from "./dto/add-new-category.dto";
 import { PrismaService } from "src/modules/prisma/prisma.service";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
@@ -58,9 +58,34 @@ export class TemplateService {
         }
       });
 
-      return successResponse('Category is added successfully!', data);
+      return successResponse('Category is update successfully!', data);
     } catch (error) {
       processException(error);
+    }
+  }
+
+  async getListCategory(payload: any) {
+    try {
+
+      const paginate = await paginatioOptions(payload);
+
+      const categoryList = await this.prisma.templateCategory.findMany({
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData(
+        'templateCategory',
+        payload,
+      );
+      
+      const data = {
+        list: categoryList,
+        meta: paginationMeta,
+      };
+
+      return successResponse('Category List data', data)
+    } catch (error) {
+      processException(error)
     }
   }
 }

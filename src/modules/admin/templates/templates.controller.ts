@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { TemplateService } from './templates.service';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
@@ -18,4 +18,9 @@ export class TemplateController {
   updateCategory(@Body() payload: UpdateCategoryDto) {
     return this.templateService.updateCategory(payload);
   }
+
+  @Get('category-list')
+  getListCategory(@Query() payload: any) {
+    return this.templateService.getListCategory(payload);
+  };
 }
