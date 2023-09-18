@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
@@ -39,6 +47,12 @@ export class PaymentsController {
   @Post('create-package')
   createPackage(@Body() packageInfo: CreatePaymentDto): Promise<ResponseModel> {
     return this.paymentsService.createPackageService(packageInfo);
+  }
+
+  @IsAdmin()
+  @Delete('delete-package/:id')
+  deletePackage(@Param('id') id: string): Promise<ResponseModel> {
+    return this.paymentsService.deletePackage(id);
   }
   @IsAdmin()
   @Post('update-package')

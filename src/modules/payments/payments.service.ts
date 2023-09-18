@@ -69,6 +69,22 @@ export class PaymentsService {
       processException(error);
     }
   }
+
+  async deletePackage(id: string): Promise<ResponseModel> {
+    try {
+      const packageData = await this.prisma.package.delete({
+        where: {
+          id: Number(id),
+        },
+      });
+      if (!packageData) {
+        return errorResponse('Package not found');
+      }
+      return successResponse('Package deleted successfully');
+    } catch (error) {
+      processException(error);
+    }
+  }
   async updatePackageService(
     packageInfo: UpdatePaymentDto,
   ): Promise<ResponseModel> {
