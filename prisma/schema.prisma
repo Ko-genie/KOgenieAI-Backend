@@ -27,8 +27,8 @@ model User {
   phone_verified Int @default(0) @db.SmallInt
   gender         Int @default(1) @db.SmallInt
 
-  provider      String?
-  provider_id   String?
+  provider    String?
+  provider_id String?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -100,7 +100,7 @@ model TemplateCategory {
 model Template {
   id               Int              @id @default(autoincrement())
   title            String           @db.VarChar(255)
-  description      String?
+  description      String?          @db.LongText()
   prompt           String           @db.Text()
   premium          Boolean          @default(true)
   templateCategory TemplateCategory @relation(fields: [sub_category_id], references: [id])
@@ -112,15 +112,14 @@ model Template {
 }
 
 model TemplateField {
-  id           Int      @id @default(autoincrement())
-  field_name   String   @db.VarChar(255)
-  type         Int
-  is_required  Boolean  @default(false)
-  option_value Json?
-  template     Template @relation(fields: [template_id], references: [id])
-  template_id  Int
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id          Int     @id @default(autoincrement())
+  field_name  String  @db.VarChar(255)
+  type        Int
+  description String? @db.LongText()
+  template    Template @relation(fields: [template_id], references: [id])
+  template_id Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }
 
 model MyDocuments {
