@@ -16,6 +16,7 @@ import { SettingsModule } from '../admin/settings/settings.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { BigIntTransformInterceptor } from 'src/shared/utils/transform.interseptor';
 import googleauthConfig from 'src/shared/configs/googleauth.config';
+import { TemplateModule } from '../admin/templates/templates.module';
 
 @Module({
   imports: [
@@ -31,15 +32,12 @@ import googleauthConfig from 'src/shared/configs/googleauth.config';
     FilesModule,
     SettingsModule,
     PaymentsModule,
+    TemplateModule
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: BigIntTransformInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,
