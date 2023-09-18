@@ -28,4 +28,9 @@ export class TemplateController {
   deleteCategory(@Param('id') id: number) {
     return this.templateService.deleteCategory(id);
   }
+
+  @Get('category-details-:id')
+  getCategoryDetails(@Param('id') id: number) {
+    return this.templateService.getCategoryDetails(id);
+  }
 }

@@ -1,8 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { errorResponse, paginatioOptions, paginationMetaData, processException, successResponse } from "src/shared/helpers/functions";
-import { AddNewCategoryDto } from "./dto/add-new-category.dto";
-import { PrismaService } from "src/modules/prisma/prisma.service";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { Injectable } from '@nestjs/common';
+import {
+  errorResponse,
+  paginatioOptions,
+  paginationMetaData,
+  processException,
+  successResponse,
+} from 'src/shared/helpers/functions';
+import { AddNewCategoryDto } from './dto/add-new-category.dto';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class TemplateService {
@@ -37,7 +43,7 @@ export class TemplateService {
       const checkNameUnique = await this.prisma.templateCategory.findFirst({
         where: {
           id: {
-            not:payload.id
+            not: payload.id,
           },
           name: {
             contains: payload.name,
@@ -48,14 +54,15 @@ export class TemplateService {
       if (checkNameUnique) {
         return errorResponse('This category is already has!');
       }
-      const {name, description } = payload;
+      const { name, description } = payload;
       const data = await this.prisma.templateCategory.update({
         where: {
-          id:payload.id
-        }, data: {
+          id: payload.id,
+        },
+        data: {
           name,
-          description
-        }
+          description,
+        },
       });
 
       return successResponse('Category is update successfully!', data);
@@ -66,7 +73,6 @@ export class TemplateService {
 
   async getListCategory(payload: any) {
     try {
-
       const paginate = await paginatioOptions(payload);
 
       const categoryList = await this.prisma.templateCategory.findMany({
@@ -83,33 +89,49 @@ export class TemplateService {
         meta: paginationMeta,
       };
 
-      return successResponse('Category List data', data)
+      return successResponse('Category List data', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
-  async deleteCategory(id: number)
-  {
+  async deleteCategory(id: number) {
     try {
       const checkCategory = await this.prisma.templateCategory.findFirst({
         where: {
-          id: id
-        }
+          id: id,
+        },
       });
+
       if (checkCategory) {
         await this.prisma.templateCategory.delete({
           where: {
-            id: id
-          }
+            id: id,
+          },
         });
-      
-      return successResponse('Category is deleted successfully!');  
+
+        return successResponse('Category is deleted successfully!');
       } else {
         return errorResponse('Category is not found!');
       }
-      
     } catch (error) {
-      processException(error)
+      processException(error);
+    }
+  }
+
+  async getCategoryDetails(id: number) {
+    try {
+      const categoryDetails = await this.prisma.templateCategory.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (categoryDetails) {
+        return successResponse('Category details', categoryDetails);
+      } else {
+        return errorResponse('Category is not found!');
+      }
+    } catch (error) {
+      processException(error);
     }
   }
 }
