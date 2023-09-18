@@ -54,13 +54,18 @@ export const openAiToneOfVoiceConstant = {
 };
 
 export const creativityConstant = {
-  ECONOMIC:0.25,
-  AVERAGE: 0.50,
+  ECONOMIC: 0.25,
+  AVERAGE: 0.5,
   GOOD: 0.75,
   PREMIUM: 1,
 };
 
 export const modeStatusConstant = {
   LIVE: 1,
-  SANDBOX:2
-}
+  SANDBOX: 2,
+};
+
+export const statusOnOffConstant = {
+  DEACTIVE: 0,
+  ACTIVE: 1,
+};

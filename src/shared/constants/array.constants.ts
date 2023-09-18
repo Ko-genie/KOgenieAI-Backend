@@ -3,6 +3,7 @@ import {
   modeStatusConstant,
   openAiModelConstant,
   openAiToneOfVoiceConstant,
+  statusOnOffConstant,
 } from '../helpers/coreConstant';
 
 export const GeneralSettingsSlugs = [
@@ -78,17 +79,25 @@ export const CreativityKeyArray = [
 ];
 
 export const PaymentMethodStripeSettingsSlugs = [
-    'pm_stripe_status_mode',
-    'pm_stripe_default_currency',
-    'pm_stripe_client_id_sandbox',
-    'pm_stripe_secret_key_sandbox',
-    'pm_stripe_client_id_live',
-    'pm_stripe_secret_key_live'
+  'pm_stripe_status_mode',
+  'pm_stripe_default_currency',
+  'pm_stripe_client_id_sandbox',
+  'pm_stripe_secret_key_sandbox',
+  'pm_stripe_client_id_live',
+  'pm_stripe_secret_key_live',
 ];
 
 export const GoogleAuthCredentialsSlugs = [
   'google_auth_client_id',
-  'google_auth_client_secret'
+  'google_auth_client_secret',
 ];
 
-export const ModeStatusArray = [modeStatusConstant.LIVE, modeStatusConstant.SANDBOX];
+export const ModeStatusArray = [
+  modeStatusConstant.LIVE,
+  modeStatusConstant.SANDBOX,
+];
+
+export const StatusOnOffArray = [
+  statusOnOffConstant.DEACTIVE,
+  statusOnOffConstant.ACTIVE,
+];
