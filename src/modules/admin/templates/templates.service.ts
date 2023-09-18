@@ -77,13 +77,37 @@ export class TemplateService {
         'templateCategory',
         payload,
       );
-      
+
       const data = {
         list: categoryList,
         meta: paginationMeta,
       };
 
       return successResponse('Category List data', data)
+    } catch (error) {
+      processException(error)
+    }
+  }
+  async deleteCategory(id: number)
+  {
+    try {
+      const checkCategory = await this.prisma.templateCategory.findFirst({
+        where: {
+          id: id
+        }
+      });
+      if (checkCategory) {
+        await this.prisma.templateCategory.delete({
+          where: {
+            id: id
+          }
+        });
+      
+      return successResponse('Category is deleted successfully!');  
+      } else {
+        return errorResponse('Category is not found!');
+      }
+      
     } catch (error) {
       processException(error)
     }

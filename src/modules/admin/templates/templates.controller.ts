@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { TemplateService } from './templates.service';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
@@ -23,4 +23,9 @@ export class TemplateController {
   getListCategory(@Query() payload: any) {
     return this.templateService.getListCategory(payload);
   };
+
+  @Delete('delete-category-:id')
+  deleteCategory(@Param('id') id: number) {
+    return this.templateService.deleteCategory(id);
+  }
 }
