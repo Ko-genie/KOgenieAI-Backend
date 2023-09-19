@@ -3,6 +3,7 @@ import { TemplateService } from './templates.service';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { AddNewCustomTemplateDto } from './dto/add-new-custom-template.dto';
 
 @IsAdmin()
 @Controller('admin-template')
@@ -22,7 +23,7 @@ export class TemplateController {
   @Get('category-list')
   getListCategory(@Query() payload: any) {
     return this.templateService.getListCategory(payload);
-  };
+  }
 
   @Delete('delete-category-:id')
   deleteCategory(@Param('id') id: number) {
@@ -32,5 +33,10 @@ export class TemplateController {
   @Get('category-details-:id')
   getCategoryDetails(@Param('id') id: number) {
     return this.templateService.getCategoryDetails(id);
+  }
+
+  @Post('add-new-custom-template')
+  addNewCustomTemplate(@Body() payload: AddNewCustomTemplateDto) {
+    return this.templateService.addNewCustomTemplate(payload);
   }
 }

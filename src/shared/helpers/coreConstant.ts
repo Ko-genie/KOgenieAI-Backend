@@ -69,3 +69,13 @@ export const statusOnOffConstant = {
   DEACTIVE: 0,
   ACTIVE: 1,
 };
+
+export const packageTypeConstant = {
+  REGULAR: 1,
+  PREMIUM:2
+}
+
+export const inputFieldTypeConstant = {
+  INPUT_FIELD: 1,
+  TEXTAREA_FIELD:2
+}

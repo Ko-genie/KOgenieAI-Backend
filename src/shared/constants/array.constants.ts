@@ -1,8 +1,10 @@
 import {
   creativityConstant,
+  inputFieldTypeConstant,
   modeStatusConstant,
   openAiModelConstant,
   openAiToneOfVoiceConstant,
+  packageTypeConstant,
   statusOnOffConstant,
 } from '../helpers/coreConstant';
 
@@ -100,4 +102,14 @@ export const ModeStatusArray = [
 export const StatusOnOffArray = [
   statusOnOffConstant.DEACTIVE,
   statusOnOffConstant.ACTIVE,
+];
+
+export const PackageTypeArray = [
+  packageTypeConstant.REGULAR,
+  packageTypeConstant.PREMIUM
+];
+
+export const InputFieldTypeArray = [
+  inputFieldTypeConstant.INPUT_FIELD,
+  inputFieldTypeConstant.TEXTAREA_FIELD
 ];

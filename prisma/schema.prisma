@@ -101,10 +101,12 @@ model Template {
   id               Int              @id @default(autoincrement())
   title            String           @db.VarChar(255)
   description      String?          @db.LongText()
+  prompt_input     String           @db.Text()
   prompt           String           @db.Text()
-  premium          Boolean          @default(true)
-  templateCategory TemplateCategory @relation(fields: [sub_category_id], references: [id])
-  sub_category_id  Int
+  color            String?          @db.VarChar(255)
+  package_type     Int              @default(1)
+  templateCategory TemplateCategory @relation(fields: [category_id], references: [id])
+  category_id      Int
   TemplateField    TemplateField[]
   MyDocuments      MyDocuments[]
   created_at       DateTime         @default(now())

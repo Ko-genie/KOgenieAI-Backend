@@ -9,6 +9,7 @@ import {
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { AddNewCustomTemplateDto } from './dto/add-new-custom-template.dto';
 
 @Injectable()
 export class TemplateService {
@@ -130,6 +131,58 @@ export class TemplateService {
       } else {
         return errorResponse('Category is not found!');
       }
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async addNewCustomTemplate(payload: AddNewCustomTemplateDto) {
+    try {
+      const {
+        title,
+        description,
+        color,
+        category_id,
+        package_type,
+        prompt_input,
+        prompt,
+        input_groups,
+      } = payload;
+
+      const newTemplateData = await this.prisma.template.create({
+        data: {
+          title,
+          description,
+          color,
+          category_id,
+          package_type,
+          prompt_input,
+          prompt,
+        },
+      });
+
+      const inputGroupPromises = input_groups.map((inputGroup, key) => {
+        return this.prisma.templateField.create({
+          data: {
+            field_name: inputGroup.name,
+            type: inputGroup.type,
+            template_id: newTemplateData.id,
+            description: inputGroup.description,
+          },
+        });
+      });
+      
+      await Promise.all(inputGroupPromises);
+
+      const templateData = await this.prisma.template.findFirst({
+        where: {
+          id: newTemplateData.id
+        },
+        include: {
+          TemplateField: true
+        }
+      });
+      return successResponse('A new template is created!', templateData);
     } catch (error) {
       processException(error);
     }
