@@ -26,6 +26,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { isNumber } from 'class-validator';
 import { User as UserEntity } from './entities/user.entity';
 import { randomUUID } from 'crypto';
+import { OpenAi } from '../openai/openai.service';
 
 // export type User = any;
 @Injectable()
@@ -35,7 +36,7 @@ export class UsersService {
     private readonly userCodeService: UserVerificationCodeService,
     private readonly notificationService: NotificationService,
   ) {}
-
+  openaiService = new OpenAi();
   async getProfile(user: UserEntity): Promise<ResponseModel> {
     if (!user) {
       return errorResponse('Please login inorder to get profile data');
@@ -413,7 +414,18 @@ export class UsersService {
         });
         return successResponse('New user is registered successfully!', user);
       }
-      
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async testTextGen(payload: { text: string }): Promise<ResponseModel> {
+    try {
+      this.openaiService.init();
+      const response = await this.openaiService.textCompletion(payload.text);
+      if (!response) {
+        return errorResponse('Something went wrong!');
+      }
+      return successResponse('Text is generated successfully!', response);
     } catch (error) {
       processException(error);
     }
