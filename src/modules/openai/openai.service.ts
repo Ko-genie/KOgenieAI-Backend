@@ -11,21 +11,45 @@ export class OpenAi {
   constructor() {}
 
   async init() {
-    const response = await getAdminSettingsData(OpenAISettingSlugs);
-    console.log(response, 'response');
+    const response: any = await getAdminSettingsData(OpenAISettingSlugs);
+    console.log(response.open_ai_secret, 'response');
     this.openai = new Openai({
-      apiKey: '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',
+      apiKey: response.open_ai_secret,
     });
+    // apiKey: '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',
   }
   async textCompletion(
     prompt: string,
   ): Promise<Openai.Chat.Completions.ChatCompletion.Choice[]> {
+    const response: any = await getAdminSettingsData(OpenAISettingSlugs);
+
     const completion = await this.openai.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-3.5-turbo',
-      temperature: 0,
-      max_tokens: 2,
+      model: response?.open_ai_model
+        ? response?.open_ai_model
+        : 'gpt-3.5-turbo',
+      temperature: response?.open_ai_temperature
+        ? response?.open_ai_temperature
+        : 0,
+      max_tokens: response?.open_ai_max_output_length
+        ? response?.open_ai_max_output_length
+        : 20,
     });
     return completion.choices;
+  }
+  async imageGenerate(
+    prompt: string,
+    size: string,
+  ): Promise<Openai.Images.ImagesResponse> {
+    const completion = await this.openai.images.generate({
+      prompt: prompt,
+      size:
+        size === '256x256'
+          ? '256x256'
+          : size === '512x512'
+          ? '512x512'
+          : '1024x1024',
+    });
+    return completion;
   }
 }

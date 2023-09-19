@@ -420,7 +420,7 @@ export class UsersService {
   }
   async testTextGen(payload: { text: string }): Promise<ResponseModel> {
     try {
-      this.openaiService.init();
+      await this.openaiService.init();
       const response = await this.openaiService.textCompletion(payload.text);
       if (!response) {
         return errorResponse('Something went wrong!');
