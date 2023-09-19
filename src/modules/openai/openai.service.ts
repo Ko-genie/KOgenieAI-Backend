@@ -37,18 +37,10 @@ export class OpenAi {
     });
     return completion.choices;
   }
-  async imageGenerate(
-    prompt: string,
-    size: string,
-  ): Promise<Openai.Images.ImagesResponse> {
+  async imageGenerate(prompt: string): Promise<Openai.Images.ImagesResponse> {
     const completion = await this.openai.images.generate({
       prompt: prompt,
-      size:
-        size === '256x256'
-          ? '256x256'
-          : size === '512x512'
-          ? '512x512'
-          : '1024x1024',
+      size: '512x512',
     });
     return completion;
   }
