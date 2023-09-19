@@ -43,6 +43,7 @@ export const TermsConditionSlugs = ['privacy_policy', 'terms_condition'];
 export const OpenAISettingSlugs = [
   'open_ai_secret',
   'open_ai_model',
+  'open_ai_temperature',
   'open_ai_default_language',
   'open_ai_default_tone_of_voice',
   'open_ai_default_creativity',
@@ -54,6 +55,7 @@ export const OpenAISettingSlugs = [
 export const OpenAISettingWithoutSecretSlugs = [
   // 'open_ai_secret',
   'open_ai_model',
+  'open_ai_temperature',
   'open_ai_default_language',
   'open_ai_default_tone_of_voice',
   'open_ai_default_creativity',

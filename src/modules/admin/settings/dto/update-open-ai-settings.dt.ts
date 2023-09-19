@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
   Min,
 } from 'class-validator';
 import {
@@ -39,6 +40,12 @@ export class UpdateOpenAISettingsDto {
   @IsNotEmpty()
   @IsNumber()
   open_ai_default_stream_server: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Max(2)
+  open_ai_temperature: number;
 
   @IsNotEmpty()
   @IsNumber()
