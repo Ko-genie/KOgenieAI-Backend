@@ -50,6 +50,7 @@ export const OpenAISettingSlugs = [
   'open_ai_default_stream_server',
   'open_ai_max_input_length',
   'open_ai_max_output_length',
+  'open_ai_max_token',
 ];
 
 export const OpenAISettingWithoutSecretSlugs = [
@@ -62,6 +63,7 @@ export const OpenAISettingWithoutSecretSlugs = [
   'open_ai_default_stream_server',
   'open_ai_max_input_length',
   'open_ai_max_output_length',
+  'open_ai_max_token',
 ];
 
 export const OpenAiModelKeyArray = [

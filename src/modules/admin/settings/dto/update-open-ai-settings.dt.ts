@@ -56,4 +56,9 @@ export class UpdateOpenAISettingsDto {
   @IsNumber()
   @Min(0)
   open_ai_max_output_length: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  open_ai_max_token: number;
 }
