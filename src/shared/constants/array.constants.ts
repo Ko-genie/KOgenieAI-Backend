@@ -41,6 +41,17 @@ export const SMTPSettingsSlugs = [
 export const TermsConditionSlugs = ['privacy_policy', 'terms_condition'];
 
 export const OpenAISettingSlugs = [
+  'open_ai_secret',
+  'open_ai_model',
+  'open_ai_default_language',
+  'open_ai_default_tone_of_voice',
+  'open_ai_default_creativity',
+  'open_ai_default_stream_server',
+  'open_ai_max_input_length',
+  'open_ai_max_output_length',
+];
+
+export const OpenAISettingWithoutSecretSlugs = [
   // 'open_ai_secret',
   'open_ai_model',
   'open_ai_default_language',

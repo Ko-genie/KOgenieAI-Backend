@@ -17,6 +17,7 @@ import {
   GeneralSettingsSlugs,
   GoogleAuthCredentialsSlugs,
   OpenAISettingSlugs,
+  OpenAISettingWithoutSecretSlugs,
   PaymentMethodStripeSettingsSlugs,
   SMTPSettingsSlugs,
   TermsConditionSlugs,
@@ -225,8 +226,7 @@ export class SettingService {
         }),
       );
 
-      const slugs: any = OpenAISettingSlugs;
-      const data = await getAdminSettingsData(slugs);
+      const data = await getAdminSettingsData(OpenAISettingWithoutSecretSlugs);
 
       return successResponse('Open AI settings is updated successfully!', data);
     } catch (error) {
@@ -236,7 +236,7 @@ export class SettingService {
 
   async getOpenAiSettingsData() {
     try {
-      const data = await getAdminSettingsData(OpenAISettingSlugs);
+      const data = await getAdminSettingsData(OpenAISettingWithoutSecretSlugs);
 
       return successResponse('Open AI settings data!', data);
     } catch (error) {
