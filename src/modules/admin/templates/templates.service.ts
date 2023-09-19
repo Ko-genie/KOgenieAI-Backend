@@ -171,18 +171,43 @@ export class TemplateService {
           },
         });
       });
-      
+
       await Promise.all(inputGroupPromises);
 
       const templateData = await this.prisma.template.findFirst({
         where: {
-          id: newTemplateData.id
+          id: newTemplateData.id,
         },
         include: {
-          TemplateField: true
-        }
+          TemplateField: true,
+        },
       });
       return successResponse('A new template is created!', templateData);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getTemplateList(payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const templateList = await this.prisma.template.findMany({
+        include: {
+          templateCategory: true,
+          TemplateField: true,
+        },
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('template', payload);
+
+      const data = {
+        list: templateList,
+        meta: paginationMeta,
+      };
+
+      return successResponse('Template List with paginate', data);
     } catch (error) {
       processException(error);
     }

@@ -39,4 +39,9 @@ export class TemplateController {
   addNewCustomTemplate(@Body() payload: AddNewCustomTemplateDto) {
     return this.templateService.addNewCustomTemplate(payload);
   }
+
+  @Get('template-list')
+  getTemplateList(@Query() payload: any) {
+    return this.templateService.getTemplateList(payload);
+  }
 }
