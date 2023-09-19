@@ -10,6 +10,8 @@ import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AddNewCustomTemplateDto } from './dto/add-new-custom-template.dto';
+import { UpdateTemplateDto } from './dto/update-template.dto';
+import { async } from 'rxjs';
 
 @Injectable()
 export class TemplateService {
@@ -226,6 +228,113 @@ export class TemplateService {
 
       if (templateDetails) {
         return successResponse('Template details', templateDetails);
+      } else {
+        return errorResponse('Invalid request!');
+      }
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateTemplate(payload: UpdateTemplateDto) {
+    try {
+      const templateDetails = await this.prisma.template.findFirst({
+        where: {
+          id: payload.id,
+        },
+      });
+
+      if (templateDetails) {
+        const {
+          id,
+          title,
+          description,
+          color,
+          category_id,
+          package_type,
+          prompt_input,
+          prompt,
+          input_groups,
+        } = payload;
+
+        const updateTemplateData = await this.prisma.template.update({
+          where: {
+            id: templateDetails.id,
+          },
+          data: {
+            title,
+            description,
+            color,
+            category_id,
+            package_type,
+            prompt_input,
+            prompt,
+          },
+        });
+
+        const existingFieldsMap = await this.prisma.templateField.findMany({
+          where: {
+            template_id: updateTemplateData.id,
+          },
+        });
+
+        for (let i = 0; i < input_groups.length; i++) {
+          const inputGroup = input_groups[i];
+          const { type, name, description } = inputGroup;
+          const existingTemplateFieldData = existingFieldsMap.find(
+            (object) => object.field_name === name,
+          );
+
+          if (existingTemplateFieldData) {
+            const existingTemplateFieldIndex = existingFieldsMap.findIndex(
+              (object) => object.field_name === name,
+            );
+            await this.prisma.templateField.update({
+              where: {
+                id: existingTemplateFieldData.id,
+              },
+              data: {
+                type: type,
+                description: description,
+              },
+            });
+
+            existingFieldsMap.splice(existingTemplateFieldIndex, 1);
+          } else {
+            await this.prisma.templateField.create({
+              data: {
+                field_name: inputGroup.name,
+                type: inputGroup.type,
+                template_id: updateTemplateData.id,
+                description: inputGroup.description,
+              },
+            });
+          }
+        }
+
+        if (existingFieldsMap.length > 0) {
+          for (let i = 0; i < existingFieldsMap.length; i++){
+            const existingFieldsdataToDelete = existingFieldsMap[i];
+            await this.prisma.templateField.delete({
+              where: {
+                id: existingFieldsdataToDelete.id,
+              },
+            });
+          }
+        }
+        const templateData = await this.prisma.template.findFirst({
+          where: {
+            id: templateDetails.id,
+          },
+          include: {
+            TemplateField: true,
+            templateCategory: true,
+          },
+        });
+        return successResponse(
+          'template is updated successfully!',
+          templateData,
+        );
       } else {
         return errorResponse('Invalid request!');
       }

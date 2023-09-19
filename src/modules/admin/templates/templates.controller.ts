@@ -1,9 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { TemplateService } from './templates.service';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AddNewCustomTemplateDto } from './dto/add-new-custom-template.dto';
+import { UpdateTemplateDto } from './dto/update-template.dto';
 
 @IsAdmin()
 @Controller('admin-template')
@@ -35,12 +44,12 @@ export class TemplateController {
     return this.templateService.getCategoryDetails(id);
   }
 
-  @Post('add-new-custom-template')
+  @Post('add-new-template')
   addNewCustomTemplate(@Body() payload: AddNewCustomTemplateDto) {
     return this.templateService.addNewCustomTemplate(payload);
   }
 
-  @Get('template-list')
+  @Get('custom-template-list')
   getTemplateList(@Query() payload: any) {
     return this.templateService.getTemplateList(payload);
   }
@@ -49,4 +58,9 @@ export class TemplateController {
   getTemplateDetails(@Param('id') id: number) {
     return this.templateService.getTemplateDetails(id);
   }
+
+  @Post('update-template')
+  updateTemplate(@Body() payload: UpdateTemplateDto) {
+    return this.templateService.updateTemplate(payload);
+  };
 }
