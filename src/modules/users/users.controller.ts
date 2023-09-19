@@ -99,4 +99,9 @@ export class UserController {
   ): Promise<ResponseModel> {
     return this.userService.updateEmail(user, payload);
   }
+
+  @Post("test-text-gen")
+  testTextGen(@Body() payload: { text: string }) { 
+    return this.userService.testTextGen(payload);
+  }
 }
