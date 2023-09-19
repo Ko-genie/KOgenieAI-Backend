@@ -11,7 +11,7 @@ import { TemplateService } from './templates.service';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { AddNewCustomTemplateDto } from './dto/add-new-custom-template.dto';
+import { AddNewTemplateDto } from './dto/add-new-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 
 @IsAdmin()
@@ -45,7 +45,7 @@ export class TemplateController {
   }
 
   @Post('add-new-template')
-  addNewCustomTemplate(@Body() payload: AddNewCustomTemplateDto) {
+  addNewCustomTemplate(@Body() payload: AddNewTemplateDto) {
     return this.templateService.addNewCustomTemplate(payload);
   }
 
