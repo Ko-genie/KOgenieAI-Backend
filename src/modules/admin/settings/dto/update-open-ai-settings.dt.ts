@@ -20,7 +20,7 @@ export class UpdateOpenAISettingsDto {
 
   @IsNotEmpty()
   @IsNumber()
-  open_ai_model: number;
+  open_ai_model: string;
 
   @IsNotEmpty()
   @IsString()
