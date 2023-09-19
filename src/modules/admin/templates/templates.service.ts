@@ -212,4 +212,25 @@ export class TemplateService {
       processException(error);
     }
   }
+
+  async getTemplateDetails(id: number) {
+    try {
+      const templateDetails = await this.prisma.template.findFirst({
+        where: {
+          id: id,
+        },
+        include: {
+          TemplateField: true,
+        },
+      });
+
+      if (templateDetails) {
+        return successResponse('Template details', templateDetails);
+      } else {
+        return errorResponse('Invalid request!');
+      }
+    } catch (error) {
+      processException(error);
+    }
+  }
 }

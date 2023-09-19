@@ -44,4 +44,9 @@ export class TemplateController {
   getTemplateList(@Query() payload: any) {
     return this.templateService.getTemplateList(payload);
   }
+
+  @Get('template-details-:id')
+  getTemplateDetails(@Param('id') id: number) {
+    return this.templateService.getTemplateDetails(id);
+  }
 }
