@@ -9,7 +9,7 @@ import {
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { AddNewCustomTemplateDto } from './dto/add-new-custom-template.dto';
+import { AddNewTemplateDto } from './dto/add-new-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { async } from 'rxjs';
 
@@ -138,7 +138,7 @@ export class TemplateService {
     }
   }
 
-  async addNewCustomTemplate(payload: AddNewCustomTemplateDto) {
+  async addNewCustomTemplate(payload: AddNewTemplateDto) {
     try {
       const {
         title,
@@ -150,6 +150,15 @@ export class TemplateService {
         prompt,
         input_groups,
       } = payload;
+      const checkCategoryId = await this.prisma.templateCategory.findFirst({
+        where: {
+          id: category_id,
+        },
+      });
+
+      if (!checkCategoryId) {
+        return errorResponse('Invalid Category Id!');
+      }
 
       const newTemplateData = await this.prisma.template.create({
         data: {
@@ -167,6 +176,7 @@ export class TemplateService {
         return this.prisma.templateField.create({
           data: {
             field_name: inputGroup.name,
+            input_field_name: inputGroup.input_field_name,
             type: inputGroup.type,
             template_id: newTemplateData.id,
             description: inputGroup.description,
@@ -260,6 +270,15 @@ export class TemplateService {
           input_groups,
         } = payload;
 
+        const checkCategoryId = await this.prisma.templateCategory.findFirst({
+          where: {
+            id: category_id,
+          },
+        });
+
+        if (!checkCategoryId) {
+          return errorResponse('Invalid Category Id!');
+        }
         const updateTemplateData = await prisma.template.update({
           where: {
             id: templateDetails.id,
@@ -307,6 +326,7 @@ export class TemplateService {
             await prisma.templateField.create({
               data: {
                 field_name: inputGroup.name,
+                input_field_name: inputGroup.input_field_name,
                 type: inputGroup.type,
                 template_id: updateTemplateData.id,
                 description: inputGroup.description,
