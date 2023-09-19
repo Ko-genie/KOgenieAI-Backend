@@ -15,9 +15,13 @@ export class InputGroupDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  input_field_name: string;
 }
 
-export class AddNewCustomTemplateDto {
+export class AddNewTemplateDto {
   @IsNotEmpty()
   @IsString()
   title: string;

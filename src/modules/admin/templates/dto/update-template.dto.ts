@@ -24,6 +24,10 @@ export class InputGroupDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  input_field_name: string;
 }
 
 export class UpdateTemplateDto {

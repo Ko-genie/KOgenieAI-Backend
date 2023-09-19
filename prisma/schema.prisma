@@ -118,6 +118,7 @@ model Template {
 model TemplateField {
   id          Int     @id @default(autoincrement())
   field_name  String  @db.VarChar(255)
+  input_field_name  String  @db.VarChar(255)
   type        Int
   description String? @db.LongText()
   template    Template @relation(fields: [template_id], references: [id])
