@@ -49,7 +49,7 @@ export class TemplateController {
     return this.templateService.addNewCustomTemplate(payload);
   }
 
-  @Get('custom-template-list')
+  @Get('template-list')
   getTemplateList(@Query() payload: any) {
     return this.templateService.getTemplateList(payload);
   }
@@ -62,5 +62,10 @@ export class TemplateController {
   @Post('update-template')
   updateTemplate(@Body() payload: UpdateTemplateDto) {
     return this.templateService.updateTemplate(payload);
-  };
+  }
+
+  @Delete('delete-template-:id')
+  deleteTemplate(@Param('id') id: number) {
+    return this.templateService.deleteTemplate(id);
+  }
 }

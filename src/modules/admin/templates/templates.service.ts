@@ -237,14 +237,17 @@ export class TemplateService {
   }
 
   async updateTemplate(payload: UpdateTemplateDto) {
-    try {
-      const templateDetails = await this.prisma.template.findFirst({
-        where: {
-          id: payload.id,
-        },
-      });
+    return this.prisma.$transaction(async (prisma) => {
+      try {
+        const templateDetails = await prisma.template.findFirst({
+          where: {
+            id: payload.id,
+          },
+        });
 
-      if (templateDetails) {
+        if (!templateDetails) {
+          return errorResponse('Invalid request!');
+        }
         const {
           id,
           title,
@@ -257,7 +260,7 @@ export class TemplateService {
           input_groups,
         } = payload;
 
-        const updateTemplateData = await this.prisma.template.update({
+        const updateTemplateData = await prisma.template.update({
           where: {
             id: templateDetails.id,
           },
@@ -272,7 +275,7 @@ export class TemplateService {
           },
         });
 
-        const existingFieldsMap = await this.prisma.templateField.findMany({
+        const existingFieldsMap = await prisma.templateField.findMany({
           where: {
             template_id: updateTemplateData.id,
           },
@@ -289,7 +292,7 @@ export class TemplateService {
             const existingTemplateFieldIndex = existingFieldsMap.findIndex(
               (object) => object.field_name === name,
             );
-            await this.prisma.templateField.update({
+            await prisma.templateField.update({
               where: {
                 id: existingTemplateFieldData.id,
               },
@@ -301,7 +304,7 @@ export class TemplateService {
 
             existingFieldsMap.splice(existingTemplateFieldIndex, 1);
           } else {
-            await this.prisma.templateField.create({
+            await prisma.templateField.create({
               data: {
                 field_name: inputGroup.name,
                 type: inputGroup.type,
@@ -313,16 +316,16 @@ export class TemplateService {
         }
 
         if (existingFieldsMap.length > 0) {
-          for (let i = 0; i < existingFieldsMap.length; i++){
+          for (let i = 0; i < existingFieldsMap.length; i++) {
             const existingFieldsdataToDelete = existingFieldsMap[i];
-            await this.prisma.templateField.delete({
+            await prisma.templateField.delete({
               where: {
                 id: existingFieldsdataToDelete.id,
               },
             });
           }
         }
-        const templateData = await this.prisma.template.findFirst({
+        const templateData = await prisma.template.findFirst({
           where: {
             id: templateDetails.id,
           },
@@ -335,9 +338,39 @@ export class TemplateService {
           'template is updated successfully!',
           templateData,
         );
-      } else {
-        return errorResponse('Invalid request!');
+      } catch (error) {
+        processException(error);
       }
+    });
+  }
+
+  async deleteTemplate(id: number) {
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        const templateDetails = await prisma.template.findFirst({
+          where: {
+            id: id,
+          },
+        });
+
+        if (!templateDetails) {
+          return errorResponse('Template not found!');
+        }
+
+        await prisma.templateField.deleteMany({
+          where: {
+            template_id: templateDetails.id,
+          },
+        });
+
+        await prisma.template.delete({
+          where: {
+            id: id,
+          },
+        });
+
+        return successResponse('Template has been deleted successfully');
+      });
     } catch (error) {
       processException(error);
     }
