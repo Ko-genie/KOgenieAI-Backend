@@ -72,6 +72,37 @@ export class PaymentsService {
 
   async deletePackage(id: string): Promise<ResponseModel> {
     try {
+      const findPackage = await this.prisma.package.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+
+      if (!findPackage) {
+        return errorResponse('Package not found');
+      }
+
+      const userPurchase = await this.prisma.userPurchasedPackage.findFirst({
+        where: {
+          package_id: Number(id),
+          status: coreConstant.ACTIVE,
+        },
+      });
+      if (userPurchase) {
+        const softDeletePackage = await this.prisma.package.update({
+          where: {
+            id: Number(id),
+          },
+          data: {
+            soft_delete: true,
+          },
+        });
+        if (!softDeletePackage) {
+          return errorResponse('Failed to delete package');
+        }
+        return successResponse('Package deleted successfully');
+      }
+
       const packageData = await this.prisma.package.delete({
         where: {
           id: Number(id),
@@ -87,9 +118,10 @@ export class PaymentsService {
   }
   async getPackageDetails(id: string): Promise<ResponseModel> {
     try {
-      const packageData = await this.prisma.package.findUnique({
+      const packageData = await this.prisma.package.findFirst({
         where: {
           id: Number(id),
+          soft_delete: false,
         },
       });
       if (!packageData) {
@@ -153,9 +185,11 @@ export class PaymentsService {
         return errorResponse('No package id provided');
       }
 
-      const packageData: Package | null = await this.prisma.package.findUnique({
+      const packageData: Package | null = await this.prisma.package.findFirst({
         where: {
           id: Number(subcription_package_Id),
+          soft_delete: false,
+          status: coreConstant.ACTIVE,
         },
       });
 
@@ -223,6 +257,7 @@ export class PaymentsService {
         packages = await this.prisma.package.findMany({
           where: {
             type: queryType,
+            soft_delete: false,
           },
           ...paginate,
         });
@@ -230,6 +265,7 @@ export class PaymentsService {
         packages = await this.prisma.package.findMany({
           where: {
             type: queryType,
+            soft_delete: false,
           },
           ...paginate,
         });
@@ -262,6 +298,7 @@ export class PaymentsService {
           where: {
             type: queryType,
             status: coreConstant.ACTIVE,
+            soft_delete: false,
           },
           ...paginate,
         });
@@ -269,6 +306,8 @@ export class PaymentsService {
         packages = await this.prisma.package.findMany({
           where: {
             type: queryType,
+            status: coreConstant.ACTIVE,
+            soft_delete: false,
           },
           ...paginate,
         });
@@ -299,9 +338,11 @@ export class PaymentsService {
         return errorResponse('User already subscribed to a package');
       }
 
-      const packageData: Package | null = await this.prisma.package.findUnique({
+      const packageData: Package | null = await this.prisma.package.findFirst({
         where: {
           id: Number(subcription_package_Id),
+          status: coreConstant.ACTIVE,
+          soft_delete: false,
         },
       });
 

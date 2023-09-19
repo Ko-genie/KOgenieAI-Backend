@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { IsIn } from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
+import { IsNotNegative } from 'src/shared/validator/not-negative.validator';
 
 export class CreatePaymentDto {
   @IsString()
@@ -21,6 +22,7 @@ export class CreatePaymentDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @IsNotNegative('price') // Apply the custom validator
   price: number;
 
   @IsNumber()
