@@ -9,8 +9,8 @@ export const coreConstant = {
   IS_NOT_VERIFIED: 0,
   VERIFICATION_TYPE_EMAIL: 1,
   FILE_DESTINATION: 'uploads',
-  ACTIVE: 1,
   INACTIVE: 0,
+  ACTIVE: 1,
   PENDING: 2,
   PACKAGE_TYPES: {
     SUBSCRIPTION: 1,
@@ -28,6 +28,10 @@ export const coreConstant = {
     WEEKLY: 1,
     MONTHLY: 2,
     YEARLY: 3,
+  },
+  AVAILABLE_FEATURES: {
+    CONTENT_WRITING: 1,
+    IMAGE_GENERATION: 2,
   },
 };
 

@@ -6,12 +6,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import {
   errorResponse,
+  paginatioOptions,
+  paginationMetaData,
   processException,
   successResponse,
 } from 'src/shared/helpers/functions';
 import { ResponseModel } from 'src/shared/models/response.model';
-import { IsNotEmpty } from 'class-validator';
 import { StripeService } from './stripe/stripe.service';
+import { paginateType } from './dto/query.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -54,7 +56,6 @@ export class PaymentsService {
         return errorResponse("Package can't be created");
       }
 
-      // Convert BigInt fields to strings for serialization
       const packageData = {
         ...CreatedPackage,
         total_words: CreatedPackage.total_words.toString(),
@@ -64,6 +65,69 @@ export class PaymentsService {
       };
 
       return successResponse('Package created successfully', packageData);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async deletePackage(id: string): Promise<ResponseModel> {
+    try {
+      const findPackage = await this.prisma.package.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+
+      if (!findPackage) {
+        return errorResponse('Package not found');
+      }
+
+      const userPurchase = await this.prisma.userPurchasedPackage.findFirst({
+        where: {
+          package_id: Number(id),
+          status: coreConstant.ACTIVE,
+        },
+      });
+      if (userPurchase) {
+        const softDeletePackage = await this.prisma.package.update({
+          where: {
+            id: Number(id),
+          },
+          data: {
+            soft_delete: true,
+          },
+        });
+        if (!softDeletePackage) {
+          return errorResponse('Failed to delete package');
+        }
+        return successResponse('Package deleted successfully');
+      }
+
+      const packageData = await this.prisma.package.delete({
+        where: {
+          id: Number(id),
+        },
+      });
+      if (!packageData) {
+        return errorResponse('Package not found');
+      }
+      return successResponse('Package deleted successfully');
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getPackageDetails(id: string): Promise<ResponseModel> {
+    try {
+      const packageData = await this.prisma.package.findFirst({
+        where: {
+          id: Number(id),
+          soft_delete: false,
+        },
+      });
+      if (!packageData) {
+        return errorResponse('Package not found');
+      }
+      return successResponse('Package details', packageData);
     } catch (error) {
       processException(error);
     }
@@ -120,20 +184,30 @@ export class PaymentsService {
       if (!subcription_package_Id) {
         return errorResponse('No package id provided');
       }
-      const packageData: Package | null = await this.prisma.package.findUnique({
+
+      const packageData: Package | null = await this.prisma.package.findFirst({
         where: {
           id: Number(subcription_package_Id),
+          soft_delete: false,
+          status: coreConstant.ACTIVE,
         },
       });
 
       if (!packageData) {
         return errorResponse("Package can't be found");
       }
+
       await this.stripe.init();
+
+      // Verify the payment intent with Stripe
       const intent = await this.stripe.verifyPaymentIntent(paymentIntentId);
-      if (!intent) {
-        return errorResponse('Stripe payment intent can not be verified');
+      console.log(intent.status, 'intent.status');
+      if (!intent || intent.status !== 'succeeded') {
+        return errorResponse(
+          'Stripe payment intent could not be verified or has not succeeded',
+        );
       }
+
       // Calculate the end_date based on the start_date and duration
       const start_date = new Date();
       const duration =
@@ -169,21 +243,82 @@ export class PaymentsService {
       processException(error);
     }
   }
-  async getAllSubcriptionPackages(type: string): Promise<ResponseModel> {
+  async getAllPackagesAdmin(payload: paginateType): Promise<ResponseModel> {
     try {
+      const paginate = await paginatioOptions(payload);
+
       const queryType =
-        Number(type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+        Number(payload.type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
           ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
           : coreConstant.PACKAGE_TYPES.PACKAGE;
 
-      const packages: Package[] = await this.prisma.package.findMany({
-        where: {
-          type: queryType,
-        },
-      });
+      let packages: Package[];
+      if (payload.type) {
+        packages = await this.prisma.package.findMany({
+          where: {
+            type: queryType,
+            soft_delete: false,
+          },
+          ...paginate,
+        });
+      } else {
+        packages = await this.prisma.package.findMany({
+          where: {
+            type: queryType,
+            soft_delete: false,
+          },
+          ...paginate,
+        });
+      }
+      const paginationMeta = await paginationMetaData('package', payload);
 
       if (!packages) return errorResponse('Packages not found');
-      return successResponse('Packages fetched successfully', packages);
+      return successResponse('Packages fetched successfully', {
+        packages,
+        meta: paginationMeta,
+      });
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getAllSubcriptionPackages(
+    payload: paginateType,
+  ): Promise<ResponseModel> {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const queryType =
+        Number(payload.type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+          ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+          : coreConstant.PACKAGE_TYPES.PACKAGE;
+
+      let packages: Package[];
+      if (payload.type) {
+        packages = await this.prisma.package.findMany({
+          where: {
+            type: queryType,
+            status: coreConstant.ACTIVE,
+            soft_delete: false,
+          },
+          ...paginate,
+        });
+      } else {
+        packages = await this.prisma.package.findMany({
+          where: {
+            type: queryType,
+            status: coreConstant.ACTIVE,
+            soft_delete: false,
+          },
+          ...paginate,
+        });
+      }
+      const paginationMeta = await paginationMetaData('package', payload);
+
+      if (!packages) return errorResponse('Packages not found');
+      return successResponse('Packages fetched successfully', {
+        packages,
+        meta: paginationMeta,
+      });
     } catch (error) {
       processException(error);
     }
@@ -203,9 +338,11 @@ export class PaymentsService {
         return errorResponse('User already subscribed to a package');
       }
 
-      const packageData: Package | null = await this.prisma.package.findUnique({
+      const packageData: Package | null = await this.prisma.package.findFirst({
         where: {
           id: Number(subcription_package_Id),
+          status: coreConstant.ACTIVE,
+          soft_delete: false,
         },
       });
 

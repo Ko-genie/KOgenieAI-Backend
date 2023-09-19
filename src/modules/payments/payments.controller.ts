@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
@@ -9,14 +17,26 @@ import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
 import { IsNotEmpty } from 'class-validator';
 import { createIntentDto } from './dto/create-intent.dto';
+import { paginateType } from './dto/query.dto';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
   @Public()
   @Get('get-all-packages')
-  getAllPackages(@Query('type') type: string): Promise<ResponseModel> {
-    return this.paymentsService.getAllSubcriptionPackages(type);
+  getAllPackages(
+    @Query()
+    payload: paginateType,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.getAllSubcriptionPackages(payload);
+  }
+  @IsAdmin()
+  @Get('admin-get-all-packages')
+  getAllPackagesAdmin(
+    @Query()
+    payload: paginateType,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.getAllPackagesAdmin(payload);
   }
   @Get('check-subscription-status')
   checkSubscriptionStatus(@UserInfo() user: User): Promise<ResponseModel> {
@@ -28,6 +48,18 @@ export class PaymentsController {
   createPackage(@Body() packageInfo: CreatePaymentDto): Promise<ResponseModel> {
     return this.paymentsService.createPackageService(packageInfo);
   }
+
+  @IsAdmin()
+  @Delete('delete-package/:id')
+  deletePackage(@Param('id') id: string): Promise<ResponseModel> {
+    return this.paymentsService.deletePackage(id);
+  }
+  @IsAdmin()
+  @Get('get-package-details/:id')
+  getPackageDetails(@Param('id') id: string): Promise<ResponseModel> {
+    return this.paymentsService.getPackageDetails(id);
+  }
+
   @IsAdmin()
   @Post('update-package')
   updatePackage(
