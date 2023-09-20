@@ -35,6 +35,22 @@ export async function hashedPassword(password: string) {
   const hashPassword = await bcrypt.hash(password, saltOrRounds);
   return hashPassword;
 }
+export function wordCountMultilingual(inputString) {
+  // Split the input string into words using Unicode properties
+  const words = inputString
+    .trim()
+    .split(/[\p{White_Space}\p{Punctuation}]+/u)
+    .filter(Boolean);
+
+  // Return the count of words
+  return words.length;
+}
+
+export function countWords(inputString) {
+  const words = inputString.trim().split(/\s+/);
+
+  return words.length;
+}
 
 export function processException(e) {
   checkPrismaError(e);
