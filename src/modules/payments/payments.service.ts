@@ -532,9 +532,9 @@ export class PaymentsService {
       },
     });
   }
-  updateUserUsedWords(userPurchasedPackageid: number, words: number) {
+  async updateUserUsedWords(userPurchasedPackageid: number, words: number) {
     const getUserPurchasedPackage: any =
-      this.prisma.userPurchasedPackage.findUnique({
+      await this.prisma.userPurchasedPackage.findUnique({
         where: {
           id: userPurchasedPackageid,
         },
@@ -550,9 +550,9 @@ export class PaymentsService {
       },
     });
   }
-  updateUserUsedImages(userPurchasedPackageid: number, images: number) {
+  async updateUserUsedImages(userPurchasedPackageid: number, images: number) {
     const getUserPurchasedPackage: any =
-      this.prisma.userPurchasedPackage.findUnique({
+      await this.prisma.userPurchasedPackage.findUnique({
         where: {
           id: userPurchasedPackageid,
         },
