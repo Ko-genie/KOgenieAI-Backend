@@ -4,6 +4,7 @@ import {
   IsString,
   IsNumber,
   Validate,
+  IsNotEmpty,
 } from 'class-validator';
 import { IsIn } from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
@@ -61,4 +62,11 @@ export class UpdatePaymentDto {
   @IsOptional()
   @IsNumber()
   total_tokens_limit?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  available_features: string;
+
+  @IsString()
+  feature_description_lists: string;
 }
