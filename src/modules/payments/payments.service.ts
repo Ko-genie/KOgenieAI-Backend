@@ -532,4 +532,24 @@ export class PaymentsService {
       },
     });
   }
+  updateUserUsedWords(userPurchasedPackageid: number, words: number) {
+    return this.prisma.userPurchasedPackage.update({
+      where: {
+        id: userPurchasedPackageid,
+      },
+      data: {
+        used_words: words,
+      },
+    });
+  }
+  updateUserUsedImages(userPurchasedPackageid: number, images: number) {
+    return this.prisma.userPurchasedPackage.update({
+      where: {
+        id: userPurchasedPackageid,
+      },
+      data: {
+        used_images: images,
+      },
+    });
+  }
 }
