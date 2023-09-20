@@ -4,9 +4,11 @@ import {
   IsString,
   IsNumber,
   Validate,
+  IsNotEmpty,
 } from 'class-validator';
 import { IsIn } from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
+import { IsNotNegative } from 'src/shared/validator/not-negative.validator';
 
 export class UpdatePaymentDto {
   @IsInt()
@@ -23,6 +25,7 @@ export class UpdatePaymentDto {
 
   @IsOptional()
   @IsNumber()
+  @IsNotNegative('price')
   price?: number;
 
   @IsOptional()
@@ -61,4 +64,11 @@ export class UpdatePaymentDto {
   @IsOptional()
   @IsNumber()
   total_tokens_limit?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  available_features: string;
+
+  @IsString()
+  feature_description_lists: string;
 }
