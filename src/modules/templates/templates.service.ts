@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import {
+  checkValidationForContentGenerateUseTemplate,
   errorResponse,
   paginatioOptions,
   paginationMetaData,
   processException,
+  setDynamicValueInPrompt,
   successResponse,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
@@ -12,6 +14,9 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AddNewTemplateDto } from './dto/add-new-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { async } from 'rxjs';
+import { GenerateOpenAiContentDto } from './dto/generate-content-open-ai.dto';
+import { ResponseModel } from 'src/shared/models/response.model';
+import { Template } from '@prisma/client';
 
 @Injectable()
 export class TemplateService {
@@ -391,6 +396,30 @@ export class TemplateService {
 
         return successResponse('Template has been deleted successfully');
       });
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async generateOpenAiContent(payload: any) {
+    try {
+      const checkValidation: ResponseModel =
+        await checkValidationForContentGenerateUseTemplate(payload);
+
+      if (checkValidation.success === false) {
+        return checkValidation;
+      }
+
+      const templateDetails = await this.prisma.template.findFirst({
+        where: {
+          id: payload.template_id,
+        },
+      });
+      const prompt = templateDetails.prompt;
+
+      const finalPrompt = await setDynamicValueInPrompt(prompt, payload);
+      console.log('finalPrompt', finalPrompt);
+      return successResponse('generaate open ai content', payload);
     } catch (error) {
       processException(error);
     }
