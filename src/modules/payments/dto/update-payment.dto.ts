@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { IsIn } from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
+import { IsNotNegative } from 'src/shared/validator/not-negative.validator';
 
 export class UpdatePaymentDto {
   @IsInt()
@@ -24,6 +25,7 @@ export class UpdatePaymentDto {
 
   @IsOptional()
   @IsNumber()
+  @IsNotNegative('price')
   price?: number;
 
   @IsOptional()
