@@ -533,22 +533,37 @@ export class PaymentsService {
     });
   }
   updateUserUsedWords(userPurchasedPackageid: number, words: number) {
+    const getUserPurchasedPackage: any =
+      this.prisma.userPurchasedPackage.findUnique({
+        where: {
+          id: userPurchasedPackageid,
+        },
+      });
+    const updatedUsedWords = getUserPurchasedPackage.used_words + words;
+
     return this.prisma.userPurchasedPackage.update({
       where: {
         id: userPurchasedPackageid,
       },
       data: {
-        used_words: words,
+        used_words: updatedUsedWords,
       },
     });
   }
   updateUserUsedImages(userPurchasedPackageid: number, images: number) {
+    const getUserPurchasedPackage: any =
+      this.prisma.userPurchasedPackage.findUnique({
+        where: {
+          id: userPurchasedPackageid,
+        },
+      });
+    const updatedUsedImages = getUserPurchasedPackage.used_images + images;
     return this.prisma.userPurchasedPackage.update({
       where: {
         id: userPurchasedPackageid,
       },
       data: {
-        used_images: images,
+        used_images: updatedUsedImages,
       },
     });
   }
