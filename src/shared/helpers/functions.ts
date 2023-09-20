@@ -1,10 +1,15 @@
 import { PrismaService } from '../../../src/modules/prisma/prisma.service';
 import { ResponseModel } from '../models/response.model';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { Prisma } from '@prisma/client';
+import { Prisma, Template } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
 import { count } from 'console';
+import { async } from 'rxjs';
+import {
+  CreativityKeyArray,
+  OpenAiToneOfVoiceKeyArray,
+} from '../constants/array.constants';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;
@@ -195,7 +200,7 @@ export async function getAdminSettingsData(slugs?: any) {
     }
     return data;
   } catch (error) {
-    // processException(error);
+    processException(error);
   }
 }
 
@@ -215,3 +220,134 @@ export const adminSettingsValueBySlug = async (slug: string) => {
 
   return adminSettingsData?.value;
 };
+
+export async function checkValidationForContentGenerateUseTemplate(
+  payload: any,
+): Promise<ResponseModel> {
+  try {
+    if (!payload.template_id || typeof payload.template_id !== 'number') {
+      return errorResponse(
+        !payload.template_id
+          ? 'Please, Enter template id'
+          : 'Template id must be a number!',
+      );
+    }
+
+    const templateDetails = await PrismaClient.template.findFirst({
+      where: { id: payload.template_id },
+    });
+
+    if (!templateDetails) {
+      return errorResponse('Invalid template Id');
+    }
+
+    const prompt = templateDetails.prompt;
+
+    const inputString = templateDetails.prompt_input;
+
+    // Regular expression to match words enclosed in double asterisks
+    const regex = /\*\*(.*?)\*\*/g;
+
+    // Use the `match` method to find all matches
+    const matches = inputString.match(regex); // Output: [ '**article_title**', '**focus_keywords**' ]
+
+    // Now, you can further process the `matches` array to remove the asterisks and get the field names
+    const fieldNames = matches.map((match) => match.replace(/\*\*/g, '')); // Output: [ 'article_title', 'focus_keywords' ]
+
+    if (fieldNames.length > 0) {
+      for (let i = 0; i < fieldNames.length; i++) {
+        if (!payload[fieldNames[i]]) {
+          return errorResponse(`Please, enter ${fieldNames[i]}`);
+        }
+      }
+    }
+    if (!payload.language) {
+      return errorResponse('Please, Enter language');
+    }
+
+    if (
+      !payload.maximum_length ||
+      typeof payload.maximum_length !== 'number' ||
+      payload.maximum_length <= 0
+    ) {
+      return errorResponse(
+        !payload.maximum_length
+          ? 'Please, Enter maximum length'
+          : typeof payload.maximum_length !== 'number'
+          ? 'Maximum length must be a valid number'
+          : 'Maximum length must be a positive number',
+      );
+    }
+
+    if (
+      !payload.number_of_result ||
+      typeof payload.number_of_result !== 'number' ||
+      payload.number_of_result <= 0
+    ) {
+      return errorResponse(
+        !payload.maximum_length
+          ? 'Please, Enter number of result'
+          : typeof payload.number_of_result !== 'number'
+          ? 'Number of resut must be a valid number'
+          : 'Number of resut must be a positive number',
+      );
+    }
+
+    if (!payload.creativity) {
+      return errorResponse('Please, Enter creativity');
+    } else {
+      if (typeof payload.creativity !== 'number') {
+        return errorResponse('Creativity must be a number!');
+      }
+      if (!CreativityKeyArray.includes(payload.creativity)) {
+        return errorResponse('Invalid creativity value');
+      }
+    }
+
+    if (!payload.tone_of_voice) {
+      return errorResponse('Please, Enter tone of voice');
+    } else {
+      if (typeof payload.tone_of_voice !== 'string') {
+        return errorResponse('Tone of voice must be a string!');
+      }
+      if (!OpenAiToneOfVoiceKeyArray.includes(payload.tone_of_voice)) {
+        return errorResponse('Invalid tone of voice value');
+      }
+    }
+
+    return successResponse(
+      'Content generate validation successful',
+      templateDetails,
+    );
+  } catch (error) {
+    processException(error);
+  }
+}
+
+export async function setDynamicValueInPrompt(inputString, replacements) {
+  // Define a regular expression to match placeholders like **placeholder**
+  const placeholderRegex = /\*\*(.*?)\*\*/g;
+
+  // Use the replace method with a function to perform replacements
+  const firstPrompt = inputString.replace(
+    placeholderRegex,
+    (match: string, placeholder: string) => {
+      // Check if the placeholder exists in the replacements object
+      console.log('aaaaa', replacements.hasOwnProperty(placeholder));
+      if (replacements.hasOwnProperty(placeholder)) {
+        // If it exists, replace the placeholder with the corresponding value
+        console.log('bbbbb', replacements[placeholder]);
+        return replacements[placeholder];
+      } else {
+        // If it doesn't exist, leave the placeholder as is
+        console.log('ccccc', match);
+        return match;
+      }
+    },
+  );
+
+  const secondPrompt = `in ${replacements.language} language. Number of results should be ${replacements.number_of_results}. And the maximum length of ${replacements.maximum_length} characters. Creativity is ${replacements.creativity} between 0 and 1. Tone of voice must be ${replacements.tone_of_voice}`;
+  const finalPrompt = firstPrompt + secondPrompt;
+
+  return finalPrompt;
+}

@@ -16,7 +16,7 @@ import { UpdateTemplateDto } from './dto/update-template.dto';
 
 @IsAdmin()
 @Controller('admin-template')
-export class TemplateController {
+export class AdminTemplateController {
   constructor(private readonly templateService: TemplateService) {}
 
   @Post('add-category')
