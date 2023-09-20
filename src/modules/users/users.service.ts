@@ -421,7 +421,7 @@ export class UsersService {
   async testTextGen(payload: { text: string }): Promise<ResponseModel> {
     try {
       await this.openaiService.init();
-      const response = await this.openaiService.textCompletion(payload.text);
+      const response = await this.openaiService.textCompletion(payload.text, 1);
       if (!response) {
         return errorResponse('Something went wrong!');
       }

@@ -17,10 +17,12 @@ import { async } from 'rxjs';
 import { GenerateOpenAiContentDto } from './dto/generate-content-open-ai.dto';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { Template } from '@prisma/client';
+import { OpenAi } from '../openai/openai.service';
 
 @Injectable()
 export class TemplateService {
   constructor(private readonly prisma: PrismaService) {}
+  openaiService = new OpenAi();
 
   async addNewCategory(payload: AddNewCategoryDto) {
     try {
@@ -401,7 +403,7 @@ export class TemplateService {
     }
   }
 
-  async generateOpenAiContent(payload: any) {
+  async generateContent(payload: any) {
     try {
       const checkValidation: ResponseModel =
         await checkValidationForContentGenerateUseTemplate(payload);
@@ -416,10 +418,21 @@ export class TemplateService {
         },
       });
       const prompt = templateDetails.prompt;
+      
 
       const finalPrompt = await setDynamicValueInPrompt(prompt, payload);
-      console.log('finalPrompt', finalPrompt);
-      return successResponse('generaate open ai content', payload);
+
+      await this.openaiService.init();
+      const response = await this.openaiService.textCompletion(
+        finalPrompt,
+        payload.number_of_result,
+      );
+
+      if (!response) {
+        return errorResponse('Something went wrong!');
+      }
+
+      return successResponse('Text is generated successfully!', response);
     } catch (error) {
       processException(error);
     }

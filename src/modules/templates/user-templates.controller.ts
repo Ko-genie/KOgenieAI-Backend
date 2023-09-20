@@ -11,6 +11,6 @@ export class UserTemplateController {
     @Body()
     payload: any,
   ) {
-    return this.templateService.generateOpenAiContent(payload);
+    return this.templateService.generateContent(payload);
   }
 }
