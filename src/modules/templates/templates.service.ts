@@ -7,6 +7,7 @@ import {
   processException,
   setDynamicValueInPrompt,
   successResponse,
+  wordCountMultilingual,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -16,12 +17,16 @@ import { UpdateTemplateDto } from './dto/update-template.dto';
 import { async } from 'rxjs';
 import { GenerateOpenAiContentDto } from './dto/generate-content-open-ai.dto';
 import { ResponseModel } from 'src/shared/models/response.model';
-import { Template } from '@prisma/client';
+import { Template, User } from '@prisma/client';
 import { OpenAi } from '../openai/openai.service';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class TemplateService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly paymentService: PaymentsService,
+  ) {}
   openaiService = new OpenAi();
 
   async addNewCategory(payload: AddNewCategoryDto) {
@@ -403,7 +408,7 @@ export class TemplateService {
     }
   }
 
-  async generateContent(payload: any) {
+  async generateContent(user: User, payload: any) {
     try {
       const checkValidation: ResponseModel =
         await checkValidationForContentGenerateUseTemplate(payload);
@@ -412,13 +417,32 @@ export class TemplateService {
         return checkValidation;
       }
 
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
+
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData = checkUserPackageResponse.data;
+      const remainingWords =
+        userPackageData.total_words - userPackageData.used_words;
+
+      if (
+        userPackageData.word_limit_exceed ||
+        payload.maximum_length > remainingWords
+      ) {
+        return errorResponse(
+          'Your word limit exceed, please, purchase an addiotional package!',
+        );
+      }
+
       const templateDetails = await this.prisma.template.findFirst({
         where: {
           id: payload.template_id,
         },
       });
+
       const prompt = templateDetails.prompt;
-      
 
       const finalPrompt = await setDynamicValueInPrompt(prompt, payload);
 
@@ -431,6 +455,12 @@ export class TemplateService {
       if (!response) {
         return errorResponse('Something went wrong!');
       }
+
+      const wordCount = wordCountMultilingual(
+        response.choices[0].message.content,
+      );
+
+      console.log('wordCount', wordCount);
 
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
