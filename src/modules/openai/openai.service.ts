@@ -49,7 +49,6 @@ export class OpenAi {
         ? Number(response?.open_ai_max_output_length)
         : 20,
     });
-    console.log(wordCountMultilingual(completion.choices[0].message.content));
     return completion;
   }
   async imageGenerate(prompt: string): Promise<Openai.Images.ImagesResponse> {
@@ -63,7 +62,6 @@ export class OpenAi {
   }
   async listModels(): Promise<Openai.ModelsPage> {
     const model = await this.openai.models.list();
-    const models = await this.openai.getAPIList
     return model;
   }
 }
