@@ -539,7 +539,8 @@ export class PaymentsService {
           id: userPurchasedPackageid,
         },
       });
-    const updatedUsedWords = getUserPurchasedPackage.used_words + words;
+    const updatedUsedWords =
+      Number(getUserPurchasedPackage.used_words) + Number(words);
 
     return this.prisma.userPurchasedPackage.update({
       where: {

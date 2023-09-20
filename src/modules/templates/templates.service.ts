@@ -410,6 +410,7 @@ export class TemplateService {
 
   async generateContent(user: User, payload: any) {
     try {
+      
       const checkValidation: ResponseModel =
         await checkValidationForContentGenerateUseTemplate(payload);
 
@@ -424,6 +425,7 @@ export class TemplateService {
         return checkUserPackageResponse;
       }
       const userPackageData = checkUserPackageResponse.data;
+      
       const remainingWords =
         userPackageData.total_words - userPackageData.used_words;
 
@@ -459,8 +461,11 @@ export class TemplateService {
       const wordCount = wordCountMultilingual(
         response.choices[0].message.content,
       );
-
-      console.log('wordCount', wordCount);
+      console.log('userPackageData.package.id', userPackageData.id);
+      this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
 
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
