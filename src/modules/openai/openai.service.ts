@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import Openai from 'openai';
 import { SettingService } from '../admin/settings/settings.service';
-import { getAdminSettingsData } from 'src/shared/helpers/functions';
+import {
+  countWords,
+  getAdminSettingsData,
+  wordCountMultilingual,
+} from 'src/shared/helpers/functions';
 import { OpenAISettingSlugs } from 'src/shared/constants/array.constants';
 
 @Injectable()
@@ -16,7 +20,9 @@ export class OpenAi {
       apiKey: response.open_ai_secret,
     });
   }
-  async textCompletion(prompt: string): Promise<any> {
+  async textCompletion(
+    prompt: string,
+  ): Promise<Openai.Chat.Completions.ChatCompletion> {
     const response: any = await getAdminSettingsData(OpenAISettingSlugs);
     const completion = await this.openai.chat.completions.create({
       messages: [
@@ -35,7 +41,7 @@ export class OpenAi {
       ],
       model: response?.open_ai_model
         ? response?.open_ai_model
-        : 'gpt-3.5-turbo',
+        : 'text-davinci-003',
       temperature: Number(response?.open_ai_temperature)
         ? Number(response?.open_ai_temperature)
         : 0,
@@ -43,13 +49,21 @@ export class OpenAi {
         ? Number(response?.open_ai_max_output_length)
         : 20,
     });
+    console.log(wordCountMultilingual(completion.choices[0].message.content));
     return completion;
   }
   async imageGenerate(prompt: string): Promise<Openai.Images.ImagesResponse> {
-    const completion = await this.openai.images.generate({
+    const imageResponse = await this.openai.images.generate({
       prompt: prompt,
       size: '512x512',
+      response_format: 'url',
     });
-    return completion;
+
+    return imageResponse;
+  }
+  async listModels(): Promise<Openai.ModelsPage> {
+    const model = await this.openai.models.list();
+    const models = await this.openai.getAPIList
+    return model;
   }
 }
