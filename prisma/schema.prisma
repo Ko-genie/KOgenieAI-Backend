@@ -54,7 +54,6 @@ model Package {
   soft_delete               Boolean                @default(false)
   image_url                 String?                @db.VarChar(255)
   total_purchase            BigInt                 @default(0)
-  total_tokens_limit        BigInt                 @db.BigInt()
   feature_description_lists String?
   available_features        String
   created_at                DateTime               @default(now())
@@ -63,17 +62,15 @@ model Package {
 }
 
 model UserPurchasedPackage {
-  id                 Int      @id @default(autoincrement())
-  start_date         DateTime
-  end_date           DateTime
-  status             Int      @default(1)
-  total_words        BigInt   @db.BigInt()
-  total_images       BigInt   @db.BigInt()
-  total_tokens_limit BigInt   @db.BigInt()
+  id           Int      @id @default(autoincrement())
+  start_date   DateTime
+  end_date     DateTime
+  status       Int      @default(1)
+  total_words  BigInt   @db.BigInt()
+  total_images BigInt   @db.BigInt()
 
   used_words         BigInt @default(0) @db.BigInt()
   used_images        BigInt @default(0) @db.BigInt()
-  used_token         BigInt @default(0) @db.BigInt()
   available_features String
 
   created_at DateTime @default(now())
@@ -116,15 +113,15 @@ model Template {
 }
 
 model TemplateField {
-  id          Int     @id @default(autoincrement())
-  field_name  String  @db.VarChar(255)
-  input_field_name  String  @db.VarChar(255)
-  type        Int
-  description String? @db.LongText()
-  template    Template @relation(fields: [template_id], references: [id])
-  template_id Int
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  field_name       String   @db.VarChar(255)
+  input_field_name String   @db.VarChar(255)
+  type             Int
+  description      String?  @db.LongText()
+  template         Template @relation(fields: [template_id], references: [id])
+  template_id      Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 }
 
 model MyDocuments {

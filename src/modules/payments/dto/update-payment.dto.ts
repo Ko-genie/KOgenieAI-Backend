@@ -61,10 +61,6 @@ export class UpdatePaymentDto {
   @IsNumber()
   total_purchase?: number;
 
-  @IsOptional()
-  @IsNumber()
-  total_tokens_limit?: number;
-
   @IsString()
   @IsNotEmpty()
   available_features: string;

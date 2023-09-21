@@ -46,7 +46,6 @@ export class PaymentsService {
               ? coreConstant.ACTIVE
               : coreConstant.INACTIVE,
           image_url: packageInfo.image_url,
-          total_tokens_limit: packageInfo.total_tokens_limit,
           available_features: packageInfo.available_features,
           feature_description_lists: packageInfo.feature_description_lists,
         },
@@ -61,7 +60,6 @@ export class PaymentsService {
         total_words: CreatedPackage.total_words.toString(),
         total_images: CreatedPackage.total_images.toString(),
         total_purchase: CreatedPackage.total_purchase.toString(),
-        total_tokens_limit: CreatedPackage.total_tokens_limit.toString(),
       };
 
       return successResponse('Package created successfully', packageData);
@@ -229,7 +227,6 @@ export class PaymentsService {
           user_id: user.id,
           package_id: packageData.id,
           payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
-          total_tokens_limit: packageData.total_tokens_limit,
           available_features: packageData.available_features,
         },
       });
@@ -371,7 +368,6 @@ export class PaymentsService {
           user_id: user.id,
           package_id: packageData.id,
           payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
-          total_tokens_limit: packageData.total_tokens_limit,
           available_features: packageData.available_features,
         },
       });
@@ -420,9 +416,6 @@ export class PaymentsService {
           total_images:
             Number(SubcribedPackage.total_images) +
             Number(getPackageToAdd.total_images),
-          total_tokens_limit:
-            Number(SubcribedPackage.total_tokens_limit) +
-            Number(getPackageToAdd.total_tokens_limit),
         },
       });
       if (!userUpdatedPackage) {
@@ -472,11 +465,6 @@ export class PaymentsService {
         coreConstant.INACTIVE,
       );
     } else if (image_limit_exceed && word_limit_exceed) {
-      userPackage = await this.changeUserPackageStatus(
-        packageRef.id,
-        coreConstant.INACTIVE,
-      );
-    } else if (packageRef.used_token >= packageRef.total_tokens_limit) {
       userPackage = await this.changeUserPackageStatus(
         packageRef.id,
         coreConstant.INACTIVE,
