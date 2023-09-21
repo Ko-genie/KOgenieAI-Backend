@@ -498,7 +498,7 @@ export class PaymentsService {
     words: number,
   ): Promise<ResponseModel> {
     try {
-      if (!model_name || !images || !words) {
+      if (!model_name) {
         return errorResponse('Please provide all the required fields');
       }
       const totalPrice = Math.ceil(calculatePrice(model_name, words, images));

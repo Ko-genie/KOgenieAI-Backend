@@ -383,11 +383,18 @@ export function calculatePrice(
     throw new Error('Model not found in pricing data');
   }
 
-  // Calculate the price for words (tokens)
-  const wordPrice = (numWords / 1000) * modelPricing.wordPrice;
+  // Check if pricing data is available for words and images
+  if (!modelPricing.wordPrice || !coreConstant.IMAGE_PRICE_PER_IMAGE) {
+    throw new Error('Pricing data is incomplete');
+  }
 
-  // Calculate the price for images
-  const imagePrice = numImages * coreConstant.IMAGE_PRICE_PER_IMAGE;
+  // Calculate the price for words (tokens) if numWords is provided
+  const wordPrice = numWords ? (numWords / 1000) * modelPricing.wordPrice : 0;
+
+  // Calculate the price for images if numImages is provided
+  const imagePrice = numImages
+    ? numImages * coreConstant.IMAGE_PRICE_PER_IMAGE
+    : 0;
 
   // Calculate the total price by adding word price and image price
   const totalPrice = wordPrice + imagePrice;
