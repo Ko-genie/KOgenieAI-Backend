@@ -44,10 +44,13 @@ export class OpenAi {
     });
     return completion;
   }
-  async imageGenerate(prompt: string): Promise<Openai.Images.ImagesResponse> {
+  async imageGenerate(
+    prompt: string,
+    image_size: '256x256' | '512x512' | '1024x1024',
+  ): Promise<Openai.Images.ImagesResponse> {
     const imageResponse = await this.openai.images.generate({
       prompt: prompt,
-      size: '512x512',
+      size: image_size ? image_size : '256x256',
       response_format: 'url',
     });
 

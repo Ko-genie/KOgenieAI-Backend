@@ -573,7 +573,8 @@ export class PaymentsService {
           id: userPurchasedPackageid,
         },
       });
-    const updatedUsedImages = getUserPurchasedPackage.used_images + images;
+    const updatedUsedImages =
+      Number(getUserPurchasedPackage.used_images) + images;
     return this.prisma.userPurchasedPackage.update({
       where: {
         id: userPurchasedPackageid,

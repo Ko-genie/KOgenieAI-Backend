@@ -14,8 +14,7 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AddNewTemplateDto } from './dto/add-new-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
-import { async } from 'rxjs';
-import { GenerateOpenAiContentDto } from './dto/generate-content-open-ai.dto';
+import { GenerateImageDto } from './dto/generate-image.dto';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { Template, User } from '@prisma/client';
 import { OpenAi } from '../openai/openai.service';
@@ -427,7 +426,6 @@ export class TemplateService {
 
       const remainingWords =
         userPackageData.total_words - userPackageData.used_words;
-      console.log(userPackageData, 'userPackageData');
       if (
         userPackageData.word_limit_exceed ||
         payload.maximum_length > remainingWords
@@ -464,6 +462,38 @@ export class TemplateService {
       console.log('userPackageData.package.id', userPackageData.id);
       this.paymentService.updateUserUsedWords(userPackageData.id, wordCount);
 
+      return successResponse('Text is generated successfully!', response);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async generateImage(user: User, payload: GenerateImageDto) {
+    try {
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
+
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData: any = checkUserPackageResponse.data;
+
+      if (userPackageData.image_limit_exceed) {
+        return errorResponse(
+          'Your image limit exceed, please, purchase an addiotional package!',
+        );
+      }
+
+      await this.openaiService.init();
+
+      const response = await this.openaiService.imageGenerate(
+        payload.prompt,
+        payload.image_size,
+      );
+
+      if (!response) {
+        return errorResponse('Something went wrong!');
+      }
+      this.paymentService.updateUserUsedImages(userPackageData.id, 1);
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
       processException(error);
