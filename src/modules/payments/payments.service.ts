@@ -520,14 +520,15 @@ export class PaymentsService {
       },
     });
   }
-  updateUserUsedWords(userPurchasedPackageid: number, words: number) {
+  async updateUserUsedWords(userPurchasedPackageid: number, words: number) {
     const getUserPurchasedPackage: any =
-      this.prisma.userPurchasedPackage.findUnique({
+      await this.prisma.userPurchasedPackage.findUnique({
         where: {
           id: userPurchasedPackageid,
         },
       });
-    const updatedUsedWords = getUserPurchasedPackage.used_words + words;
+    const updatedUsedWords =
+      Number(getUserPurchasedPackage.used_words) + Number(words);
 
     return this.prisma.userPurchasedPackage.update({
       where: {
@@ -538,9 +539,9 @@ export class PaymentsService {
       },
     });
   }
-  updateUserUsedImages(userPurchasedPackageid: number, images: number) {
+  async updateUserUsedImages(userPurchasedPackageid: number, images: number) {
     const getUserPurchasedPackage: any =
-      this.prisma.userPurchasedPackage.findUnique({
+      await this.prisma.userPurchasedPackage.findUnique({
         where: {
           id: userPurchasedPackageid,
         },

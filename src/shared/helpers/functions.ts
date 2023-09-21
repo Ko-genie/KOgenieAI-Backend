@@ -349,20 +349,21 @@ export async function setDynamicValueInPrompt(inputString, replacements) {
     placeholderRegex,
     (match: string, placeholder: string) => {
       // Check if the placeholder exists in the replacements object
-      console.log('aaaaa', replacements.hasOwnProperty(placeholder));
+
       if (replacements.hasOwnProperty(placeholder)) {
         // If it exists, replace the placeholder with the corresponding value
-        console.log('bbbbb', replacements[placeholder]);
+
         return replacements[placeholder];
       } else {
         // If it doesn't exist, leave the placeholder as is
-        console.log('ccccc', match);
+
         return match;
       }
     },
   );
 
-  const secondPrompt = `in ${replacements.language} language. Number of results should be ${replacements.number_of_results}. And the maximum length of ${replacements.maximum_length} characters. Creativity is ${replacements.creativity} between 0 and 1. Tone of voice must be ${replacements.tone_of_voice}`;
+  const secondPrompt = `Tone of voice must be ${replacements.tone_of_voice}, Language is ${replacements.language}, Maximum ${replacements.maximum_length} words. Creativity is ${replacements.creativity} between 0 and 1`;
+  
   const finalPrompt = firstPrompt + secondPrompt;
 
   return finalPrompt;

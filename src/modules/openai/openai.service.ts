@@ -20,23 +20,13 @@ export class OpenAi {
       apiKey: response.open_ai_secret,
     });
   }
-  async textCompletion(
-    prompt: string,
-  ): Promise<Openai.Chat.Completions.ChatCompletion> {
+  async textCompletion(prompt: string, number_of_result:number): Promise<any> {
     const response: any = await getAdminSettingsData(OpenAISettingSlugs);
     const completion = await this.openai.chat.completions.create({
       messages: [
         {
           role: 'user',
-          content: `${prompt}.Tone of voice must be ${
-            response?.open_ai_default_tone_of_voice
-              ? response?.open_ai_default_tone_of_voice
-              : 'professional'
-          }, Your language is ${
-            response?.open_ai_default_language
-          }, Language is ${response?.open_ai_default_language}, Maximum ${
-            response?.open_ai_max_output_length
-          } words`,
+          content: prompt,
         },
       ],
       model: response?.open_ai_model
@@ -48,6 +38,7 @@ export class OpenAi {
       max_tokens: Number(response?.open_ai_max_output_length)
         ? Number(response?.open_ai_max_output_length)
         : 20,
+      n: Number(number_of_result),
     });
     return completion;
   }
