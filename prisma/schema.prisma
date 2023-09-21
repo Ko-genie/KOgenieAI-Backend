@@ -54,6 +54,7 @@ model Package {
   soft_delete               Boolean                @default(false)
   image_url                 String?                @db.VarChar(255)
   total_purchase            BigInt                 @default(0)
+  model                     String?
   feature_description_lists String?
   available_features        String
   created_at                DateTime               @default(now())
@@ -69,12 +70,12 @@ model UserPurchasedPackage {
   total_words  BigInt   @db.BigInt()
   total_images BigInt   @db.BigInt()
 
-  used_words         BigInt @default(0) @db.BigInt()
-  used_images        BigInt @default(0) @db.BigInt()
+  used_words         BigInt   @default(0) @db.BigInt()
+  used_images        BigInt   @default(0) @db.BigInt()
   available_features String
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  model              String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   package        Package @relation(fields: [package_id], references: [id])
   user           User    @relation(fields: [user_id], references: [id])

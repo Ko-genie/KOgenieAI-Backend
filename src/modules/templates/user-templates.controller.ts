@@ -10,10 +10,10 @@ export class UserTemplateController {
 
   @Post('generate-content')
   generateOpenAiContent(
-    @UserInfo() user:User,
+    @UserInfo() user: User,
     @Body()
     payload: any,
   ) {
-    return this.templateService.generateContent(user,payload);
+    return this.templateService.generateContent(user, payload);
   }
 }

@@ -59,5 +59,9 @@ export class CreatePaymentDto {
   available_features: string;
 
   @IsString()
+  @IsNotEmpty()
+  model_name: string;
+
+  @IsString()
   feature_description_lists: string;
 }

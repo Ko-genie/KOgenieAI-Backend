@@ -5,6 +5,7 @@ import { Package, User, UserPurchasedPackage } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import {
+  calculatePrice,
   errorResponse,
   paginatioOptions,
   paginationMetaData,
@@ -48,6 +49,7 @@ export class PaymentsService {
           image_url: packageInfo.image_url,
           available_features: packageInfo.available_features,
           feature_description_lists: packageInfo.feature_description_lists,
+          model: packageInfo.model_name,
         },
       });
 
@@ -199,7 +201,6 @@ export class PaymentsService {
 
       // Verify the payment intent with Stripe
       const intent = await this.stripe.verifyPaymentIntent(paymentIntentId);
-      console.log(intent.status, 'intent.status');
       if (!intent || intent.status !== 'succeeded') {
         return errorResponse(
           'Stripe payment intent could not be verified or has not succeeded',
@@ -369,12 +370,22 @@ export class PaymentsService {
           package_id: packageData.id,
           payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
           available_features: packageData.available_features,
+          model: packageData.model,
         },
       });
 
       if (!purchedPackage) {
         return errorResponse("Package can't be purchased");
       }
+      const total_purchase = Number(packageData.total_purchase) + 1;
+      await this.prisma.package.update({
+        where: {
+          id: packageData.id,
+        },
+        data: {
+          total_purchase: total_purchase,
+        },
+      });
 
       return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
@@ -479,6 +490,22 @@ export class PaymentsService {
       image_limit_exceed,
       word_limit_exceed,
     };
+  }
+
+  async suggestPricing(
+    model_name: string,
+    images: number,
+    words: number,
+  ): Promise<ResponseModel> {
+    try {
+      if (!model_name || !images || !words) {
+        return errorResponse('Please provide all the required fields');
+      }
+      const totalPrice = Math.ceil(calculatePrice(model_name, words, images));
+      return successResponse(`Your cost will be around $${totalPrice}`, {
+        price: totalPrice,
+      });
+    } catch (error) {}
   }
 
   async checkSubscriptionStatus(user: User): Promise<ResponseModel> {

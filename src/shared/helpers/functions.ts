@@ -10,6 +10,7 @@ import {
   CreativityKeyArray,
   OpenAiToneOfVoiceKeyArray,
 } from '../constants/array.constants';
+import { coreConstant } from './coreConstant';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;
@@ -363,8 +364,33 @@ export async function setDynamicValueInPrompt(inputString, replacements) {
   );
 
   const secondPrompt = `Tone of voice must be ${replacements.tone_of_voice}, Language is ${replacements.language}, Maximum ${replacements.maximum_length} words. Creativity is ${replacements.creativity} between 0 and 1`;
-  
+
   const finalPrompt = firstPrompt + secondPrompt;
 
   return finalPrompt;
+}
+
+export function calculatePrice(
+  modelName: string,
+  numWords: number,
+  numImages: number,
+): number {
+  // Look up the model's pricing details
+  const modelPricing = coreConstant.OPEN_AI_PRICING[modelName];
+
+  if (!modelPricing) {
+    // Model not found in pricing data
+    throw new Error('Model not found in pricing data');
+  }
+
+  // Calculate the price for words (tokens)
+  const wordPrice = (numWords / 1000) * modelPricing.wordPrice;
+
+  // Calculate the price for images
+  const imagePrice = numImages * coreConstant.IMAGE_PRICE_PER_IMAGE;
+
+  // Calculate the total price by adding word price and image price
+  const totalPrice = wordPrice + imagePrice;
+
+  return totalPrice;
 }

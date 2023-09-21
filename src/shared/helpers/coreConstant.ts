@@ -16,6 +16,22 @@ export const coreConstant = {
     SUBSCRIPTION: 1,
     PACKAGE: 2,
   },
+  OPEN_AI_PRICING: {
+    'gpt-4': {
+      wordPrice: 0.03, // $0.03 per 1K tokens
+    },
+    'gpt-4-32k': {
+      wordPrice: 0.06, // $0.06 per 1K tokens
+    },
+    'gpt-3.5-turbo': {
+      wordPrice: 0.0015, // $0.0015 per 1K tokens
+    },
+    'gpt-3.5-turbo-16k': {
+      wordPrice: 0.003, // $0.003 per 1K tokens
+    },
+  },
+  IMAGE_PRICE_PER_IMAGE: 0.02, // $0.020 per image
+
   FEATURES_TYPES: {
     WRITING: 1,
     IMAGE: 2,
@@ -76,10 +92,10 @@ export const statusOnOffConstant = {
 
 export const packageTypeConstant = {
   REGULAR: 1,
-  PREMIUM:2
-}
+  PREMIUM: 2,
+};
 
 export const inputFieldTypeConstant = {
   INPUT_FIELD: 1,
-  TEXTAREA_FIELD:2
-}
+  TEXTAREA_FIELD: 2,
+};

@@ -410,7 +410,6 @@ export class TemplateService {
 
   async generateContent(user: User, payload: any) {
     try {
-      
       const checkValidation: ResponseModel =
         await checkValidationForContentGenerateUseTemplate(payload);
 
@@ -424,11 +423,11 @@ export class TemplateService {
       if (checkUserPackageResponse.success === false) {
         return checkUserPackageResponse;
       }
-      const userPackageData = checkUserPackageResponse.data;
-      
+      const userPackageData: any = checkUserPackageResponse.data;
+
       const remainingWords =
         userPackageData.total_words - userPackageData.used_words;
-
+      console.log(userPackageData, 'userPackageData');
       if (
         userPackageData.word_limit_exceed ||
         payload.maximum_length > remainingWords
@@ -452,6 +451,7 @@ export class TemplateService {
       const response = await this.openaiService.textCompletion(
         finalPrompt,
         payload.number_of_result,
+        userPackageData.model,
       );
 
       if (!response) {
@@ -462,10 +462,7 @@ export class TemplateService {
         response.choices[0].message.content,
       );
       console.log('userPackageData.package.id', userPackageData.id);
-      this.paymentService.updateUserUsedWords(
-        userPackageData.id,
-        wordCount,
-      );
+      this.paymentService.updateUserUsedWords(userPackageData.id, wordCount);
 
       return successResponse('Text is generated successfully!', response);
     } catch (error) {

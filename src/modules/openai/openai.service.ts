@@ -20,7 +20,11 @@ export class OpenAi {
       apiKey: response.open_ai_secret,
     });
   }
-  async textCompletion(prompt: string, number_of_result:number): Promise<any> {
+  async textCompletion(
+    prompt: string,
+    number_of_result: number,
+    model_name: string,
+  ): Promise<any> {
     const response: any = await getAdminSettingsData(OpenAISettingSlugs);
     const completion = await this.openai.chat.completions.create({
       messages: [
@@ -29,9 +33,7 @@ export class OpenAi {
           content: prompt,
         },
       ],
-      model: response?.open_ai_model
-        ? response?.open_ai_model
-        : 'text-davinci-003',
+      model: model_name ? model_name : 'gpt-3.5-turbo',
       temperature: Number(response?.open_ai_temperature)
         ? Number(response?.open_ai_temperature)
         : 0,

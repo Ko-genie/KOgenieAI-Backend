@@ -63,6 +63,10 @@ export class UpdatePaymentDto {
 
   @IsString()
   @IsNotEmpty()
+  model_name: string;
+
+  @IsString()
+  @IsNotEmpty()
   available_features: string;
 
   @IsString()

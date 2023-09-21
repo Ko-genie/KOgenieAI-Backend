@@ -90,6 +90,22 @@ export class PaymentsController {
       user,
     );
   }
+  @Post('price-suggestion')
+  suggestPricing(
+    @Body()
+    payload: {
+      model_name: string;
+      images: number;
+      words: number;
+    },
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.suggestPricing(
+      payload.model_name,
+      payload.images,
+      payload.words,
+    );
+  }
 
   @Post('subscribe')
   subscribeToPackage(
@@ -104,6 +120,7 @@ export class PaymentsController {
       payload.subcription_package_Id,
     );
   }
+
   @Post('add-package-to-subscription')
   addPackageToSubscription(
     @UserInfo() user: User,
