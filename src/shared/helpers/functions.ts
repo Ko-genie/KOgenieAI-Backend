@@ -4,8 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Prisma, Template } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
-import { count } from 'console';
-import { async } from 'rxjs';
+import sharp from 'sharp';
 import {
   CreativityKeyArray,
   OpenAiToneOfVoiceKeyArray,
@@ -400,4 +399,28 @@ export function calculatePrice(
   const totalPrice = wordPrice + imagePrice;
 
   return totalPrice;
+}
+
+export function convertBase64ToJpg(
+  base64Image,
+  outputPath,
+  quality = 80,
+  callback,
+) {
+  // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+  const data = base64Image.replace(/^data:image\/\w+;base64,/, '');
+
+  // Create a buffer from the base64 data
+  const buffer = Buffer.from(data, 'base64');
+
+  // Use Sharp to convert the buffer to a JPG image
+  sharp(buffer)
+    .jpeg({ quality })
+    .toFile(outputPath, (err, info) => {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, info);
+      }
+    });
 }

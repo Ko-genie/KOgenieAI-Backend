@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   checkValidationForContentGenerateUseTemplate,
+  convertBase64ToJpg,
   errorResponse,
   paginatioOptions,
   paginationMetaData,
@@ -19,6 +20,7 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { Template, User } from '@prisma/client';
 import { OpenAi } from '../openai/openai.service';
 import { PaymentsService } from '../payments/payments.service';
+import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 @Injectable()
 export class TemplateService {
@@ -533,13 +535,46 @@ export class TemplateService {
       processException(error);
     }
   }
-
+  async saveImageDocument(
+    prompt: string,
+    base64Image: string,
+    image_name: string,
+    template_id: number,
+    user_id: number,
+  ): Promise<ResponseModel> {
+    try {
+      convertBase64ToJpg(
+        base64Image,
+        `/${coreConstant.FILE_DESTINATION}`,
+        80,
+        (err, info) => {
+          if (err) {
+            console.error('Error:', err);
+          } else {
+            console.log('Conversion successful. Output saved to', info.path);
+          }
+        },
+      );
+      const saveImage = await this.prisma.myImages.create({
+        data: {
+          prompt,
+          image_url: base64Image,
+          image_name,
+          template_id,
+          user_id,
+        },
+      });
+      return;
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getDocumentListByPaginate(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
 
       const documentList = await this.prisma.myDocuments.findMany({
-        ...paginate
+        ...paginate,
       });
       const paginationMeta = await paginationMetaData('myDocuments', payload);
 

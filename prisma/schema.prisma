@@ -39,6 +39,7 @@ model User {
   MyDocuments           MyDocuments[]
   MyUploads             MyUploads[]
   PaymentTransaction    PaymentTransaction[]
+  MyImages              MyImages[]
 }
 
 model Package {
@@ -55,7 +56,7 @@ model Package {
   soft_delete               Boolean                @default(false)
   image_url                 String?                @db.VarChar(255)
   total_purchase            BigInt                 @default(0)
-  model                     String?
+  model_name                String?
   feature_description_lists String?
   available_features        String
   created_at                DateTime               @default(now())
@@ -124,6 +125,7 @@ model Template {
   MyDocuments      MyDocuments[]
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
+  MyImages         MyImages[]
 }
 
 model TemplateField {
@@ -152,12 +154,16 @@ model MyDocuments {
 }
 
 model MyImages {
-  id         Int      @id @default(autoincrement())
-  prompt     String   @db.LongText()
-  image_url  String
-  image_name String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  prompt      String   @db.LongText()
+  image_url   String
+  image_name  String
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int
+  template    Template @relation(fields: [template_id], references: [id])
+  template_id Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }
 
 model MyUploads {

@@ -54,7 +54,7 @@ export class PaymentsService {
           image_url: packageInfo.image_url,
           available_features: packageInfo.available_features,
           feature_description_lists: packageInfo.feature_description_lists,
-          model: packageInfo.model_name,
+          model_name: packageInfo.model_name,
         },
       });
 
@@ -379,7 +379,7 @@ export class PaymentsService {
           package_id: packageData.id,
           payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
           available_features: packageData.available_features,
-          model: packageData.model,
+          model: packageData.model_name,
         },
       });
 
