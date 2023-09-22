@@ -90,6 +90,11 @@ export class PaymentsController {
       user,
     );
   }
+
+  @Get('get-openai-model-names')
+  getOpenAIModelNames(): Promise<ResponseModel> {
+    return this.paymentsService.getOpenAIModelNames();
+  }
   @Post('price-suggestion')
   suggestPricing(
     @Body()

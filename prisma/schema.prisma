@@ -60,6 +60,7 @@ model Package {
   created_at                DateTime               @default(now())
   updated_at                DateTime               @updatedAt
   UserPurchase              UserPurchasedPackage[]
+  PaymentTransaction        PaymentTransaction[]
 }
 
 model UserPurchasedPackage {
@@ -82,6 +83,13 @@ model UserPurchasedPackage {
   user_id        Int
   package_id     Int
   payment_method Int
+}
+
+model PaymentTransaction {
+  id             Int      @id @default(autoincrement())
+  payment_method Int
+  Package        Package? @relation(fields: [packageId], references: [id])
+  packageId      Int?
 }
 
 model TemplateCategory {

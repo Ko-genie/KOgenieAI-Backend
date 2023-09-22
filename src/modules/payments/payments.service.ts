@@ -507,6 +507,15 @@ export class PaymentsService {
       });
     } catch (error) {}
   }
+  async getOpenAIModelNames(): Promise<ResponseModel> {
+    try {
+      const modelNames = coreConstant.OPEN_AI_MODEL_NAMES;
+      if (!modelNames) {
+        return errorResponse('No model name found!');
+      }
+      return successResponse('Model name fetched successfully', modelNames);
+    } catch (error) {}
+  }
 
   async checkSubscriptionStatus(user: User): Promise<ResponseModel> {
     try {
