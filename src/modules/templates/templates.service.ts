@@ -456,17 +456,51 @@ export class TemplateService {
         return errorResponse('Something went wrong!');
       }
 
-      const wordCount = wordCountMultilingual(
-        response.choices[0].message.content,
+      const resultOfPrompt = response.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
       );
-      console.log('userPackageData.package.id', userPackageData.id);
-      this.paymentService.updateUserUsedWords(userPackageData.id, wordCount);
+
+      await this.saveDocument(
+        finalPrompt,
+        resultOfPrompt,
+        templateDetails.id,
+        user.id,
+        wordCount,
+      );
 
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
       processException(error);
     }
   }
+
+  async saveDocument(
+    prompt: string,
+    result: string,
+    template_id: number,
+    user_id: number,
+    total_used_words: number,
+  ) {
+    try {
+      const saveDocument = await this.prisma.myDocuments.create({
+        data: {
+          prompt,
+          result,
+          template_id,
+          user_id,
+          total_used_words,
+        },
+      });
+      return saveDocument;
+    } catch (error) {
+      processException(error);
+    }
+  }
+
   async generateImage(user: User, payload: GenerateImageDto) {
     try {
       const checkUserPackageResponse: any =
@@ -495,6 +529,67 @@ export class TemplateService {
       }
       this.paymentService.updateUserUsedImages(userPackageData.id, 1);
       return successResponse('Text is generated successfully!', response);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getDocumentListByPaginate(payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const documentList = await this.prisma.myDocuments.findMany({});
+      const paginationMeta = await paginationMetaData('myDocuments', payload);
+
+      const data = {
+        list: documentList,
+        meta: paginationMeta,
+      };
+      return successResponse('Document List by paginate', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getDocumentDetails(id: number) {
+    try {
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: { id: id },
+        include: {
+          template: {
+            include: {
+              templateCategory: true,
+            },
+          },
+        },
+      });
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Document details', documentDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getUserDocumentDetails(id: number, user: User) {
+    try {
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: {
+          id: id,
+          user_id: user.id,
+        },
+        include: {
+          template: {
+            include: {
+              templateCategory: true,
+            },
+          },
+        },
+      });
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Document details', documentDetails);
     } catch (error) {
       processException(error);
     }

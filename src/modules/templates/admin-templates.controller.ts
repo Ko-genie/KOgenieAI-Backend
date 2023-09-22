@@ -68,4 +68,14 @@ export class AdminTemplateController {
   deleteTemplate(@Param('id') id: number) {
     return this.templateService.deleteTemplate(id);
   }
+
+  @Get('document-list')
+  getDocumentListByPaginate(@Query() payload: any) {
+    return this.templateService.getDocumentListByPaginate(payload);
+  }
+
+  @Get('document-details-:id')
+  getUserDocumentDetails(@Param('id') id: number) {
+    return this.templateService.getDocumentDetails(id);
+  }
 }
