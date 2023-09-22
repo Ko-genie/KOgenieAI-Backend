@@ -10,6 +10,7 @@ import {
   OpenAiToneOfVoiceKeyArray,
 } from '../constants/array.constants';
 import { coreConstant } from './coreConstant';
+import path from 'path';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;
@@ -400,27 +401,27 @@ export function calculatePrice(
 
   return totalPrice;
 }
+const uploadDirectory = `./${coreConstant.FILE_DESTINATION}`;
 
-export function convertBase64ToJpg(
-  base64Image,
-  outputPath,
-  quality = 80,
-  callback,
-) {
-  // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
-  const data = base64Image.replace(/^data:image\/\w+;base64,/, '');
+export const saveBase64ImageAsJpg = (base64Image) => {
+  return new Promise((resolve, reject) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const fileName = `${uniqueSuffix}.jpg`;
+    const imagePath = path.join(uploadDirectory, fileName);
 
-  // Create a buffer from the base64 data
-  const buffer = Buffer.from(data, 'base64');
+    const data = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(data, 'base64');
 
-  // Use Sharp to convert the buffer to a JPG image
-  sharp(buffer)
-    .jpeg({ quality })
-    .toFile(outputPath, (err, info) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, info);
-      }
-    });
-}
+    sharp(buffer)
+      .jpeg({ quality: 80 })
+      .toFile(imagePath, (err, info) => {
+        if (err) {
+          reject(err);
+        } else {
+          const imageUrl = `/${coreConstant.FILE_DESTINATION}/${fileName}`;
+          resolve({ fileName, imageUrl });
+          return imageUrl;
+        }
+      });
+  });
+};

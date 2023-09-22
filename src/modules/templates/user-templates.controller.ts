@@ -15,6 +15,8 @@ import { User } from '@prisma/client';
 import { SubscriptionGuard } from 'src/shared/guards/Subscription.guard';
 import { Subscription } from 'src/shared/decorators/subcription.decorators';
 import { userInfo } from 'os';
+import { paginateType } from '../payments/dto/query.dto';
+import { paginateInterface } from 'src/shared/constants/types';
 
 @Controller('user')
 export class UserTemplateController {
@@ -39,12 +41,23 @@ export class UserTemplateController {
   }
 
   @Get('document-list')
-  getDocumentListByPaginate(@Query() payload: any) {
+  getDocumentListByPaginate(@Query() payload: paginateInterface) {
     return this.templateService.getDocumentListByPaginate(payload);
+  }
+  @Get('my-image-list')
+  getAllImageDocument(
+    @Query() payload: paginateInterface,
+    @UserInfo() user: User,
+  ) {
+    return this.templateService.getAllImageDocument(user, payload);
   }
 
   @Get('document-details-:id')
   getUserDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getUserDocumentDetails(id, user);
+  }
+  @Get('image-details-:id')
+  getImageDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.getImageDocumentDetails(id, user);
   }
 }

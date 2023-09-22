@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   checkValidationForContentGenerateUseTemplate,
-  convertBase64ToJpg,
+  saveBase64ImageAsJpg,
   errorResponse,
   paginatioOptions,
   paginationMetaData,
@@ -9,6 +9,7 @@ import {
   setDynamicValueInPrompt,
   successResponse,
   wordCountMultilingual,
+  addPhotoPrefix,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -17,7 +18,7 @@ import { AddNewTemplateDto } from './dto/add-new-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { GenerateImageDto } from './dto/generate-image.dto';
 import { ResponseModel } from 'src/shared/models/response.model';
-import { Template, User } from '@prisma/client';
+import { MyImages, Template, User } from '@prisma/client';
 import { OpenAi } from '../openai/openai.service';
 import { PaymentsService } from '../payments/payments.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
@@ -525,11 +526,20 @@ export class TemplateService {
         payload.prompt,
         payload.image_size,
       );
-
+      const imageUrl: any = await saveBase64ImageAsJpg(
+        response.data[0].b64_json,
+      );
+      await this.saveImageDocument(
+        payload.prompt,
+        imageUrl.imageUrl,
+        imageUrl.fileName,
+        user.id,
+      );
       if (!response) {
         return errorResponse('Something went wrong!');
       }
       this.paymentService.updateUserUsedImages(userPackageData.id, 1);
+
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
       processException(error);
@@ -537,34 +547,74 @@ export class TemplateService {
   }
   async saveImageDocument(
     prompt: string,
-    base64Image: string,
+    image_url: string,
     image_name: string,
-    template_id: number,
     user_id: number,
-  ): Promise<ResponseModel> {
+  ): Promise<MyImages> {
     try {
-      convertBase64ToJpg(
-        base64Image,
-        `/${coreConstant.FILE_DESTINATION}`,
-        80,
-        (err, info) => {
-          if (err) {
-            console.error('Error:', err);
-          } else {
-            console.log('Conversion successful. Output saved to', info.path);
-          }
-        },
-      );
       const saveImage = await this.prisma.myImages.create({
         data: {
           prompt,
-          image_url: base64Image,
+          image_url: image_url,
           image_name,
-          template_id,
           user_id,
         },
       });
-      return;
+
+      return saveImage;
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getAllImageDocument(
+    user: User,
+    paginationOptions: any,
+  ): Promise<ResponseModel> {
+    try {
+      const paginate = await paginatioOptions(paginationOptions);
+
+      const imageDocuments = await this.prisma.myImages.findMany({
+        where: {
+          user_id: user.id,
+        },
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData(
+        'myImages',
+        paginationOptions,
+      );
+
+      const data = {
+        list: imageDocuments,
+        meta: paginationMeta,
+      };
+
+      return successResponse('Image Documents List by user', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getImageDocumentDetails(
+    id: number,
+    user: User,
+  ): Promise<ResponseModel> {
+    try {
+      let imageDocumentDetails = await this.prisma.myImages.findFirst({
+        where: {
+          id,
+          user_id: user.id,
+        },
+      });
+      imageDocumentDetails.image_url = addPhotoPrefix(
+        imageDocumentDetails.image_url,
+      );
+
+      if (!imageDocumentDetails) {
+        return errorResponse('Image Document not found!');
+      }
+
+      return successResponse('Image Document details', imageDocumentDetails);
     } catch (error) {
       processException(error);
     }

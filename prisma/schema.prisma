@@ -154,16 +154,16 @@ model MyDocuments {
 }
 
 model MyImages {
-  id          Int      @id @default(autoincrement())
-  prompt      String   @db.LongText()
-  image_url   String
-  image_name  String
-  user        User     @relation(fields: [user_id], references: [id])
-  user_id     Int
-  template    Template @relation(fields: [template_id], references: [id])
-  template_id Int
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id         Int       @id @default(autoincrement())
+  prompt     String    @db.LongText()
+  image_url  String
+  image_name String
+  user       User      @relation(fields: [user_id], references: [id])
+  user_id    Int
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  Template   Template? @relation(fields: [templateId], references: [id])
+  templateId Int?
 }
 
 model MyUploads {

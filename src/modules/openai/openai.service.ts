@@ -51,7 +51,7 @@ export class OpenAi {
     const imageResponse = await this.openai.images.generate({
       prompt: prompt,
       size: image_size ? image_size : '256x256',
-      response_format: 'url',
+      response_format: 'b64_json',
     });
 
     return imageResponse;
