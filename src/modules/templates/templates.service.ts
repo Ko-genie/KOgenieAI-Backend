@@ -533,4 +533,65 @@ export class TemplateService {
       processException(error);
     }
   }
+
+  async getDocumentListByPaginate(payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const documentList = await this.prisma.myDocuments.findMany({});
+      const paginationMeta = await paginationMetaData('myDocuments', payload);
+
+      const data = {
+        list: documentList,
+        meta: paginationMeta,
+      };
+      return successResponse('Document List by paginate', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getDocumentDetails(id: number) {
+    try {
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: { id: id },
+        include: {
+          template: {
+            include: {
+              templateCategory: true,
+            },
+          },
+        },
+      });
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Document details', documentDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getUserDocumentDetails(id: number, user: User) {
+    try {
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: {
+          id: id,
+          user_id: user.id,
+        },
+        include: {
+          template: {
+            include: {
+              templateCategory: true,
+            },
+          },
+        },
+      });
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Document details', documentDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
