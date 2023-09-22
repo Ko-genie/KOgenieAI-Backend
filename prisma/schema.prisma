@@ -126,20 +126,25 @@ model TemplateField {
 }
 
 model MyDocuments {
-  id                 Int      @id @default(autoincrement())
-  name               String   @db.VarChar(255)
-  description        String?
-  prompt             String   @db.Text()
-  result             String?  @db.Text()
-  language           String   @default("english") @db.VarChar(255)
-  content_quality    String   @default("good") @db.VarChar(255)
-  content_max_length Int      @default(50)
-  template           Template @relation(fields: [template_id], references: [id])
-  template_id        Int
-  user               User     @relation(fields: [user_id], references: [id])
-  user_id            Int
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  prompt           String   @db.LongText()
+  result           String?  @db.LongText()
+  template         Template @relation(fields: [template_id], references: [id])
+  template_id      Int
+  total_used_words BigInt   @default(0) @db.BigInt()
+  user             User     @relation(fields: [user_id], references: [id])
+  user_id          Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model MyImages {
+  id         Int      @id @default(autoincrement())
+  prompt     String   @db.LongText()
+  image_url  String
+  image_name String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model MyUploads {
