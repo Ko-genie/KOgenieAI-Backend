@@ -240,7 +240,11 @@ export class PaymentsService {
       if (!purchedPackage) {
         return errorResponse("Package can't be purchased");
       }
-
+      this.addTransaction(
+        coreConstant.PAYMENT_METHODS.STRIPE,
+        packageData.id,
+        user.id,
+      );
       return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
       processException(error);
@@ -391,7 +395,11 @@ export class PaymentsService {
           total_purchase: total_purchase,
         },
       });
-
+      this.addTransaction(
+        coreConstant.PAYMENT_METHODS.STRIPE,
+        packageData.id,
+        user.id,
+      );
       return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
       processException(error);
@@ -610,7 +618,38 @@ export class PaymentsService {
     });
   }
 
-  // async addTransaction(): Promise<PaymentTransaction>{
-  //   const newTransaction =await this.prisma.
-  // }
+  async addTransaction(
+    payment_method: number,
+    packageId: number,
+    userId: number,
+  ): Promise<PaymentTransaction> {
+    const newTransaction = await this.prisma.paymentTransaction.create({
+      data: {
+        payment_method: payment_method,
+        packageId: packageId,
+        userId: userId,
+      },
+    });
+    return newTransaction;
+  }
+  async getAllTransaction(): Promise<ResponseModel> {
+    try {
+      const allTransactions = await this.prisma.paymentTransaction.findMany({
+        include: {
+          Package: true,
+          User: {
+            include: {
+              UserPurchase: true,
+            },
+          },
+        },
+      });
+      if (!allTransactions.length) {
+        return errorResponse('No Transaction Found');
+      }
+      return successResponse('Transaction found!', allTransactions);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }

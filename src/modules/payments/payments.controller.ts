@@ -91,10 +91,13 @@ export class PaymentsController {
     );
   }
 
+  @IsAdmin()
   @Get('get-openai-model-names')
   getOpenAIModelNames(): Promise<ResponseModel> {
     return this.paymentsService.getOpenAIModelNames();
   }
+
+  @IsAdmin()
   @Post('price-suggestion')
   suggestPricing(
     @Body()
@@ -138,5 +141,14 @@ export class PaymentsController {
       user,
       payload.packageId,
     );
+  }
+  // getAllTransaction;
+  @IsAdmin()
+  @Get('get-all-transaction')
+  getAllTransaction(
+    @Query()
+    payload: paginateType,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.getAllTransaction();
   }
 }
