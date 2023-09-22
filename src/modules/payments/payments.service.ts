@@ -271,8 +271,8 @@ export class PaymentsService {
       } else {
         packages = await this.prisma.package.findMany({
           where: {
-            type: queryType,
-            soft_delete: false,
+            // type: queryType,
+            // soft_delete: false,
           },
           ...paginate,
         });
@@ -312,7 +312,7 @@ export class PaymentsService {
       } else {
         packages = await this.prisma.package.findMany({
           where: {
-            type: queryType,
+            // type: queryType,
             status: coreConstant.ACTIVE,
             soft_delete: false,
           },
