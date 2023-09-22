@@ -538,7 +538,9 @@ export class TemplateService {
     try {
       const paginate = await paginatioOptions(payload);
 
-      const documentList = await this.prisma.myDocuments.findMany({});
+      const documentList = await this.prisma.myDocuments.findMany({
+        ...paginate
+      });
       const paginationMeta = await paginationMetaData('myDocuments', payload);
 
       const data = {
