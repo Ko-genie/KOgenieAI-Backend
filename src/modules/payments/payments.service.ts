@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { Package, User, UserPurchasedPackage } from '@prisma/client';
+import {
+  Package,
+  PaymentTransaction,
+  User,
+  UserPurchasedPackage,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import {
@@ -510,10 +515,21 @@ export class PaymentsService {
   async getOpenAIModelNames(): Promise<ResponseModel> {
     try {
       const modelNames = coreConstant.OPEN_AI_MODEL_NAMES;
+      let modifyModelNames = [];
+      modelNames.map((item) => {
+        modifyModelNames.push({
+          label: item,
+          value: item,
+        });
+      });
+
       if (!modelNames) {
         return errorResponse('No model name found!');
       }
-      return successResponse('Model name fetched successfully', modelNames);
+      return successResponse(
+        'Model name fetched successfully',
+        modifyModelNames,
+      );
     } catch (error) {}
   }
 
@@ -593,4 +609,8 @@ export class PaymentsService {
       },
     });
   }
+
+  // async addTransaction(): Promise<PaymentTransaction>{
+  //   const newTransaction =await this.prisma.
+  // }
 }

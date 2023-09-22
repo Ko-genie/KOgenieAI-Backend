@@ -38,6 +38,7 @@ model User {
   UserPurchase          UserPurchasedPackage[]
   MyDocuments           MyDocuments[]
   MyUploads             MyUploads[]
+  PaymentTransaction    PaymentTransaction[]
 }
 
 model Package {
@@ -90,6 +91,10 @@ model PaymentTransaction {
   payment_method Int
   Package        Package? @relation(fields: [packageId], references: [id])
   packageId      Int?
+  User           User?    @relation(fields: [userId], references: [id])
+  userId         Int?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
 
 model TemplateCategory {
