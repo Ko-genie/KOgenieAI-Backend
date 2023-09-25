@@ -6,7 +6,7 @@ export class CheckDemoMode implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { method } = req;
     const isDemo = process.env.DEMO_MODE;
-    if (method === 'POST') {
+    if (method === 'POST' && isDemo === 'demo') {
       res.status(403).json(errorResponse('This is disbled for demo!'));
       // throw new BadRequestException(
       //   errorResponse('This is disble for demo!'),
