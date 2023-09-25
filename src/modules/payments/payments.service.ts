@@ -457,13 +457,16 @@ export class PaymentsService {
     word_limit_exceed: boolean;
     image_limit_exceed: boolean;
   }> {
-    let userPackage = await this.prisma.userPurchasedPackage.findFirst({
+    let userPackage: any = await this.prisma.userPurchasedPackage.findFirst({
       where: {
         user_id: user.id,
         status: coreConstant.ACTIVE,
       },
       orderBy: {
         end_date: 'desc',
+      },
+      include: {
+        package: true,
       },
     });
     const packageRef = userPackage;
