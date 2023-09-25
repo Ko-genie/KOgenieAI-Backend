@@ -17,12 +17,13 @@ import { PaymentsModule } from '../payments/payments.module';
 import { BigIntTransformInterceptor } from 'src/shared/utils/transform.interseptor';
 import googleauthConfig from 'src/shared/configs/googleauth.config';
 import { TemplateModule } from '../templates/templates.module';
+import { CheckDemoMode } from 'src/shared/middlewares/check-demo.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [MailConfig,googleauthConfig],
+      load: [MailConfig, googleauthConfig],
     }),
 
     PrismaModule,
@@ -32,7 +33,7 @@ import { TemplateModule } from '../templates/templates.module';
     FilesModule,
     SettingsModule,
     PaymentsModule,
-    TemplateModule
+    TemplateModule,
   ],
   providers: [
     {
@@ -54,5 +55,13 @@ export class AppModule implements NestModule {
         method: RequestMethod.ALL,
       })
       .forRoutes({ path: '*', method: RequestMethod.ALL });
+
+    consumer
+      .apply(CheckDemoMode)
+      .exclude({
+        path: `/user/generate-content`,
+        method: RequestMethod.POST,
+      })
+      .forRoutes('*');
   }
 }
