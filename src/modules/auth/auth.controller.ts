@@ -13,6 +13,7 @@ import { VerifyEmailCredentialsDto } from './dto/verify-email-credentials.dto';
 import { ResetPasswordCredentialsDto } from './dto/reset-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { request } from 'http';
+import { GoogleSignInDto } from './dto/googleCred.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -78,6 +79,19 @@ export class AuthController {
   async logout(@Body() { refreshToken }: LogoutDto) {
     return this.authService.logout(refreshToken);
   }
+  @Public()
+  @Post('google-login')
+  async googleLogin(
+    @Req() request: Request,
+    @Body() googleCred: GoogleSignInDto,
+  ) {
+    const browserInfo =
+      `${request.ip} ${request.headers['user-agent']} ${request.headers['accept-language']}`.replace(
+        / undefined/g,
+        '',
+      );
+    return this.authService.googleLogin(request, googleCred, browserInfo);
+  }
 
   /** Logs out the User from all sessions */
 
@@ -97,20 +111,15 @@ export class AuthController {
     return this.authService.findAllTokens(userId);
   }
 
-  @Public()
-  @Get()
-  @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {}
-
-  @Public()
-  @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() request:Request) {
-    const browserInfo =
-      `${request.ip} ${request.headers['user-agent']} ${request.headers['accept-language']}`.replace(
-        / undefined/g,
-        '',
-      );
-    return this.authService.googleLogin(request,browserInfo);
-  }
+  // @Public()
+  // @Get('google/callback')
+  // @UseGuards(AuthGuard('google'))
+  // googleAuthRedirect(@Req() request: Request) {
+  //   const browserInfo =
+  //     `${request.ip} ${request.headers['user-agent']} ${request.headers['accept-language']}`.replace(
+  //       / undefined/g,
+  //       '',
+  //     );
+  //   return this.authService.googleLogin(request, browserInfo);
+  // }
 }

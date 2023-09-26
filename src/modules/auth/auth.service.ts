@@ -20,6 +20,7 @@ import {
   PrismaClient,
   createUniqueCode,
   errorResponse,
+  getAdminSettingsData,
   hashedPassword,
   processException,
   successResponse,
@@ -37,6 +38,9 @@ import { UserVerificationCodeService } from '../verification_code/user-verify-co
 import { ResetPasswordCredentialsDto } from './dto/reset-password.dto';
 import { randomUUID } from 'crypto';
 import { Request } from 'express';
+import { GoogleSignInDto } from './dto/googleCred.dto';
+import { OAuth2Client } from 'google-auth-library';
+import { GoogleAuthCredentialsSlugs } from 'src/shared/constants/array.constants';
 
 @Injectable()
 export class AuthService {
@@ -396,33 +400,73 @@ export class AuthService {
     }
   }
 
-  async googleLogin(req: Request, browserInfo?: any) {
-    if (!req.user) {
-      return errorResponse('Access Invalid, try again letter!');
+  async googleLogin(
+    req: Request,
+    googleCred: GoogleSignInDto,
+    browserInfo?: any,
+  ) {
+    try {
+      const { credential, clientId } = googleCred;
+      const client = new OAuth2Client(clientId);
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: clientId,
+      });
+
+      const getPayload: any = ticket.getPayload();
+
+      if (getPayload.aud !== clientId) {
+        return errorResponse('Invalid token');
+      }
+
+      const existingUser = await this.validateUserByEmail(getPayload.email);
+      const hashPassword = await hashedPassword(Date.now().toString());
+      if (!existingUser) {
+        const newUser = await this.userService.createNewUser(
+          {
+            email: getPayload.email,
+            first_name: getPayload.given_name,
+            last_name: getPayload.family_name,
+            password: hashPassword,
+            provider: 'google',
+            email_verified: coreConstant.IS_VERIFIED,
+          },
+          false,
+        );
+
+        if (!newUser.success) {
+          return errorResponse('User registration failed');
+        }
+      }
+      const user = await this.validateUserByEmail(getPayload.email);
+
+      if (user.email_verified !== coreConstant.IS_VERIFIED) {
+        return errorResponse(
+          'Email is not verified! Please verify your email first.',
+        );
+      }
+
+      // Generate an access token
+      const data = { sub: user.id, email: user.email };
+      const accessToken = await this.generateAccessToken(data);
+
+      // Create a refresh token
+      const refreshToken = await this.createRefreshToken(
+        { sub: data.sub, email: data.email },
+        browserInfo,
+      );
+
+      // Prepare the response data
+      const userData = {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        user: user,
+        isAdmin: user.role === coreConstant.USER_ROLE_ADMIN,
+      };
+
+      return successResponse('Login successful', userData);
+    } catch (error) {
+      processException(error);
     }
-    const payload = req.user;
-
-    const userRegistrationResponse =
-      await this.userService.userRegistrationBySocialMedia(payload);
-
-    const user: any = userRegistrationResponse.data;
-    delete user.password;
-    const data = { sub: user.id, email: user.email };
-
-    const accessToken = await this.generateAccessToken(data);
-
-    const refreshToken = await this.createRefreshToken(
-      { sub: data.sub, email: data.email },
-      browserInfo,
-    );
-
-    const userData = {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      user: user,
-      isAdmin: false,
-    };
-
-    return successResponse('Login successful', userData);
   }
 }

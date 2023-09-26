@@ -99,7 +99,7 @@ export class UsersService {
   }
 
   // create new user process
-  async createNewUser(payload: any) {
+  async createNewUser(payload: any, sendMail = true) {
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -107,7 +107,7 @@ export class UsersService {
           unique_code: createUniqueCode(),
         },
       });
-      if (user) {
+      if (user && sendMail) {
         const mailKey = generateMailKey();
         const codeData = {
           user_id: user.id,
@@ -127,6 +127,7 @@ export class UsersService {
         );
         return successResponse('New user created successfully', user);
       }
+      return successResponse('New user created successfully', user);
     } catch (err) {
       console.log(err);
     }

@@ -27,7 +27,7 @@ export const coreConstant = {
       wordPrice: 0.0015, // $0.0015 per 1K tokens
     },
     'gpt-3.5-turbo-16k': {
-      wordPrice: 0.003, // $0.003 per 1K tokens
+      wordPrice: 0.003,
     },
   },
   OPEN_AI_MODEL_NAMES: [
@@ -36,7 +36,7 @@ export const coreConstant = {
     'gpt-3.5-turbo',
     'gpt-3.5-turbo-16k',
   ],
-  IMAGE_PRICE_PER_IMAGE: 0.02, // $0.020 per image
+  IMAGE_PRICE_PER_IMAGE: 0.02,
 
   FEATURES_TYPES: {
     WRITING: 1,

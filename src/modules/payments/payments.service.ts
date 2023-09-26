@@ -428,7 +428,7 @@ export class PaymentsService {
         await this.getUserPackage(user);
       if (!package_valid) {
         return errorResponse(
-          'Package is not valid or expired! Please buy a new package',
+          'Please subscribe before adding package to subscription',
         );
       }
       const getPackageToAdd = await this.prisma.package.findFirst({
