@@ -16,7 +16,14 @@ import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.d
 @Controller('admin-settings')
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}
-
+  @Get('get-terms-privacy-data')
+  getTermsPrivacyData(): Promise<ResponseModel> {
+    return this.settingService.getTermsPrivacyData();
+  }
+  @Get('get-admin-dashboard-data')
+  getAdminDashboardData(): Promise<ResponseModel> {
+    return this.settingService.getAdminDashboardData();
+  }
   @Get('common-settings')
   commonSettings(): Promise<ResponseModel> {
     return this.settingService.commonSettings();
@@ -62,11 +69,6 @@ export class SettingController {
     @Body() payload: UpdateTermsPrivacyDto,
   ): Promise<ResponseModel> {
     return this.settingService.updateTermsPrivacy(payload);
-  }
-
-  @Get('get-terms-privacy-data')
-  getTermsPrivacyData(): Promise<ResponseModel> {
-    return this.settingService.getTermsPrivacyData();
   }
 
   @Post('update-open-ai-settings')

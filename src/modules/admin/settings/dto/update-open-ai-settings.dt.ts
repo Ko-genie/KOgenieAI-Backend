@@ -32,10 +32,10 @@ export class UpdateOpenAISettingsDto {
   @IsIn(OpenAiToneOfVoiceKeyArray)
   open_ai_default_tone_of_voice: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @IsIn(CreativityKeyArray)
-  open_ai_default_creativity: number;
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @IsIn(CreativityKeyArray)
+  // open_ai_default_creativity: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -47,18 +47,18 @@ export class UpdateOpenAISettingsDto {
   @Max(2)
   open_ai_temperature: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  open_ai_max_input_length: number;
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @Min(0)
+  // open_ai_max_input_length: number;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
   open_ai_max_output_length: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  open_ai_max_token: number;
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @Min(0)
+  // open_ai_max_token: number;
 }

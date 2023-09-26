@@ -163,13 +163,23 @@ export class PaymentsService {
     user: User,
   ): Promise<ResponseModel> {
     try {
-      const { package_valid } = await this.getUserPackage(user);
-      if (package_valid) {
-        return errorResponse('User already subscribed to a package');
-      }
+      const { package_valid, package: myPack }: any = await this.getUserPackage(
+        user,
+      );
+      // console.log(myPack.package.type, 'myPack.package.type');
+      // if (
+      //   package_valid &&
+      //   myPack.package.type === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+      // ) {
+      //   return errorResponse('User already subscribed to a package');
+      // }
 
       await this.stripe.init();
-      const intent = await this.stripe.createStripePaymentIntent(amount, 'USD');
+      const intent = await this.stripe.createStripePaymentIntent(
+        amount * 100,
+        'USD',
+      );
+      console.log(intent, 'intent');
       if (!intent) {
         return errorResponse('Stripe payment intent can not be created');
       }
@@ -222,7 +232,9 @@ export class PaymentsService {
           : 365;
       const end_date = new Date(start_date);
       end_date.setDate(end_date.getDate() + duration);
-
+      if (packageData.type === coreConstant.PACKAGE_TYPES.PACKAGE) {
+        await this.addPackageToSubscription(user, String(packageData.id));
+      }
       const purchedPackage = await this.prisma.userPurchasedPackage.create({
         data: {
           start_date: start_date,
@@ -244,6 +256,7 @@ export class PaymentsService {
         coreConstant.PAYMENT_METHODS.STRIPE,
         packageData.id,
         user.id,
+        Number(packageData.price),
       );
       return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
@@ -399,6 +412,7 @@ export class PaymentsService {
         coreConstant.PAYMENT_METHODS.STRIPE,
         packageData.id,
         user.id,
+        Number(packageData.price),
       );
       return successResponse('Package purchased successfully', purchedPackage);
     } catch (error) {
@@ -442,6 +456,7 @@ export class PaymentsService {
             Number(getPackageToAdd.total_images),
         },
       });
+      console.log(userUpdatedPackage, 'ssssssssss');
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }
@@ -625,12 +640,14 @@ export class PaymentsService {
     payment_method: number,
     packageId: number,
     userId: number,
+    price: number,
   ): Promise<PaymentTransaction> {
     const newTransaction = await this.prisma.paymentTransaction.create({
       data: {
         payment_method: payment_method,
         packageId: packageId,
         userId: userId,
+        price: price,
       },
     });
     return newTransaction;

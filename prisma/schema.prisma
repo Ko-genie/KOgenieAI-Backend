@@ -45,7 +45,7 @@ model User {
 model Package {
   id                        Int                    @id @default(autoincrement())
   name                      String                 @db.VarChar(255)
-  description               String?
+  description               String?                @db.LongText()
   price                     Decimal                @db.Decimal(19, 2)
   currency                  String                 @default("USD") @db.VarChar(20)
   duration                  Int                    @default(2) @db.SmallInt()
@@ -90,6 +90,7 @@ model UserPurchasedPackage {
 model PaymentTransaction {
   id             Int      @id @default(autoincrement())
   payment_method Int
+  price          Decimal  @default(0) @db.Decimal(19, 2)
   Package        Package? @relation(fields: [packageId], references: [id])
   packageId      Int?
   User           User?    @relation(fields: [userId], references: [id])

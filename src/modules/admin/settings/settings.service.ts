@@ -82,6 +82,15 @@ export class SettingService {
       processException(error);
     }
   }
+  async getAdminDashboardData() {
+    try {
+      const totalUsers = await this.prisma.user.count();
+      const totalSale = await this.prisma.paymentTransaction.findMany({});
+      return successResponse('Admin dashboard data', {});
+    } catch (error) {
+      processException(error);
+    }
+  }
 
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
     try {
@@ -311,7 +320,7 @@ export class SettingService {
 
       return successResponse('Google auth credentials', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 }
