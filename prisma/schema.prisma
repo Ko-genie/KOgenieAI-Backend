@@ -224,6 +224,7 @@ model FavouriteTemplate {
   id            Int @id @default(autoincrement())
   user_id       Int
   template_id   Int
+  status        Int @default(0) @db.SmallInt
 
   user User @relation(fields: [user_id], references: [id])
   template Template @relation(fields: [template_id], references: [id])
