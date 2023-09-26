@@ -135,11 +135,13 @@ export class PaymentsController {
     @Body()
     payload: {
       packageId: string;
+      payment_intent_id: string;
     },
   ): Promise<ResponseModel> {
     return this.paymentsService.addPackageToSubscription(
       user,
       payload.packageId,
+      payload.payment_intent_id,
     );
   }
   // getAllTransaction;

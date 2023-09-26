@@ -166,6 +166,9 @@ export class PaymentsService {
       const { package_valid, package: myPack }: any = await this.getUserPackage(
         user,
       );
+      // if (package_valid) {
+      //   return errorResponse('User already subscribed to a package');
+      // }
       // console.log(myPack.package.type, 'myPack.package.type');
       // if (
       //   package_valid &&
@@ -196,6 +199,12 @@ export class PaymentsService {
     user: User,
   ): Promise<ResponseModel> {
     try {
+      const { package_valid, package: myPack }: any = await this.getUserPackage(
+        user,
+      );
+      if (package_valid) {
+        return errorResponse('User already subscribed to a package');
+      }
       if (!subcription_package_Id) {
         return errorResponse('No package id provided');
       }
@@ -232,9 +241,6 @@ export class PaymentsService {
           : 365;
       const end_date = new Date(start_date);
       end_date.setDate(end_date.getDate() + duration);
-      if (packageData.type === coreConstant.PACKAGE_TYPES.PACKAGE) {
-        await this.addPackageToSubscription(user, String(packageData.id));
-      }
       const purchedPackage = await this.prisma.userPurchasedPackage.create({
         data: {
           start_date: start_date,
@@ -422,10 +428,11 @@ export class PaymentsService {
   async addPackageToSubscription(
     user: User,
     packageId: string,
+    paymentIntentId: string,
   ): Promise<ResponseModel> {
     try {
-      if (!packageId) {
-        return errorResponse('Invalid data please provide packageId');
+      if (!packageId || !paymentIntentId) {
+        return errorResponse('Invalid data please provide data properly');
       }
       const { package_valid, package: SubcribedPackage } =
         await this.getUserPackage(user);
@@ -442,6 +449,15 @@ export class PaymentsService {
       });
       if (!getPackageToAdd) {
         return errorResponse('Package not found!');
+      }
+      await this.stripe.init();
+
+      // Verify the payment intent with Stripe
+      const intent = await this.stripe.verifyPaymentIntent(paymentIntentId);
+      if (!intent || intent.status !== 'succeeded') {
+        return errorResponse(
+          'Stripe payment intent could not be verified or has not succeeded',
+        );
       }
       const userUpdatedPackage = await this.prisma.userPurchasedPackage.update({
         where: {
