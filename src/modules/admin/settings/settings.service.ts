@@ -84,9 +84,60 @@ export class SettingService {
   }
   async getAdminDashboardData() {
     try {
-      const totalUsers = await this.prisma.user.count();
-      const totalSale = await this.prisma.paymentTransaction.findMany({});
-      return successResponse('Admin dashboard data', {});
+      const data = {};
+      data['totalUsers'] = await this.prisma.user.count();
+      const totalSaleResult = await this.prisma.paymentTransaction.aggregate({
+        _sum: {
+          price: true,
+        },
+      });
+      data['totalSale'] = totalSaleResult._sum.price.toNumber();
+
+      const totalWordGenerated =
+        await this.prisma.userPurchasedPackage.aggregate({
+          _sum: {
+            used_words: true,
+            used_images: true,
+          },
+        });
+      data['totalWordGenerated'] = totalWordGenerated._sum.used_words;
+      data['totalImageGenerated'] = totalWordGenerated._sum.used_images;
+
+      const rawData = await this.prisma.paymentTransaction.findMany({
+        select: {
+          created_at: true,
+          price: true,
+        },
+      });
+
+      const weeklySalesData = {
+        Sunday: 0,
+        Monday: 0,
+        Tuesday: 0,
+        Wednesday: 0,
+        Thursday: 0,
+        Friday: 0,
+        Saturday: 0,
+      };
+      for (const entry of rawData) {
+        const createdAt = entry.created_at;
+        const weekName = createdAt.toLocaleDateString('en-US', {
+          weekday: 'long',
+        });
+
+        weeklySalesData[weekName] += Number(entry.price);
+      }
+
+      data['weeklySalesData'] = weeklySalesData;
+
+      data['latest_transaction_list'] =
+        await this.prisma.paymentTransaction.findMany({
+          take: 10,
+          orderBy: {
+            created_at: 'desc',
+          },
+        });
+      return successResponse('Admin dashboard data', data);
     } catch (error) {
       processException(error);
     }
