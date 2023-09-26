@@ -14,6 +14,7 @@ import { NotificationService } from 'src/shared/notification/notification.servic
 import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
+  CommonSettingsSlugs,
   GeneralSettingsSlugs,
   GoogleAuthCredentialsSlugs,
   OpenAISettingSlugs,
@@ -75,7 +76,7 @@ export class SettingService {
   }
   async commonSettings() {
     try {
-      const settings = await this.getAllSettings();
+      const settings = await getAdminSettingsData(CommonSettingsSlugs);
 
       return successResponse('Common settings', settings);
     } catch (error) {
