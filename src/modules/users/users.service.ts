@@ -463,8 +463,12 @@ export class UsersService {
         where: {
           user_id: user.id,
         },
+        orderBy: {
+          created_at:'desc'
+        },
         take: 5,
       });
+      data['user_count_by_country'] = await this.userListByCountryWise();
       return successResponse('User dashboard api data!', data);
     } catch (error) {
       processException(error);
