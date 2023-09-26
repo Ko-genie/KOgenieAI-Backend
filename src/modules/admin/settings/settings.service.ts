@@ -101,7 +101,6 @@ export class SettingService {
         ? await fetchMyUploadFilePathById(payload.site_fav_icon)
         : await adminSettingsValueBySlug('site_fav_icon');
 
-      console.log('site_logo_path', site_logo_path);
       const keyValuePairs = Object.entries(payload).map(([key, value]) => {
         if (key === 'site_logo') {
           value = site_logo_path;

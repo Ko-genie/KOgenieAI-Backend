@@ -37,11 +37,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  console.log(
-    'Static assets directory:',
-    path.join(__dirname, `../../${coreConstant.FILE_DESTINATION}`),
-  );
-  console.log('Serving at:', `/${coreConstant.FILE_DESTINATION}`);
   await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();

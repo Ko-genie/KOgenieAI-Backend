@@ -158,7 +158,6 @@ export class AuthService {
       };
       return successResponse('Refresh token', userData);
     } catch (err) {
-      console.log(err);
       return errorResponse('Something went wrong', []);
     }
   }
@@ -168,7 +167,6 @@ export class AuthService {
       await this.prisma.userTokens.deleteMany({ where: { refreshToken } });
       return successResponse('Logout successful', []);
     } catch (err) {
-      console.log(err);
       return errorResponse('Something went wrong', []);
     }
   }
@@ -178,7 +176,6 @@ export class AuthService {
       await this.prisma.userTokens.deleteMany({ where: { userId } });
       return successResponse('Logout successful', []);
     } catch (err) {
-      console.log(err);
       return errorResponse('Something went wrong', []);
     }
   }
@@ -225,12 +222,9 @@ export class AuthService {
       payload.tokenFamily = uuidV4();
     }
 
-    const refreshToken = this.jwtService.sign(
-      { ...payload },
-      refreshJwtConfig,
-    );
+    const refreshToken = this.jwtService.sign({ ...payload }, refreshJwtConfig);
 
-     this.saveRefreshToken({
+    this.saveRefreshToken({
       userId: payload.sub,
       refreshToken,
       family: payload.tokenFamily,
@@ -402,17 +396,15 @@ export class AuthService {
     }
   }
 
-  async googleLogin(req:Request, browserInfo?:any) {
+  async googleLogin(req: Request, browserInfo?: any) {
     if (!req.user) {
       return errorResponse('Access Invalid, try again letter!');
     }
     const payload = req.user;
-    
+
     const userRegistrationResponse =
-      await this.userService.userRegistrationBySocialMedia(
-        payload,
-      );
-    
+      await this.userService.userRegistrationBySocialMedia(payload);
+
     const user: any = userRegistrationResponse.data;
     delete user.password;
     const data = { sub: user.id, email: user.email };
@@ -424,7 +416,6 @@ export class AuthService {
       browserInfo,
     );
 
-    
     const userData = {
       accessToken: accessToken,
       refreshToken: refreshToken,
