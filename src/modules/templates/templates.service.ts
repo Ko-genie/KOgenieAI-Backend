@@ -692,4 +692,53 @@ export class TemplateService {
       processException(error);
     }
   }
+
+  async getTemplateListForUser(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const templateList = await this.prisma.template.findMany({
+        include: {
+          templateCategory: true,
+          TemplateField: true,
+          FavouriteTemplate: true,
+        },
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('template', payload);
+
+      const data = {
+        list: templateList,
+        meta: paginationMeta,
+      };
+      return successResponse('Template list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async makeTemplateFavourite(user: User, payload: { template_id: number }) {
+    try {
+      const makeTemplateFavouriteDetails =
+        await this.prisma.favouriteTemplate.findFirst({
+          where: {
+            user_id: user.id,
+            template_id: payload.template_id,
+          },
+        });
+      if (!makeTemplateFavouriteDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.favouriteTemplate.update({
+        where: {
+          id: makeTemplateFavouriteDetails.id,
+        },
+        data: {},
+      });
+    } catch (error) {
+      processException(error);
+    }
+  }
 }

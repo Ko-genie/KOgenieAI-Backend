@@ -60,4 +60,16 @@ export class UserTemplateController {
   getImageDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getImageDocumentDetails(id, user);
   }
+
+  @Get('get-template-list')
+  getTemplateListForUser(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getTemplateListForUser(user, payload);
+  }
+  @Post('make-template-favourite')
+  makeTemplateFavourite(
+    @UserInfo() user: User,
+    @Body() payload: { template_id: number },
+  ) {
+    return this.templateService.makeTemplateFavourite(user, payload);
+  }
 }
