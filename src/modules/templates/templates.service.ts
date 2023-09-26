@@ -71,7 +71,7 @@ export class TemplateService {
       if (checkNameUnique) {
         return errorResponse('This category is already has!');
       }
-      const { name, description } = payload;
+      const { name, description, status } = payload;
       const data = await this.prisma.templateCategory.update({
         where: {
           id: payload.id,
@@ -79,6 +79,7 @@ export class TemplateService {
         data: {
           name,
           description,
+          status
         },
       });
 
