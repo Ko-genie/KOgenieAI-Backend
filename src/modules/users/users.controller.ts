@@ -104,4 +104,9 @@ export class UserController {
   testTextGen(@Body() payload: { text: string }) { 
     return this.userService.testTextGen(payload);
   }
+
+  @Get('dashboard')
+  getUserDashboardData(@UserInfo() user: User) {
+    return this.userService.getUserDashboardData(user);
+  }
 }

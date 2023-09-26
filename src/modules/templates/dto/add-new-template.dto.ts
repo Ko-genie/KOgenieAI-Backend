@@ -1,6 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
-import { InputFieldTypeArray, PackageTypeArray } from 'src/shared/constants/array.constants';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import {
+  InputFieldTypeArray,
+  PackageTypeArray,
+} from 'src/shared/constants/array.constants';
 
 export class InputGroupDto {
   @IsNotEmpty()
@@ -37,6 +46,11 @@ export class AddNewTemplateDto {
   @IsNotEmpty()
   @IsNumber()
   category_id: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsIn(InputFieldTypeArray)
+  status: number;
 
   @IsNotEmpty()
   @IsNumber()

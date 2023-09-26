@@ -163,6 +163,7 @@ export class TemplateService {
         package_type,
         prompt_input,
         prompt,
+        status,
         input_groups,
       } = payload;
       const checkCategoryId = await this.prisma.templateCategory.findFirst({
@@ -184,6 +185,7 @@ export class TemplateService {
           package_type,
           prompt_input,
           prompt,
+          status
         },
       });
 
@@ -282,6 +284,7 @@ export class TemplateService {
           package_type,
           prompt_input,
           prompt,
+          status,
           input_groups,
         } = payload;
 
@@ -306,6 +309,7 @@ export class TemplateService {
             package_type,
             prompt_input,
             prompt,
+            status
           },
         });
 
