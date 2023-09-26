@@ -71,7 +71,7 @@ export class TemplateService {
       if (checkNameUnique) {
         return errorResponse('This category is already has!');
       }
-      const { name, description } = payload;
+      const { name, description, status } = payload;
       const data = await this.prisma.templateCategory.update({
         where: {
           id: payload.id,
@@ -79,6 +79,7 @@ export class TemplateService {
         data: {
           name,
           description,
+          status,
         },
       });
 
@@ -90,27 +91,33 @@ export class TemplateService {
 
   async getListCategory(payload: any) {
     try {
-      const paginate = await paginatioOptions(payload);
+      const data = {};
+      if (payload.limit || payload.offset) {
+        const paginate = await paginatioOptions(payload);
 
-      const categoryList = await this.prisma.templateCategory.findMany({
-        ...paginate,
-      });
+        const categoryList = await this.prisma.templateCategory.findMany({
+          ...paginate,
+        });
 
-      const paginationMeta = await paginationMetaData(
-        'templateCategory',
-        payload,
-      );
+        const paginationMeta = await paginationMetaData(
+          'templateCategory',
+          payload,
+        );
 
-      const data = {
-        list: categoryList,
-        meta: paginationMeta,
-      };
+        data['list'] = categoryList;
+        data['meta'] = paginationMeta;
+      } else {
+        const categoryList = await this.prisma.templateCategory.findMany();
+
+        data['list'] = categoryList;
+      }
 
       return successResponse('Category List data', data);
     } catch (error) {
       processException(error);
     }
   }
+
   async deleteCategory(id: number) {
     try {
       const checkCategory = await this.prisma.templateCategory.findFirst({
@@ -162,6 +169,7 @@ export class TemplateService {
         package_type,
         prompt_input,
         prompt,
+        status,
         input_groups,
       } = payload;
       const checkCategoryId = await this.prisma.templateCategory.findFirst({
@@ -183,6 +191,7 @@ export class TemplateService {
           package_type,
           prompt_input,
           prompt,
+          status,
         },
       });
 
@@ -281,6 +290,7 @@ export class TemplateService {
           package_type,
           prompt_input,
           prompt,
+          status,
           input_groups,
         } = payload;
 
@@ -305,6 +315,7 @@ export class TemplateService {
             package_type,
             prompt_input,
             prompt,
+            status,
           },
         });
 

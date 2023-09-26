@@ -53,6 +53,11 @@ export class UpdateTemplateDto {
 
   @IsNotEmpty()
   @IsNumber()
+  @IsIn(InputFieldTypeArray)
+  status: number;
+
+  @IsNotEmpty()
+  @IsNumber()
   @IsIn(PackageTypeArray)
   package_type: number;
 

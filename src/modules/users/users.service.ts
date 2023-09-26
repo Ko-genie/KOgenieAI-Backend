@@ -435,4 +435,39 @@ export class UsersService {
       processException(error);
     }
   }
+
+  async getUserDashboardData(user: User) {
+    try {
+      const data = {};
+      const userWordImageDetail =
+        await this.prisma.userPurchasedPackage.aggregate({
+          _sum: {
+            total_words: true,
+            total_images: true,
+            used_words: true,
+            used_images: true,
+          },
+          where: {
+            user_id: user.id,
+          },
+        });
+      data['word_left'] =
+        Number(userWordImageDetail._sum.total_words) -
+        Number(userWordImageDetail._sum.used_words);
+
+      data['image_left'] =
+        Number(userWordImageDetail._sum.total_images) -
+        Number(userWordImageDetail._sum.used_images);
+
+      data['latest_document_list'] = await this.prisma.myDocuments.findMany({
+        where: {
+          user_id: user.id,
+        },
+        take: 5,
+      });
+      return successResponse('User dashboard api data!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
