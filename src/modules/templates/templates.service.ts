@@ -22,6 +22,7 @@ import { MyImages, Template, User } from '@prisma/client';
 import { OpenAi } from '../openai/openai.service';
 import { PaymentsService } from '../payments/payments.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
+import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 
 @Injectable()
 export class TemplateService {
@@ -688,6 +689,75 @@ export class TemplateService {
         return errorResponse('Invalid request!');
       }
       return successResponse('Document details', documentDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getTemplateListForUser(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const templateList = await this.prisma.template.findMany({
+        include: {
+          templateCategory: true,
+          TemplateField: true,
+          FavouriteTemplate: true,
+        },
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('template', payload);
+
+      const data = {
+        list: templateList,
+        meta: paginationMeta,
+      };
+      return successResponse('Template list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async makeTemplateFavourite(user: User, payload: MakeTemplateFavourite) {
+    try {
+      const favouriteTemplateDetails =
+        await this.prisma.favouriteTemplate.findFirst({
+          where: {
+            user_id: user.id,
+            template_id: payload.template_id,
+          },
+        });
+
+      let updateFavouriteTemplate;
+      if (favouriteTemplateDetails) {
+        updateFavouriteTemplate = await this.prisma.favouriteTemplate.update({
+          where: {
+            id: favouriteTemplateDetails.id,
+          },
+          data: {
+            status:
+              favouriteTemplateDetails.status === coreConstant.ACTIVE
+                ? coreConstant.INACTIVE
+                : coreConstant.ACTIVE,
+          },
+        });
+      } else {
+        updateFavouriteTemplate = await this.prisma.favouriteTemplate.create({
+          data: {
+            user_id: user.id,
+            template_id: payload.template_id,
+            status: coreConstant.ACTIVE,
+          },
+        });
+      }
+
+      if (updateFavouriteTemplate.status === coreConstant.ACTIVE) {
+        return successResponse('Template is marked as favourite!');
+      }
+      {
+        return successResponse('Template is removed from favourite!');
+      }
     } catch (error) {
       processException(error);
     }

@@ -17,6 +17,7 @@ import { Subscription } from 'src/shared/decorators/subcription.decorators';
 import { userInfo } from 'os';
 import { paginateType } from '../payments/dto/query.dto';
 import { paginateInterface } from 'src/shared/constants/types';
+import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 
 @Controller('user')
 export class UserTemplateController {
@@ -59,5 +60,17 @@ export class UserTemplateController {
   @Get('image-details-:id')
   getImageDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getImageDocumentDetails(id, user);
+  }
+
+  @Get('get-template-list')
+  getTemplateListForUser(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getTemplateListForUser(user, payload);
+  }
+  @Post('make-template-favourite')
+  makeTemplateFavourite(
+    @UserInfo() user: User,
+    @Body() payload: MakeTemplateFavourite,
+  ) {
+    return this.templateService.makeTemplateFavourite(user, payload);
   }
 }
