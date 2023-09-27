@@ -37,6 +37,20 @@ export class SettingService {
     private readonly notificationService: NotificationService,
   ) {}
 
+  async userListByCountryWise() {
+    try {
+      const userList = await this.prisma.user.groupBy({
+        by: ['country'],
+        _count: true,
+      });
+
+      console.log(userList);
+
+      return successResponse('Country wise user list', userList);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getAllSettings() {
     try {
       const settings = await this.prisma.adminSettings.findMany();
@@ -151,6 +165,8 @@ export class SettingService {
             },
           },
         });
+
+      data['user_count_by_country'] = await this.userListByCountryWise();
       return successResponse('Admin dashboard data', data);
     } catch (error) {
       processException(error);
