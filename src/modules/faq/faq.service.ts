@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import {
+  errorResponse,
   paginatioOptions,
   paginationMetaData,
   processException,
@@ -9,6 +10,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { paginateInterface } from 'src/shared/constants/types';
 import { GetFaqListByTypePaginate } from './dto/get-list-faq.dto';
+import { UpdateFaqDto } from './dto/update-faq.dto';
 
 @Injectable()
 export class FaqService {
@@ -44,6 +46,34 @@ export class FaqService {
       data['list'] = faqList;
       data['meta'] = paginationMeta;
       return successResponse('Faq list with paginate', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateFaq(payload: UpdateFaqDto) {
+    try {
+      const faqDetails = await this.prisma.faq.findFirst({
+        where: {
+          id: payload.id,
+        },
+      });
+      if (!faqDetails) {
+        return errorResponse('Invalid request!');
+      }
+      const { type, question, answer, status } = payload;
+      const updateFaqDetails = await this.prisma.faq.update({
+        where: {
+          id: faqDetails.id,
+        },
+        data: {
+          type,
+          question,
+          answer,
+          status,
+        },
+      });
+      return successResponse('Faq is updated successfully!', updateFaqDetails);
     } catch (error) {
       processException(error);
     }

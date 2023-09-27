@@ -3,6 +3,7 @@ import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { GetFaqListByTypePaginate } from './dto/get-list-faq.dto';
+import { UpdateFaqDto } from './dto/update-faq.dto';
 
 @Controller('admin-faq')
 export class AdminFaqController {
@@ -17,4 +18,9 @@ export class AdminFaqController {
   getListFaq(@Query() payload: GetFaqListByTypePaginate) {
     return this.faqService.getListFaq(payload);
   }
+    
+    @Post('update')
+    updateFaq(@Body() payload: UpdateFaqDto) {
+        return this.faqService.updateFaq(payload);
+    }
 }
