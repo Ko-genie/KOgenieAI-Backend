@@ -137,6 +137,19 @@ export class SettingService {
           orderBy: {
             created_at: 'desc',
           },
+          include: {
+            User: {
+              select: {
+                last_name: true,
+                photo: true,
+              },
+            },
+            Package: {
+              select: {
+                name: true,
+              },
+            },
+          },
         });
       return successResponse('Admin dashboard data', data);
     } catch (error) {
