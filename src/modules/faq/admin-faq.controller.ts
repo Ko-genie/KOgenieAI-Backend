@@ -1,10 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { GetFaqListByTypePaginate } from './dto/get-list-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
+import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 
+@IsAdmin()
 @Controller('admin-faq')
 export class AdminFaqController {
   constructor(private readonly faqService: FaqService) {}
