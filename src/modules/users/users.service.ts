@@ -464,11 +464,21 @@ export class UsersService {
           user_id: user.id,
         },
         orderBy: {
-          created_at:'desc'
+          created_at: 'desc',
         },
         take: 5,
       });
-      
+      data['user_count_by_country'] = await this.userListByCountryWise();
+      data['favourite_template_list'] =
+        await this.prisma.favouriteTemplate.findMany({
+          where: {
+            user_id: user.id,
+            status: coreConstant.ACTIVE,
+          },
+          include: {
+            template: true,
+          },
+        });
       return successResponse('User dashboard api data!', data);
     } catch (error) {
       processException(error);

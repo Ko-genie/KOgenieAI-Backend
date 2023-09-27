@@ -105,3 +105,7 @@ export const inputFieldTypeConstant = {
   INPUT_FIELD: 1,
   TEXTAREA_FIELD: 2,
 };
+
+export const faqTypeConstant = {
+  LANDING_PAGE: 0,
+};

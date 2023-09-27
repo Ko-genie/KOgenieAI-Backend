@@ -18,6 +18,7 @@ import { BigIntTransformInterceptor } from 'src/shared/utils/transform.intersept
 import googleauthConfig from 'src/shared/configs/googleauth.config';
 import { TemplateModule } from '../templates/templates.module';
 import { CheckDemoMode } from 'src/shared/middlewares/check-demo.middleware';
+import { FaqModule } from '../faq/faq.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CheckDemoMode } from 'src/shared/middlewares/check-demo.middleware';
     SettingsModule,
     PaymentsModule,
     TemplateModule,
+    FaqModule,
   ],
   providers: [
     {

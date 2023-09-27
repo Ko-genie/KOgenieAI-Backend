@@ -228,4 +228,18 @@ model FavouriteTemplate {
 
   user User @relation(fields: [user_id], references: [id])
   template Template @relation(fields: [template_id], references: [id])
+  
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Faq {
+  id Int @id @default(autoincrement())
+  type Int @default(0) @db.SmallInt
+  question String @db.Text
+  answer String @db.LongText
+  status Int @default(0) @db.SmallInt
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
