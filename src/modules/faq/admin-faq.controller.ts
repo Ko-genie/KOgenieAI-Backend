@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { paginateInterface } from 'src/shared/constants/types';
@@ -18,9 +18,19 @@ export class AdminFaqController {
   getListFaq(@Query() payload: GetFaqListByTypePaginate) {
     return this.faqService.getListFaq(payload);
   }
-    
-    @Post('update')
-    updateFaq(@Body() payload: UpdateFaqDto) {
-        return this.faqService.updateFaq(payload);
-    }
+
+  @Post('update')
+  updateFaq(@Body() payload: UpdateFaqDto) {
+    return this.faqService.updateFaq(payload);
+  }
+
+  @Get('details-:id')
+  getFaqDetails(@Param('id') id: number) {
+    return this.faqService.getFaqDetails(id);
+  }
+
+  @Delete('delete-:id')
+  deleteFaq(@Param('id') id: number) {
+    return this.faqService.deleteFaq(id);
+  }
 }

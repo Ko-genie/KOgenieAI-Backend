@@ -78,4 +78,46 @@ export class FaqService {
       processException(error);
     }
   }
+
+  async getFaqDetails(id: number) {
+    try {
+      const faqDetails = await this.prisma.faq.findFirst({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!faqDetails) {
+        return errorResponse('Faq details is not found!');
+      }
+
+      return successResponse('Faq details!', faqDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async deleteFaq(id: number) {
+    try {
+      const faqDetails = await this.prisma.faq.findFirst({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!faqDetails) {
+        return errorResponse('Faq details is not found!');
+      }
+
+      await this.prisma.faq.delete({
+        where: {
+          id: faqDetails.id,
+        },
+      });
+
+      return successResponse('Faq is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
