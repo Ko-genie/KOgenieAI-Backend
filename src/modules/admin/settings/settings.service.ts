@@ -100,7 +100,9 @@ export class SettingService {
   async getAdminDashboardData() {
     try {
       const data = {};
+
       data['totalUsers'] = await this.prisma.user.count();
+
       const totalSaleResult = await this.prisma.paymentTransaction.aggregate({
         _sum: {
           price: true,
@@ -108,6 +110,7 @@ export class SettingService {
       });
       data['totalSale'] = totalSaleResult._sum.price.toNumber();
 
+      // Total Word and Image Generated
       const totalWordGenerated =
         await this.prisma.userPurchasedPackage.aggregate({
           _sum: {
@@ -142,8 +145,9 @@ export class SettingService {
 
         weeklySalesData[weekName] += Number(entry.price);
       }
-
       data['weeklySalesData'] = weeklySalesData;
+
+      data['packageAndSubscriptions'] = await this.prisma.package.findMany();
 
       data['latest_transaction_list'] =
         await this.prisma.paymentTransaction.findMany({
@@ -167,12 +171,82 @@ export class SettingService {
         });
 
       data['user_count_by_country'] = await this.userListByCountryWise();
+
+      const currentYear = new Date().getFullYear();
+      const totalNewUsersThisYear = await this.prisma.user.count({
+        where: {
+          AND: [
+            {
+              created_at: {
+                gte: new Date(currentYear, 0, 1),
+              },
+            },
+            {
+              created_at: {
+                lte: new Date(currentYear, 11, 31, 23, 59, 59),
+              },
+            },
+          ],
+        },
+      });
+      data['totalNewUsersThisYear'] = totalNewUsersThisYear;
+      const usersCountByMonth = await this.getUsersCountByMonth(currentYear);
+      data['usersCountByMonth'] = usersCountByMonth;
+
       return successResponse('Admin dashboard data', data);
     } catch (error) {
       processException(error);
     }
   }
+  async getRevenueCountByMonth(currentYear) {
+    const revenueCountByMonth = {};
+    for (let month = 0; month < 12; month++) {
+      const startDate = new Date(currentYear, month, 1);
+      const endDate = new Date(currentYear, month + 1, 0, 23, 59, 59);
 
+      const revenueResult = await this.prisma.paymentTransaction.aggregate({
+        _sum: {
+          price: true,
+        },
+        where: {
+          created_at: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      });
+
+      revenueCountByMonth[month] = revenueResult._sum.price.toNumber();
+    }
+    return revenueCountByMonth;
+  }
+  async getUsersCountByMonth(year) {
+    const usersCountByMonth = {};
+
+    for (let month = 0; month < 12; month++) {
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0, 23, 59, 59);
+
+      const count = await this.prisma.user.count({
+        where: {
+          AND: [
+            {
+              created_at: {
+                gte: startDate,
+                lte: endDate,
+              },
+            },
+          ],
+        },
+      });
+
+      const monthName = startDate.toLocaleString('en-US', { month: 'long' });
+
+      usersCountByMonth[monthName] = count;
+    }
+
+    return usersCountByMonth;
+  }
   async updateGeneralSettings(payload: UpdateGeneralSettingsDto) {
     try {
       const site_logo_path = payload.site_logo
