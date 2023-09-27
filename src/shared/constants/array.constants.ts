@@ -1,5 +1,6 @@
 import {
   creativityConstant,
+  faqTypeConstant,
   inputFieldTypeConstant,
   modeStatusConstant,
   openAiModelConstant,
@@ -140,10 +141,12 @@ export const StatusOnOffArray = [
 
 export const PackageTypeArray = [
   packageTypeConstant.REGULAR,
-  packageTypeConstant.PREMIUM
+  packageTypeConstant.PREMIUM,
 ];
 
 export const InputFieldTypeArray = [
   inputFieldTypeConstant.INPUT_FIELD,
-  inputFieldTypeConstant.TEXTAREA_FIELD
+  inputFieldTypeConstant.TEXTAREA_FIELD,
 ];
+
+export const FaqTypeArray = [faqTypeConstant.LANDING_PAGE];
