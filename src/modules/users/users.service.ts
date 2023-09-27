@@ -41,7 +41,9 @@ export class UsersService {
     if (!user) {
       return errorResponse('Please login inorder to get profile data');
     }
-    user.photo = addPhotoPrefix(user.photo);
+    if (user.photo) {
+      user.photo = addPhotoPrefix(user.photo);
+    }
 
     if (user.role === coreConstant.USER_ROLE_ADMIN) {
       const admin = {
@@ -454,11 +456,16 @@ export class UsersService {
       data['word_left'] =
         Number(userWordImageDetail._sum.total_words) -
         Number(userWordImageDetail._sum.used_words);
-
+      data['total_words'] = Number(userWordImageDetail._sum.total_words);
       data['image_left'] =
         Number(userWordImageDetail._sum.total_images) -
         Number(userWordImageDetail._sum.used_images);
-
+      data['total_images'] = Number(userWordImageDetail._sum.total_images);
+      data['total_documents'] = await this.prisma.myDocuments.count({
+        where: {
+          user_id: user.id,
+        },
+      });
       data['latest_document_list'] = await this.prisma.myDocuments.findMany({
         where: {
           user_id: user.id,
