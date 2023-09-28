@@ -108,7 +108,16 @@ export class SettingService {
           price: true,
         },
       });
-      data['totalSale'] = totalSaleResult._sum.price.toNumber();
+
+      if (
+        totalSaleResult &&
+        totalSaleResult._sum &&
+        totalSaleResult._sum.price !== null
+      ) {
+        data['totalSale'] = totalSaleResult._sum.price.toNumber();
+      } else {
+        data['totalSale'] = 0; // Handle the case where data is missing
+      }
 
       // Total Word and Image Generated
       const totalWordGenerated =

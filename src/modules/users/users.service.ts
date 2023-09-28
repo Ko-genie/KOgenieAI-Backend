@@ -466,16 +466,30 @@ export class UsersService {
           user_id: user.id,
         },
       });
-      data['latest_document_list'] = await this.prisma.myDocuments.findMany({
+      data['user_count_by_country'] = await this.userListByCountryWise();
+      data['my_documents'] = await this.prisma.myDocuments.findMany({
         where: {
           user_id: user.id,
+        },
+        include: {
+          template: {
+            select: {
+              title: true,
+              color: true,
+              templateCategory: {
+                select: {
+                  name: true,
+                },
+              },  
+            },
+          },
         },
         orderBy: {
           created_at: 'desc',
         },
         take: 5,
       });
-      data['user_count_by_country'] = await this.userListByCountryWise();
+
       data['favourite_template_list'] =
         await this.prisma.favouriteTemplate.findMany({
           where: {
