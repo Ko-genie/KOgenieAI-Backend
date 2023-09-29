@@ -120,6 +120,7 @@ model Template {
   prompt_input     String           @db.Text()
   prompt           String           @db.Text()
   color            String?          @db.VarChar(255)
+  icon_tag         String?          @db.VarChar(255)
   package_type     Int              @default(1)
   template_type    Int?             @default(1)
   status           Int              @default(0) @db.SmallInt
