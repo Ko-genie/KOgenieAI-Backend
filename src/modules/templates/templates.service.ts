@@ -489,6 +489,9 @@ export class TemplateService {
 
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
+      if (error.error.message) {
+        return errorResponse(error.error.message);
+      }
       processException(error);
     }
   }
@@ -552,8 +555,11 @@ export class TemplateService {
       }
       this.paymentService.updateUserUsedImages(userPackageData.id, 1);
 
-      return successResponse('Text is generated successfully!', response);
+      return successResponse('Image is generated successfully!', response);
     } catch (error) {
+      if (error.error.message) {
+        return errorResponse(error.error.message);
+      }
       processException(error);
     }
   }
