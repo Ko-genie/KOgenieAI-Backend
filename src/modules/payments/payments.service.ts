@@ -166,16 +166,6 @@ export class PaymentsService {
       const { package_valid, package: myPack }: any = await this.getUserPackage(
         user,
       );
-      // if (package_valid) {
-      //   return errorResponse('User already subscribed to a package');
-      // }
-      // console.log(myPack.package.type, 'myPack.package.type');
-      // if (
-      //   package_valid &&
-      //   myPack.package.type === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
-      // ) {
-      //   return errorResponse('User already subscribed to a package');
-      // }
 
       await this.stripe.init();
       const intent = await this.stripe.createStripePaymentIntent(
@@ -438,7 +428,7 @@ export class PaymentsService {
         await this.getUserPackage(user);
       if (!package_valid) {
         return errorResponse(
-          'Package is not valid or expired! Please buy a new package',
+          'Please subscribe before adding package to subscription',
         );
       }
       const getPackageToAdd = await this.prisma.package.findFirst({
@@ -472,7 +462,6 @@ export class PaymentsService {
             Number(getPackageToAdd.total_images),
         },
       });
-      console.log(userUpdatedPackage, 'ssssssssss');
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }

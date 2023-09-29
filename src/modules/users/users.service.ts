@@ -41,7 +41,9 @@ export class UsersService {
     if (!user) {
       return errorResponse('Please login inorder to get profile data');
     }
-    user.photo = addPhotoPrefix(user.photo);
+    if (user.photo) {
+      user.photo = addPhotoPrefix(user.photo);
+    }
 
     if (user.role === coreConstant.USER_ROLE_ADMIN) {
       const admin = {
@@ -99,7 +101,7 @@ export class UsersService {
   }
 
   // create new user process
-  async createNewUser(payload: any) {
+  async createNewUser(payload: any, sendMail = true) {
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -107,7 +109,7 @@ export class UsersService {
           unique_code: createUniqueCode(),
         },
       });
-      if (user) {
+      if (user && sendMail) {
         const mailKey = generateMailKey();
         const codeData = {
           user_id: user.id,
@@ -127,6 +129,7 @@ export class UsersService {
         );
         return successResponse('New user created successfully', user);
       }
+      return successResponse('New user created successfully', user);
     } catch (err) {
       console.log(err);
     }
@@ -453,21 +456,40 @@ export class UsersService {
       data['word_left'] =
         Number(userWordImageDetail._sum.total_words) -
         Number(userWordImageDetail._sum.used_words);
-
+      data['total_words'] = Number(userWordImageDetail._sum.total_words);
       data['image_left'] =
         Number(userWordImageDetail._sum.total_images) -
         Number(userWordImageDetail._sum.used_images);
-
-      data['latest_document_list'] = await this.prisma.myDocuments.findMany({
+      data['total_images'] = Number(userWordImageDetail._sum.total_images);
+      data['total_documents'] = await this.prisma.myDocuments.count({
         where: {
           user_id: user.id,
+        },
+      });
+      data['user_count_by_country'] = await this.userListByCountryWise();
+      data['my_documents'] = await this.prisma.myDocuments.findMany({
+        where: {
+          user_id: user.id,
+        },
+        include: {
+          template: {
+            select: {
+              title: true,
+              color: true,
+              templateCategory: {
+                select: {
+                  name: true,
+                },
+              },  
+            },
+          },
         },
         orderBy: {
           created_at: 'desc',
         },
         take: 5,
       });
-      data['user_count_by_country'] = await this.userListByCountryWise();
+
       data['favourite_template_list'] =
         await this.prisma.favouriteTemplate.findMany({
           where: {
