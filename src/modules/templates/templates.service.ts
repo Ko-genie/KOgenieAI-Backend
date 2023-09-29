@@ -762,4 +762,13 @@ export class TemplateService {
       processException(error);
     }
   }
+
+  async generateOpenAiCode(user: User, payload: any) {
+    try {
+      console.log(payload);
+      return successResponse('Generate Code successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
 }

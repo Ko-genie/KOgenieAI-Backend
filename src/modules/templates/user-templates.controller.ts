@@ -73,4 +73,9 @@ export class UserTemplateController {
   ) {
     return this.templateService.makeTemplateFavourite(user, payload);
   }
+
+  @Post('generate-code')
+  generateOpenAiCode(@UserInfo() user: User, @Body() payload: any) {
+    return this.templateService.generateOpenAiCode(user, payload);
+  }
 }
