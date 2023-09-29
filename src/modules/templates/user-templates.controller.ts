@@ -18,6 +18,7 @@ import { userInfo } from 'os';
 import { paginateType } from '../payments/dto/query.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
+import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 
 @Controller('user')
 export class UserTemplateController {
@@ -74,8 +75,12 @@ export class UserTemplateController {
     return this.templateService.makeTemplateFavourite(user, payload);
   }
 
+  // @Subscription('text')
   @Post('generate-code')
-  generateOpenAiCode(@UserInfo() user: User, @Body() payload: any) {
+  generateOpenAiCode(
+    @UserInfo() user: User,
+    @Body() payload: GenerateOpenAiCodeDto,
+  ) {
     return this.templateService.generateOpenAiCode(user, payload);
   }
 }

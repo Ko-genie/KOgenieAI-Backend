@@ -425,3 +425,13 @@ export const saveBase64ImageAsJpg = (base64Image) => {
       });
   });
 };
+
+export async function generatePromptForCode(
+  description: string,
+  codingLanguage: string,
+  codingLevel: string,
+):Promise<string> {
+  const prompt = `Generate code for me for ${description} using ${codingLanguage} programing languages. The coding level must be ${codingLevel}`;
+
+  return prompt;
+}

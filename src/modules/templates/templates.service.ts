@@ -10,6 +10,7 @@ import {
   successResponse,
   wordCountMultilingual,
   addPhotoPrefix,
+  generatePromptForCode,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -23,6 +24,7 @@ import { OpenAi } from '../openai/openai.service';
 import { PaymentsService } from '../payments/payments.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
+import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 
 @Injectable()
 export class TemplateService {
@@ -763,10 +765,57 @@ export class TemplateService {
     }
   }
 
-  async generateOpenAiCode(user: User, payload: any) {
+  async generateOpenAiCode(user: User, payload: GenerateOpenAiCodeDto) {
     try {
-      console.log(payload);
-      return successResponse('Generate Code successfully!');
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
+
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData: any = checkUserPackageResponse.data;
+
+      if (userPackageData.word_limit_exceed) {
+        return errorResponse(
+          'Your word limit exceed, please, purchase an addiotional package!',
+        );
+      }
+
+      const promot: string = await generatePromptForCode(
+        payload.description,
+        payload.coding_language,
+        payload.coding_level,
+      );
+
+      await this.openaiService.init();
+      const responseOpenAi = await this.openaiService.textCompletion(
+        promot,
+        1,
+        userPackageData.model,
+      );
+
+      if (!responseOpenAi) {
+        return errorResponse('Something went wrong!');
+      }
+
+      const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
+
+      const saveGeneratedCode = await this.prisma.generatedCode.create({
+        data: {
+          prompt:promot,
+          result:resultOfPrompt,
+          total_used_words: wordCount,
+          user_id: user.id,
+        },
+      });
+
+      return successResponse('Generate Code successfully!', saveGeneratedCode);
     } catch (error) {
       processException(error);
     }
