@@ -41,6 +41,7 @@ model User {
   PaymentTransaction    PaymentTransaction[]
   MyImages              MyImages[]
   FavouriteTemplate     FavouriteTemplate[]
+  GeneratedCode         GeneratedCode[]
 }
 
 model Package {
@@ -119,6 +120,7 @@ model Template {
   prompt_input     String           @db.Text()
   prompt           String           @db.Text()
   color            String?          @db.VarChar(255)
+  icon_tag         String?          @db.VarChar(255)
   package_type     Int              @default(1)
   template_type    Int?             @default(1)
   status           Int              @default(0) @db.SmallInt
@@ -242,4 +244,15 @@ model Faq {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model GeneratedCode {
+  id               Int      @id @default(autoincrement())
+  prompt           String   @db.LongText()
+  result           String?  @db.LongText()
+  total_used_words BigInt   @default(0) @db.BigInt()
+  user             User     @relation(fields: [user_id], references: [id])
+  user_id          Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 }

@@ -109,3 +109,9 @@ export const inputFieldTypeConstant = {
 export const faqTypeConstant = {
   LANDING_PAGE: 0,
 };
+
+export const CodingLevelConstant = {
+  BEGINNER: 'beginner',
+  INTERMEDIATE: 'intermediate',
+  ADVANCE: 'advance',
+};

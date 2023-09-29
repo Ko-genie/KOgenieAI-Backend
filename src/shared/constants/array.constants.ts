@@ -1,4 +1,5 @@
 import {
+  CodingLevelConstant,
   creativityConstant,
   faqTypeConstant,
   inputFieldTypeConstant,
@@ -150,3 +151,9 @@ export const InputFieldTypeArray = [
 ];
 
 export const FaqTypeArray = [faqTypeConstant.LANDING_PAGE];
+
+export const CodingLevelArray = [
+  CodingLevelConstant.BEGINNER,
+  CodingLevelConstant.INTERMEDIATE,
+  CodingLevelConstant.ADVANCE,
+];

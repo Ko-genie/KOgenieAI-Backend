@@ -10,6 +10,7 @@ import {
   successResponse,
   wordCountMultilingual,
   addPhotoPrefix,
+  generatePromptForCode,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -23,6 +24,7 @@ import { OpenAi } from '../openai/openai.service';
 import { PaymentsService } from '../payments/payments.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
+import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 
 @Injectable()
 export class TemplateService {
@@ -171,6 +173,7 @@ export class TemplateService {
         prompt_input,
         prompt,
         status,
+        icon_tag,
         input_groups,
       } = payload;
       const checkCategoryId = await this.prisma.templateCategory.findFirst({
@@ -193,6 +196,7 @@ export class TemplateService {
           prompt_input,
           prompt,
           status,
+          icon_tag,
         },
       });
 
@@ -292,6 +296,7 @@ export class TemplateService {
           prompt_input,
           prompt,
           status,
+          icon_tag,
           input_groups,
         } = payload;
 
@@ -317,6 +322,7 @@ export class TemplateService {
             prompt_input,
             prompt,
             status,
+            icon_tag,
           },
         });
 
@@ -764,6 +770,104 @@ export class TemplateService {
       {
         return successResponse('Template is removed from favourite!');
       }
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async generateOpenAiCode(user: User, payload: GenerateOpenAiCodeDto) {
+    try {
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
+
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData: any = checkUserPackageResponse.data;
+
+      if (userPackageData.word_limit_exceed) {
+        return errorResponse(
+          'Your word limit exceed, please, purchase an addiotional package!',
+        );
+      }
+
+      const promot: string = await generatePromptForCode(
+        payload.description,
+        payload.coding_language,
+        payload.coding_level,
+      );
+
+      await this.openaiService.init();
+      const responseOpenAi = await this.openaiService.textCompletion(
+        promot,
+        1,
+        userPackageData.model,
+      );
+
+      if (!responseOpenAi) {
+        return errorResponse('Something went wrong!');
+      }
+
+      const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
+
+      const saveGeneratedCode = await this.prisma.generatedCode.create({
+        data: {
+          prompt: promot,
+          result: resultOfPrompt,
+          total_used_words: wordCount,
+          user_id: user.id,
+        },
+      });
+
+      return successResponse('Generate Code successfully!', saveGeneratedCode);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneratedCodeList(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const generatedCodeList = await this.prisma.generatedCode.findMany({
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('generatedCode', payload);
+
+      const data = {
+        list: generatedCodeList,
+        meta: paginationMeta,
+      };
+      return successResponse('Generated code list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneratedCodeDetails(id: number, user?: User) {
+    try {
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+
+      const generatedCodeDetails = await this.prisma.generatedCode.findFirst({
+        where: whereCondition,
+      });
+
+      if (!generatedCodeDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Generated code details', generatedCodeDetails);
     } catch (error) {
       processException(error);
     }

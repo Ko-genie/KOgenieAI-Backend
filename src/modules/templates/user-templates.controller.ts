@@ -18,6 +18,7 @@ import { userInfo } from 'os';
 import { paginateType } from '../payments/dto/query.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
+import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 
 @Controller('user')
 export class UserTemplateController {
@@ -66,11 +67,35 @@ export class UserTemplateController {
   getTemplateListForUser(@UserInfo() user: User, @Query() payload: any) {
     return this.templateService.getTemplateListForUser(user, payload);
   }
+
+  @Get('template-details-:id')
+  getTemplateDetails(@Param('id') id: number) {
+    return this.templateService.getTemplateDetails(id);
+  }
+
   @Post('make-template-favourite')
   makeTemplateFavourite(
     @UserInfo() user: User,
     @Body() payload: MakeTemplateFavourite,
   ) {
     return this.templateService.makeTemplateFavourite(user, payload);
+  }
+
+  // @Subscription('text')
+  @Post('generate-code')
+  generateOpenAiCode(
+    @UserInfo() user: User,
+    @Body() payload: GenerateOpenAiCodeDto,
+  ) {
+    return this.templateService.generateOpenAiCode(user, payload);
+  }
+
+  @Get('get-generated-code-list')
+  getGeneratedCodeList(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getGeneratedCodeList(user, payload);
+  }
+  @Get('get-generated-code-details-:id')
+  getGeneratedCodeDetails(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.getGeneratedCodeDetails(id, user);
   }
 }
