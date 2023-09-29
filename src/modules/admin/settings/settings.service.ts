@@ -15,6 +15,7 @@ import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
   CommonSettingsSlugs,
+  CountryListObjectArray,
   GeneralSettingsSlugs,
   GoogleAuthCredentialsSlugs,
   OpenAISettingSlugs,
@@ -25,10 +26,10 @@ import {
 } from 'src/shared/constants/array.constants';
 import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
-import { async } from 'rxjs';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
+
 
 @Injectable()
 export class SettingService {
@@ -90,9 +91,12 @@ export class SettingService {
   }
   async commonSettings() {
     try {
-      const settings = await getAdminSettingsData(CommonSettingsSlugs);
+      const data = {};
 
-      return successResponse('Common settings', settings);
+      data['countryList'] = CountryListObjectArray;
+      data['settings'] = await getAdminSettingsData(CommonSettingsSlugs);
+
+      return successResponse('Common settings', data);
     } catch (error) {
       processException(error);
     }
