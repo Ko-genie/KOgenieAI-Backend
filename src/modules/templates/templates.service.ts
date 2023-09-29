@@ -841,14 +841,20 @@ export class TemplateService {
     }
   }
 
-  async getGeneratedCodeDetails(id: number, user: User) {
+  async getGeneratedCodeDetails(id: number, user?: User) {
     try {
+      
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+      
       const generatedCodeDetails = await this.prisma.generatedCode.findFirst({
-        where: {
-          id: id,
-          user_id: user.id,
-        },
+        where: whereCondition,
       });
+
       if (!generatedCodeDetails) {
         return errorResponse('Invalid request!');
       }
