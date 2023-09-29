@@ -173,6 +173,7 @@ export class TemplateService {
         prompt_input,
         prompt,
         status,
+        icon_tag,
         input_groups,
       } = payload;
       const checkCategoryId = await this.prisma.templateCategory.findFirst({
@@ -195,6 +196,7 @@ export class TemplateService {
           prompt_input,
           prompt,
           status,
+          icon_tag,
         },
       });
 
@@ -294,6 +296,7 @@ export class TemplateService {
           prompt_input,
           prompt,
           status,
+          icon_tag,
           input_groups,
         } = payload;
 
@@ -319,6 +322,7 @@ export class TemplateService {
             prompt_input,
             prompt,
             status,
+            icon_tag,
           },
         });
 
@@ -843,14 +847,13 @@ export class TemplateService {
 
   async getGeneratedCodeDetails(id: number, user?: User) {
     try {
-      
       const whereCondition = {
         id: id,
         ...(user && user.role === coreConstant.USER_ROLE_USER
           ? { user_id: user.id }
           : {}),
       };
-      
+
       const generatedCodeDetails = await this.prisma.generatedCode.findFirst({
         where: whereCondition,
       });

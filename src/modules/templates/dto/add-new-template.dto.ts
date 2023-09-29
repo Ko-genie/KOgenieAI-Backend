@@ -67,6 +67,10 @@ export class AddNewTemplateDto {
   prompt: string;
 
   @IsNotEmpty()
+  @IsString()
+  icon_tag: string;
+
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => InputGroupDto)
   input_groups: InputGroupDto[];
