@@ -597,20 +597,27 @@ export class TemplateService {
     try {
       const paginate = await paginatioOptions(paginationOptions);
 
-      const imageDocuments = await this.prisma.myImages.findMany({
+      let imageDocuments = await this.prisma.myImages.findMany({
         where: {
           user_id: user.id,
         },
+        orderBy: {
+          created_at: 'desc',
+        },
         ...paginate,
       });
-
+      let images_with_url = [];
+      imageDocuments.map((image) => {
+        image.image_url = addPhotoPrefix(image.image_url);
+        images_with_url.push(image);
+      });
       const paginationMeta = await paginationMetaData(
         'myImages',
         paginationOptions,
       );
 
       const data = {
-        list: imageDocuments,
+        list: images_with_url,
         meta: paginationMeta,
       };
 
