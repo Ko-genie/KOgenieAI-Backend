@@ -83,4 +83,13 @@ export class UserTemplateController {
   ) {
     return this.templateService.generateOpenAiCode(user, payload);
   }
+
+  @Get('get-generated-code-list')
+  getGeneratedCodeList(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getGeneratedCodeList(user, payload);
+  }
+  @Get('get-generated-code-details-:id')
+  getGeneratedCodeDetails(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.getGeneratedCodeDetails(id, user);
+  }
 }

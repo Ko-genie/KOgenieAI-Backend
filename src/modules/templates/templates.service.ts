@@ -808,14 +808,51 @@ export class TemplateService {
 
       const saveGeneratedCode = await this.prisma.generatedCode.create({
         data: {
-          prompt:promot,
-          result:resultOfPrompt,
+          prompt: promot,
+          result: resultOfPrompt,
           total_used_words: wordCount,
           user_id: user.id,
         },
       });
 
       return successResponse('Generate Code successfully!', saveGeneratedCode);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneratedCodeList(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const generatedCodeList = await this.prisma.generatedCode.findMany({
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('generatedCode', payload);
+
+      const data = {
+        list: generatedCodeList,
+        meta: paginationMeta,
+      };
+      return successResponse('Generated code list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneratedCodeDetails(id: number, user: User) {
+    try {
+      const generatedCodeDetails = await this.prisma.generatedCode.findFirst({
+        where: {
+          id: id,
+          user_id: user.id,
+        },
+      });
+      if (!generatedCodeDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Generated code details', generatedCodeDetails);
     } catch (error) {
       processException(error);
     }
