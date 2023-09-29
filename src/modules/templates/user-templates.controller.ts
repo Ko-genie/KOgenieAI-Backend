@@ -67,6 +67,12 @@ export class UserTemplateController {
   getTemplateListForUser(@UserInfo() user: User, @Query() payload: any) {
     return this.templateService.getTemplateListForUser(user, payload);
   }
+
+  @Get('template-details-:id')
+  getTemplateDetails(@Param('id') id: number) {
+    return this.templateService.getTemplateDetails(id);
+  }
+
   @Post('make-template-favourite')
   makeTemplateFavourite(
     @UserInfo() user: User,
