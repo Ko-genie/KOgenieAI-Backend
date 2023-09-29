@@ -9,6 +9,7 @@ import {
 import {
   InputFieldTypeArray,
   PackageTypeArray,
+  StatusOnOffArray,
 } from 'src/shared/constants/array.constants';
 
 export class InputGroupDto {
@@ -49,7 +50,7 @@ export class AddNewTemplateDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @IsIn(InputFieldTypeArray)
+  @IsIn(StatusOnOffArray)
   status: number;
 
   @IsNotEmpty()
