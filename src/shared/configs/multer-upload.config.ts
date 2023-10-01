@@ -30,7 +30,6 @@ export const multerUploadConfig: MulterOptions = {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       const user: any = request.user;
       const { originalname, mimetype, path } = file;
-
       const fileName = `${uniqueSuffix}-${file.originalname}`;
       PrismaClient.myUploads
         .create({

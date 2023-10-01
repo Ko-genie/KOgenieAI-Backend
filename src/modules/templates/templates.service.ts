@@ -25,6 +25,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
+import { paginateInterface } from 'src/shared/constants/types';
 
 @Injectable()
 export class TemplateService {
@@ -650,7 +651,45 @@ export class TemplateService {
       processException(error);
     }
   }
-  async getDocumentListByPaginate(payload: any) {
+  async getDocumentListByPaginate(payload: paginateInterface, user: User) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const documentList = await this.prisma.myDocuments.findMany({
+        where: {
+          user_id: user.id,
+        },
+        include: {
+          template: {
+            select: {
+              title: true,
+              color: true,
+              templateCategory: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        ...paginate,
+      });
+      const paginationMeta = await paginationMetaData('myDocuments', payload);
+
+      const data = {
+        list: documentList,
+        meta: paginationMeta,
+      };
+      return successResponse('Document List by paginate', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getDocumentListByPaginateAdmin(payload: paginateInterface) {
     try {
       const paginate = await paginatioOptions(payload);
 
@@ -720,8 +759,11 @@ export class TemplateService {
       const templateList = await this.prisma.template.findMany({
         include: {
           templateCategory: true,
-          TemplateField: true,
+        TemplateField: true,
           FavouriteTemplate: true,
+        },
+        orderBy: {
+          updated_at: 'desc',
         },
         ...paginate,
       });

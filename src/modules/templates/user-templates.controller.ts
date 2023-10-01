@@ -43,8 +43,11 @@ export class UserTemplateController {
   }
 
   @Get('document-list')
-  getDocumentListByPaginate(@Query() payload: paginateInterface) {
-    return this.templateService.getDocumentListByPaginate(payload);
+  getDocumentListByPaginate(
+    @Query() payload: paginateInterface,
+    @UserInfo() user: User,
+  ) {
+    return this.templateService.getDocumentListByPaginate(payload, user);
   }
   @Get('my-image-list')
   getAllImageDocument(
