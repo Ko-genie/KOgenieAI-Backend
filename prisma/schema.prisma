@@ -150,8 +150,8 @@ model MyDocuments {
   id               Int      @id @default(autoincrement())
   prompt           String   @db.LongText()
   result           String?  @db.LongText()
-  template         Template @relation(fields: [template_id], references: [id])
-  template_id      Int
+  template         Template? @relation(fields: [template_id], references: [id])
+  template_id      Int?
   total_used_words BigInt   @default(0) @db.BigInt()
   user             User     @relation(fields: [user_id], references: [id])
   user_id          Int
