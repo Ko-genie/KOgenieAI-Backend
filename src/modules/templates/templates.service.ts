@@ -962,4 +962,28 @@ export class TemplateService {
     const languageList = LanguageListJsonArray;
     return successResponse('Language list', languageList);
   }
+
+  async deleteDocument(id: number, user: User) {
+    try {
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.myDocuments.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      return successResponse('Document is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
 }

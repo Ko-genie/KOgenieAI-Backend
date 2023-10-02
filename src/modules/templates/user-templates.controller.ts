@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -104,12 +105,20 @@ export class UserTemplateController {
   }
 
   @Post('update-document-user')
-  updateDocumentByUser(@UserInfo() user: User, @Body() payload: UpdateDocumentDto) {
+  updateDocumentByUser(
+    @UserInfo() user: User,
+    @Body() payload: UpdateDocumentDto,
+  ) {
     return this.templateService.updateDocumentByUser(user, payload);
   }
 
   @Get('language-list')
   getAllLanguageList() {
     return this.templateService.getAllLanguageList();
+  }
+
+  @Delete('delete-document-:id')
+  deleteDocument(@UserInfo() user: User, @Param('id') id: number) {
+    return this.templateService.deleteDocument(id, user);
   }
 }
