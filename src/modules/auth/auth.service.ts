@@ -471,14 +471,72 @@ export class AuthService {
     }
   }
 
-  async githubLogin( payload: any) {
-    const data = {};
+  async githubLogin(payload: any, browserInfo?: any) {
     const headers = {
       Authorization: `Bearer ${payload.accessToken}`,
     };
 
-      const response = await axios.get('https://api.github.com/user', { headers });
-      return response.data;
-    return successResponse('github', data);
+    try {
+      const githubResponse = await axios.get('https://api.github.com/user', {
+        headers,
+      });
+      const githubUserDetails = githubResponse.data;
+
+      const existingUser = await this.validateUserByEmail(
+        githubUserDetails.email,
+      );
+
+      const hashPassword = await hashedPassword(Date.now().toString());
+      if (!existingUser) {
+        const githubUserName = githubUserDetails.name.split(' ');
+        const newUser = await this.userService.createNewUser(
+          {
+            email: githubUserDetails.email,
+            first_name: githubUserName[0],
+            last_name: githubUserName.length > 1 ? githubUserName[1] : '',
+            password: hashPassword,
+            provider: 'github',
+            email_verified: coreConstant.IS_VERIFIED,
+          },
+          false,
+        );
+
+        if (!newUser.success) {
+          return errorResponse('User registration failed');
+        }
+      }
+      const user = await this.validateUserByEmail(githubUserDetails.email);
+
+      if (user.email_verified !== coreConstant.IS_VERIFIED) {
+        return errorResponse(
+          'Email is not verified! Please verify your email first.',
+        );
+      }
+
+      // Generate an access token
+      const data = { sub: user.id, email: user.email };
+      const accessToken = await this.generateAccessToken(data);
+
+      // Create a refresh token
+      const refreshToken = await this.createRefreshToken(
+        { sub: data.sub, email: data.email },
+        browserInfo,
+      );
+
+      // Prepare the response data
+      const userData = {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        user: user,
+        isAdmin: user.role === coreConstant.USER_ROLE_ADMIN,
+      };
+
+      return successResponse('Login successful', userData);
+    } catch (error) {
+      if (error.response) {
+        console.error('GitHub API Error Response:', error.response.data);
+        return errorResponse('response error', error.response.data);
+      }
+    }
   }
 }
