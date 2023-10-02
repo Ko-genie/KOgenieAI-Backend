@@ -7,6 +7,7 @@ import {
   wordCountMultilingual,
 } from 'src/shared/helpers/functions';
 import { OpenAISettingSlugs } from 'src/shared/constants/array.constants';
+import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 @Injectable()
 export class OpenAi {
@@ -56,8 +57,8 @@ export class OpenAi {
 
     return imageResponse;
   }
-  async listModels(): Promise<Openai.ModelsPage> {
-    const model = await this.openai.models.list();
+  async listModels(): Promise<string[]> {
+    const model = coreConstant.OPEN_AI_MODEL_NAMES;
     return model;
   }
 }
