@@ -148,6 +148,7 @@ model TemplateField {
 
 model MyDocuments {
   id               Int      @id @default(autoincrement())
+  title            String   @db.Text()
   prompt           String   @db.LongText()
   result           String?  @db.LongText()
   template         Template? @relation(fields: [template_id], references: [id])

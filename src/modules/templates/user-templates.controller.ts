@@ -19,6 +19,7 @@ import { paginateType } from '../payments/dto/query.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Controller('user')
 export class UserTemplateController {
@@ -100,5 +101,10 @@ export class UserTemplateController {
   @Get('get-generated-code-details-:id')
   getGeneratedCodeDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getGeneratedCodeDetails(id, user);
+  }
+
+  @Post('update-document-user')
+  updateDocumentByUser(@UserInfo() user: User, @Body() payload: UpdateDocumentDto) {
+    return this.templateService.updateDocumentByUser(user, payload);
   }
 }

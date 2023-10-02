@@ -26,6 +26,7 @@ import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { paginateInterface } from 'src/shared/constants/types';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Injectable()
 export class TemplateService {
@@ -485,8 +486,11 @@ export class TemplateService {
         userPackageData.id,
         wordCount,
       );
-
+      const title: string = payload.document_title
+        ? payload.document_title
+        : 'Untitled Document';
       await this.saveDocument(
+        title,
         finalPrompt,
         resultOfPrompt,
         templateDetails.id,
@@ -504,6 +508,7 @@ export class TemplateService {
   }
 
   async saveDocument(
+    title: string,
     prompt: string,
     result: string,
     template_id: number,
@@ -513,6 +518,7 @@ export class TemplateService {
     try {
       const saveDocument = await this.prisma.myDocuments.create({
         data: {
+          title,
           prompt,
           result,
           template_id,
@@ -759,7 +765,7 @@ export class TemplateService {
       const templateList = await this.prisma.template.findMany({
         include: {
           templateCategory: true,
-        TemplateField: true,
+          TemplateField: true,
           FavouriteTemplate: true,
         },
         orderBy: {
@@ -917,6 +923,35 @@ export class TemplateService {
         return errorResponse('Invalid request!');
       }
       return successResponse('Generated code details', generatedCodeDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateDocumentByUser(user: User, payload: UpdateDocumentDto) {
+    try {
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: {
+          id: payload.document_id,
+          user_id: user.id,
+        },
+      });
+
+      if (!documentDetails) {
+        return errorResponse('Invalid Request to save the document!');
+      }
+
+      await this.prisma.myDocuments.update({
+        where: {
+          id: documentDetails.id,
+        },
+        data: {
+          title: payload.title,
+          result: payload.result,
+        },
+      });
+
+      return successResponse('Document is updated successfully!');
     } catch (error) {
       processException(error);
     }
