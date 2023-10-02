@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { PublicService } from './public.service';
+import { ResponseModel } from 'src/shared/models/response.model';
 
 @Controller('common')
 export class PublicController {
@@ -8,5 +9,10 @@ export class PublicController {
   @Get('language-list')
   getAllLanguageList() {
     return this.publicService.getAllLanguageList();
+  }
+
+  @Get('settings')
+  commonSettings(): Promise<ResponseModel> {
+    return this.publicService.commonSettings();
   }
 }
