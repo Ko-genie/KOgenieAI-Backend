@@ -19,6 +19,7 @@ import googleauthConfig from 'src/shared/configs/googleauth.config';
 import { TemplateModule } from '../templates/templates.module';
 import { CheckDemoMode } from 'src/shared/middlewares/check-demo.middleware';
 import { FaqModule } from '../faq/faq.module';
+import { PublicModule } from '../public/public.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FaqModule } from '../faq/faq.module';
     PaymentsModule,
     TemplateModule,
     FaqModule,
+    PublicModule,
   ],
   providers: [
     {
