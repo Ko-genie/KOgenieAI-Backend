@@ -40,7 +40,10 @@ export class SettingController {
   getGeneralSettingsData(): Promise<ResponseModel> {
     return this.settingService.getGeneralSettingsData();
   }
-
+  @Get('get-openai-models')
+  getOpenAiModels(): Promise<ResponseModel> {
+    return this.settingService.getOpenAiModels();
+  }
   @Post('update-smtp-settings')
   updateSMTPSettings(
     @Body() payload: updateSMTPSettingsDto,
