@@ -107,4 +107,9 @@ export class UserTemplateController {
   updateDocumentByUser(@UserInfo() user: User, @Body() payload: UpdateDocumentDto) {
     return this.templateService.updateDocumentByUser(user, payload);
   }
+
+  @Get('language-list')
+  getAllLanguageList() {
+    return this.templateService.getAllLanguageList();
+  }
 }

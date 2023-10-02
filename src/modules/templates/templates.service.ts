@@ -27,6 +27,7 @@ import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { UpdateDocumentDto } from './dto/update-document.dto';
+import { LanguageListJsonArray } from 'src/shared/constants/array.constants';
 
 @Injectable()
 export class TemplateService {
@@ -955,5 +956,10 @@ export class TemplateService {
     } catch (error) {
       processException(error);
     }
+  }
+
+  async getAllLanguageList() {
+    const languageList = LanguageListJsonArray;
+    return successResponse('Language list', languageList);
   }
 }
