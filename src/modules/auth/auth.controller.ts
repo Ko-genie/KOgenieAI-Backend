@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupCredentialsDto } from './dto/signup-credentials.dto';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
@@ -122,4 +122,10 @@ export class AuthController {
   //     );
   //   return this.authService.googleLogin(request, browserInfo);
   // }
+
+  @Public()
+  @Get('github-login')
+  githubLogin(@Query() payload:any) {
+    return this.authService.githubLogin(payload);
+  }
 }

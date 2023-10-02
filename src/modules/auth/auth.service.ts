@@ -41,6 +41,7 @@ import { Request } from 'express';
 import { GoogleSignInDto } from './dto/googleCred.dto';
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleAuthCredentialsSlugs } from 'src/shared/constants/array.constants';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -468,5 +469,16 @@ export class AuthService {
     } catch (error) {
       processException(error);
     }
+  }
+
+  async githubLogin( payload: any) {
+    const data = {};
+    const headers = {
+      Authorization: `Bearer ${payload.accessToken}`,
+    };
+
+      const response = await axios.get('https://api.github.com/user', { headers });
+      return response.data;
+    return successResponse('github', data);
   }
 }
