@@ -194,7 +194,6 @@ export async function getAdminSettingsData(slugs?: any) {
               slug: slug,
             },
           });
-          addPhotoPrefix(slufInfo.site_logo);
 
           if (slufInfo) {
             data[slug] = slufInfo.value;
