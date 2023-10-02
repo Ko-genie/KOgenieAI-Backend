@@ -32,7 +32,6 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 
-
 @Injectable()
 export class SettingService {
   constructor(
@@ -298,8 +297,9 @@ export class SettingService {
       const slugs: any = GeneralSettingsSlugs;
       const data: any = await getAdminSettingsData(slugs);
 
-      data.site_logo = addPhotoPrefix(data.site_logo);
-      data.site_fav_icon = addPhotoPrefix(data.site_fav_icon);
+      if (data.site_logo) data.site_logo = addPhotoPrefix(data.site_logo);
+      if (data.site_fav_icon)
+        data.site_fav_icon = addPhotoPrefix(data.site_fav_icon);
       return successResponse('General settings  data', data);
     } catch (error) {
       processException(error);
