@@ -292,6 +292,7 @@ export class SettingService {
     try {
       const slugs: any = GeneralSettingsSlugs;
       const data: any = await getAdminSettingsData(slugs);
+
       data.site_logo = addPhotoPrefix(data.site_logo);
       return successResponse('General settings  data', data);
     } catch (error) {
