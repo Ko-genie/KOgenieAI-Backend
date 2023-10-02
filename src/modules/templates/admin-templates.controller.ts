@@ -71,7 +71,7 @@ export class AdminTemplateController {
 
   @Get('document-list')
   getDocumentListByPaginate(@Query() payload: any) {
-    return this.templateService.getDocumentListByPaginate(payload);
+    return this.templateService.getDocumentListByPaginateAdmin(payload);
   }
 
   @Get('document-details-:id')

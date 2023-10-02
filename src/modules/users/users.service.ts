@@ -480,7 +480,7 @@ export class UsersService {
                 select: {
                   name: true,
                 },
-              },  
+              },
             },
           },
         },
@@ -497,9 +497,31 @@ export class UsersService {
             status: coreConstant.ACTIVE,
           },
           include: {
-            template: true,
+            template: {
+              include: {
+                templateCategory: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         });
+      let my_img = await this.prisma.myImages.findMany({
+        where: {
+          user_id: user.id,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        take: 5,
+      });
+      data['my_images'] = [];
+      my_img.map((img: any) => {
+        img.image_url = addPhotoPrefix(img.image_url);
+        data['my_images'].push(img);
+      });
       return successResponse('User dashboard api data!', data);
     } catch (error) {
       processException(error);

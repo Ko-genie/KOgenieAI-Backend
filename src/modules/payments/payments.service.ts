@@ -517,6 +517,10 @@ export class PaymentsService {
         coreConstant.INACTIVE,
       );
     }
+    userPackage.remaining_images =
+      userPackage?.total_images - userPackage?.used_images;
+    userPackage.remaining_words =
+      userPackage?.total_words - userPackage?.used_words;
     const package_valid =
       userPackage.status === coreConstant.ACTIVE ? true : false;
 

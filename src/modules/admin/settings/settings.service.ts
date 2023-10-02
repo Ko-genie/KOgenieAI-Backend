@@ -1,4 +1,5 @@
 import {
+  addPhotoPrefix,
   adminSettingsValueBySlug,
   errorResponse,
   fetchMyUploadFilePathById,
@@ -294,8 +295,10 @@ export class SettingService {
   async getGeneralSettingsData() {
     try {
       const slugs: any = GeneralSettingsSlugs;
-      const data = await getAdminSettingsData(slugs);
+      const data: any = await getAdminSettingsData(slugs);
 
+      data.site_logo = addPhotoPrefix(data.site_logo);
+      data.site_fav_icon = addPhotoPrefix(data.site_fav_icon);
       return successResponse('General settings  data', data);
     } catch (error) {
       processException(error);

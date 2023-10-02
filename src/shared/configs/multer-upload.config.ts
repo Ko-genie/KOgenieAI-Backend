@@ -1,43 +1,40 @@
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { diskStorage } from 'multer';
 import path from 'path';
-import fs from 'fs'; // Import the 'fs' module for file system operations
+import fs from 'fs';
 import { PrismaClient } from '../helpers/functions';
 import { coreConstant } from '../helpers/coreConstant';
 
-/** Constant containing a Regular Expression
- * with the valid image upload types
- */
 export const validImageUploadTypesRegex = /jpeg|jpg|png/;
-
-/** Constant that sets the maximum image upload file size */
 export const maxImageUploadSize = 3 * 1024 * 1024; // 3MB
 
-// Create the 'uploads' directory if it doesn't exist
 const uploadDirectory = `./${coreConstant.FILE_DESTINATION}`;
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory);
 }
 
-/** Configurations for the multer library used for file upload.
- *
- * Accepts types jpeg, jpg, and png of size up to 3MB
- */
 export const multerUploadConfig: MulterOptions = {
   storage: diskStorage({
-    destination: uploadDirectory, // Use the 'uploads' directory
+    destination: uploadDirectory,
     filename: (request, file, callback) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       const user: any = request.user;
-      const { originalname, mimetype, path } = file;
-
+      const { originalname, mimetype } = file;
       const fileName = `${uniqueSuffix}-${file.originalname}`;
+
+      // Check if file size exceeds the maximum allowed size
+      if (file.size > maxImageUploadSize) {
+        return callback(
+          new Error('File size exceeds the maximum allowed size'),
+          null,
+        );
+      }
+
       PrismaClient.myUploads
         .create({
           data: {
-            // user_id: Number(user.id),
             user: {
-              connect: { id: user.id }, // Connect the upload to the user
+              connect: { id: user.id },
             },
             fieldname: originalname,
             mimetype: mimetype,
@@ -64,7 +61,7 @@ export const multerUploadConfig: MulterOptions = {
       return callback(null, true);
     }
 
-    // return callback(new FileTypeError(validImageUploadTypesRegex), false);
+    return callback(new Error('Invalid file type'), false);
   },
 
   limits: {

@@ -1,7 +1,7 @@
 import { PrismaService } from '../../../src/modules/prisma/prisma.service';
 import { ResponseModel } from '../models/response.model';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { Prisma, Template } from '@prisma/client';
+import { AdminSettings, Prisma, Template } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
 import sharp from 'sharp';
@@ -189,7 +189,7 @@ export async function getAdminSettingsData(slugs?: any) {
     if (Array.isArray(slugs)) {
       await Promise.all(
         slugs.map(async (slug) => {
-          const slufInfo = await PrismaClient.adminSettings.findFirst({
+          const slufInfo: any = await PrismaClient.adminSettings.findFirst({
             where: {
               slug: slug,
             },
@@ -430,7 +430,7 @@ export async function generatePromptForCode(
   description: string,
   codingLanguage: string,
   codingLevel: string,
-):Promise<string> {
+): Promise<string> {
   const prompt = `Generate code for me for ${description} using ${codingLanguage} programing languages. The coding level must be ${codingLevel}`;
 
   return prompt;
