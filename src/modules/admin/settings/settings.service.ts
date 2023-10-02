@@ -30,6 +30,7 @@ import { async } from 'rxjs';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
+import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 @Injectable()
 export class SettingService {
@@ -298,7 +299,20 @@ export class SettingService {
       processException(error);
     }
   }
-
+  async getOpenAiModels() {
+    try {
+      const model = [];
+      coreConstant.OPEN_AI_MODEL_NAMES.map((item) => {
+        model.push({
+          label: item,
+          value: item,
+        });
+      });
+      return successResponse('Open Ai Models', model);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async updateSMTPSettings(payload: updateSMTPSettingsDto) {
     try {
       const keyValuePairs = Object.keys(payload).map((key) => ({
