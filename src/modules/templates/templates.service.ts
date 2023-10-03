@@ -944,7 +944,7 @@ export class TemplateService {
           ? { user_id: user.id }
           : {}),
       };
-      const documentDetails = await this.prisma.myDocuments.findFirst({
+      const documentDetails = await this.prisma.generatedCode.findFirst({
         where: whereCondition,
       });
 
@@ -952,7 +952,7 @@ export class TemplateService {
         return errorResponse('Invalid request!');
       }
 
-      await this.prisma.textTranslateDocument.delete({
+      await this.prisma.generatedCode.delete({
         where: {
           id: documentDetails.id,
         },
