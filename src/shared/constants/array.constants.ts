@@ -120,6 +120,11 @@ export const GoogleAuthCredentialsSlugs = [
   'google_auth_client_secret',
 ];
 
+export const GithubAuthCredentialsSlugs = [
+  'github_auth_client_id',
+  'github_auth_client_secret',
+];
+
 export const ModeStatusArray = [
   modeStatusConstant.LIVE,
   modeStatusConstant.SANDBOX,

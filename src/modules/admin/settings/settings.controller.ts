@@ -11,6 +11,7 @@ import { UpdateTermsPrivacyDto } from './dto/update-terms-privacy.dt';
 import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
+import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -104,5 +105,15 @@ export class SettingController {
   @Get('get-google-auth-settings-data')
   getGoogleAuthSettingsData() {
     return this.settingService.getGoogleAuthSettingsData();
+  }
+
+  @Post('update-github-auth-settings')
+  updateGithubAuthSettings(@Body() payload: UpdateGithubAuthSettingsDto) {
+    return this.settingService.updateGithubAuthSettings(payload);
+  }
+
+  @Get('get-github-auth-settings-data')
+  getGithubAuthSettingsData() {
+    return this.settingService.getGithubAuthSettingsData();
   }
 }

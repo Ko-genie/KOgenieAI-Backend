@@ -18,6 +18,7 @@ import {
   CommonSettingsSlugs,
   CountryListObjectArray,
   GeneralSettingsSlugs,
+  GithubAuthCredentialsSlugs,
   GoogleAuthCredentialsSlugs,
   OpenAISettingSlugs,
   OpenAISettingWithoutSecretSlugs,
@@ -31,6 +32,7 @@ import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-strip
 import { ResponseModel } from 'src/shared/models/response.model';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
+import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
 
 
 @Injectable()
@@ -503,6 +505,41 @@ export class SettingService {
       const data = await getAdminSettingsData(GoogleAuthCredentialsSlugs);
 
       return successResponse('Google auth credentials', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateGithubAuthSettings(payload: UpdateGithubAuthSettingsDto) {
+    try {
+      console.log(payload);
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(GithubAuthCredentialsSlugs);
+
+      return successResponse(
+        'Github auth credentials is update successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGithubAuthSettingsData() {
+    try {
+      const data = await getAdminSettingsData(GithubAuthCredentialsSlugs);
+
+      return successResponse('Github auth credentials', data);
     } catch (error) {
       processException(error);
     }
