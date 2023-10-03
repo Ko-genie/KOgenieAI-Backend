@@ -936,6 +936,34 @@ export class TemplateService {
     }
   }
 
+  async deleteGeneratedCode(id: number, user: User) {
+    try {
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+      const documentDetails = await this.prisma.myDocuments.findFirst({
+        where: whereCondition,
+      });
+
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.textTranslateDocument.delete({
+        where: {
+          id: documentDetails.id,
+        },
+      });
+
+      return successResponse('Translated Document is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
   async updateDocumentByUser(user: User, payload: UpdateDocumentDto) {
     try {
       const documentDetails = await this.prisma.myDocuments.findFirst({
@@ -972,10 +1000,13 @@ export class TemplateService {
 
   async deleteDocument(id: number, user: User) {
     try {
+      const whereCondition = {
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
       const documentDetails = await this.prisma.myDocuments.findFirst({
-        where: {
-          id: id,
-        },
+        where: whereCondition,
       });
 
       if (!documentDetails) {

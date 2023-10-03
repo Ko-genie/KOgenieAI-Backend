@@ -106,6 +106,10 @@ export class UserTemplateController {
     return this.templateService.getGeneratedCodeDetails(id, user);
   }
 
+  @Delete('delete-generated-code-:id')
+  deleteGeneratedCode(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.deleteGeneratedCode(id, user);
+  }
   @Post('update-document-user')
   updateDocumentByUser(
     @UserInfo() user: User,
