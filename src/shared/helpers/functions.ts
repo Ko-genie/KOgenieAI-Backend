@@ -435,3 +435,11 @@ export async function generatePromptForCode(
 
   return prompt;
 }
+
+export async function generatePromptForTranslate(
+  text: string,
+  language: string,
+) {
+  const prompt = `Please translate this text into ${language} language. My text is ${text}`;
+  return prompt;
+}

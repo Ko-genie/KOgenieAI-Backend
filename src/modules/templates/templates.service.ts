@@ -11,6 +11,7 @@ import {
   wordCountMultilingual,
   addPhotoPrefix,
   generatePromptForCode,
+  generatePromptForTranslate,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -28,6 +29,8 @@ import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { LanguageListJsonArray } from 'src/shared/constants/array.constants';
+import { title } from 'process';
+import { TextTranslateDto } from './dto/text-translate.dto';
 
 @Injectable()
 export class TemplateService {
@@ -874,6 +877,7 @@ export class TemplateService {
 
       const saveGeneratedCode = await this.prisma.generatedCode.create({
         data: {
+          title: payload.title,
           prompt: promot,
           result: resultOfPrompt,
           total_used_words: wordCount,
@@ -887,11 +891,14 @@ export class TemplateService {
     }
   }
 
-  async getGeneratedCodeList(user: User, payload: any) {
+  async getGeneratedCodeListOfUser(user: User, payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
 
       const generatedCodeList = await this.prisma.generatedCode.findMany({
+        where: {
+          user_id: user.id,
+        },
         ...paginate,
       });
 
@@ -982,6 +989,124 @@ export class TemplateService {
       });
 
       return successResponse('Document is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async textTranslate(user: User, payload: TextTranslateDto) {
+    try {
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
+
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData: any = checkUserPackageResponse.data;
+
+      if (userPackageData.word_limit_exceed) {
+        return errorResponse(
+          'Your word limit exceed, please, purchase an addiotional package!',
+        );
+      }
+
+      const promot: string = await generatePromptForTranslate(
+        payload.text,
+        payload.language,
+      );
+
+      await this.openaiService.init();
+      const responseOpenAi = await this.openaiService.textCompletion(
+        promot,
+        1,
+        userPackageData.model,
+      );
+
+      if (!responseOpenAi) {
+        return errorResponse('Something went wrong!');
+      }
+
+      const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
+
+      const saveGeneratedTranslation =
+        await this.prisma.textTranslateDocument.create({
+          data: {
+            title: payload.title,
+            text: payload.text,
+            language: payload.language,
+            prompt: promot,
+            result: resultOfPrompt,
+            total_used_words: wordCount,
+            user_id: user.id,
+          },
+        });
+
+      return successResponse(
+        'Generate Transaltion is done successfully!',
+        saveGeneratedTranslation,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneratedTranslationList(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const whereCondition = {
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+      const generatedTranslationList =
+        await this.prisma.textTranslateDocument.findMany({
+          where: whereCondition,
+          ...paginate,
+        });
+
+      const paginationMeta = await paginationMetaData(
+        'textTranslateDocument',
+        payload,
+      );
+
+      const data = {
+        list: generatedTranslationList,
+        meta: paginationMeta,
+      };
+      return successResponse('Generated translation list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getGeneratedTranslationDetails(id: number, user: User) {
+    try {
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+
+      const generatedCodeDetails =
+        await this.prisma.textTranslateDocument.findFirst({
+          where: whereCondition,
+        });
+
+      if (!generatedCodeDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse(
+        'Generated translation details',
+        generatedCodeDetails,
+      );
     } catch (error) {
       processException(error);
     }

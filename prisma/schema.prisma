@@ -42,6 +42,7 @@ model User {
   MyImages              MyImages[]
   FavouriteTemplate     FavouriteTemplate[]
   GeneratedCode         GeneratedCode[]
+  TextTranslateDocument TextTranslateDocument[]
 }
 
 model Package {
@@ -249,6 +250,21 @@ model Faq {
 
 model GeneratedCode {
   id               Int      @id @default(autoincrement())
+  title            String   @db.Text()
+  prompt           String   @db.LongText()
+  result           String?  @db.LongText()
+  total_used_words BigInt   @default(0) @db.BigInt()
+  user             User     @relation(fields: [user_id], references: [id])
+  user_id          Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model TextTranslateDocument {
+  id               Int      @id @default(autoincrement())
+  title            String   @db.Text()
+  text           String   @db.LongText()
+  language         String   @db.VarChar(255)
   prompt           String   @db.LongText()
   result           String?  @db.LongText()
   total_used_words BigInt   @default(0) @db.BigInt()

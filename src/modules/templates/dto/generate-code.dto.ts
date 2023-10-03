@@ -4,6 +4,10 @@ import { CodingLevelArray } from 'src/shared/constants/array.constants';
 export class GenerateOpenAiCodeDto {
   @IsNotEmpty()
   @IsString()
+  title: string;
+
+  @IsNotEmpty()
+  @IsString()
   description: string;
 
   @IsNotEmpty()

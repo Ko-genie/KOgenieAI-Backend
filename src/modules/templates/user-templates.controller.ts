@@ -21,6 +21,7 @@ import { paginateInterface } from 'src/shared/constants/types';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
+import { TextTranslateDto } from './dto/text-translate.dto';
 
 @Controller('user')
 export class UserTemplateController {
@@ -96,9 +97,10 @@ export class UserTemplateController {
   }
 
   @Get('get-generated-code-list')
-  getGeneratedCodeList(@UserInfo() user: User, @Query() payload: any) {
-    return this.templateService.getGeneratedCodeList(user, payload);
+  getGeneratedCodeListOfUser(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getGeneratedCodeListOfUser(user, payload);
   }
+
   @Get('get-generated-code-details-:id')
   getGeneratedCodeDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getGeneratedCodeDetails(id, user);
@@ -120,5 +122,23 @@ export class UserTemplateController {
   @Delete('delete-document-:id')
   deleteDocument(@UserInfo() user: User, @Param('id') id: number) {
     return this.templateService.deleteDocument(id, user);
+  }
+
+  @Post('text-translate')
+  textTranslate(@UserInfo() user: User, @Body() payload: TextTranslateDto) {
+    return this.templateService.textTranslate(user, payload);
+  }
+
+  @Get('get-generated-translation-list')
+  getGeneratedTranslationList(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getGeneratedTranslationList(user, payload);
+  }
+
+  @Get('get-generated-translation-details-:id')
+  getGeneratedTranslationDetails(
+    @Param('id') id: number,
+    @UserInfo() user: User,
+  ) {
+    return this.templateService.getGeneratedTranslationDetails(id, user);
   }
 }
