@@ -8,7 +8,10 @@ import {
   UserPurchasedPackage,
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { coreConstant } from 'src/shared/helpers/coreConstant';
+import {
+  DefaultPaginationMetaData,
+  coreConstant,
+} from 'src/shared/helpers/coreConstant';
 import {
   calculatePrice,
   errorResponse,
@@ -297,10 +300,9 @@ export class PaymentsService {
       processException(error);
     }
   }
-  async getAllSubcriptionPackages(
-    payload: paginateType,
-  ): Promise<ResponseModel> {
+  async getAllSubcriptionPackages(payload: any): Promise<ResponseModel> {
     try {
+      const search = payload.search ? payload.search : '';
       const paginate = await paginatioOptions(payload);
 
       const queryType =
@@ -315,6 +317,20 @@ export class PaymentsService {
             type: queryType,
             status: coreConstant.ACTIVE,
             soft_delete: false,
+            OR: [
+              {
+                name: search,
+              },
+              {
+                price: search,
+              },
+              {
+                total_words: search,
+              },
+              {
+                total_images: search,
+              },
+            ],
           },
           ...paginate,
         });
@@ -324,11 +340,28 @@ export class PaymentsService {
             // type: queryType,
             status: coreConstant.ACTIVE,
             soft_delete: false,
+            OR: [
+              {
+                name: search,
+              },
+              {
+                price: search,
+              },
+              {
+                total_words: search,
+              },
+              {
+                total_images: search,
+              },
+            ],
           },
           ...paginate,
         });
       }
-      const paginationMeta = await paginationMetaData('package', payload);
+      const paginationMeta =
+        packages.length > 0
+          ? await paginationMetaData('package', payload)
+          : DefaultPaginationMetaData;
 
       if (!packages) return errorResponse('Packages not found');
       return successResponse('Packages fetched successfully', {

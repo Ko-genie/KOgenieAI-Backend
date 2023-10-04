@@ -26,7 +26,7 @@ export class PaymentsController {
   @Get('get-all-packages')
   getAllPackages(
     @Query()
-    payload: paginateType,
+    payload: any,
   ): Promise<ResponseModel> {
     return this.paymentsService.getAllSubcriptionPackages(payload);
   }
