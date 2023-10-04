@@ -302,62 +302,45 @@ export class PaymentsService {
   }
   async getAllSubcriptionPackages(payload: any): Promise<ResponseModel> {
     try {
-      const search = payload.search ? payload.search : '';
       const paginate = await paginatioOptions(payload);
 
-      const queryType =
-        Number(payload.type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
+      const queryType = payload.type
+        ? Number(payload.type) === coreConstant.PACKAGE_TYPES.SUBSCRIPTION
           ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
-          : coreConstant.PACKAGE_TYPES.PACKAGE;
+          : coreConstant.PACKAGE_TYPES.PACKAGE
+        : undefined;
 
-      let packages: Package[];
-      if (payload.type) {
-        packages = await this.prisma.package.findMany({
-          where: {
-            type: queryType,
-            status: coreConstant.ACTIVE,
-            soft_delete: false,
-            OR: [
-              {
-                name: search,
-              },
-              {
-                price: search,
-              },
-              {
-                total_words: search,
-              },
-              {
-                total_images: search,
-              },
-            ],
-          },
-          ...paginate,
-        });
-      } else {
-        packages = await this.prisma.package.findMany({
-          where: {
-            // type: queryType,
-            status: coreConstant.ACTIVE,
-            soft_delete: false,
-            OR: [
-              {
-                name: search,
-              },
-              {
-                price: search,
-              },
-              {
-                total_words: search,
-              },
-              {
-                total_images: search,
-              },
-            ],
-          },
-          ...paginate,
-        });
+      const whereClause = {
+        type: queryType,
+        status: coreConstant.ACTIVE,
+        soft_delete: false,
+      };
+
+      if (payload.search) {
+        whereClause['OR'] = {
+          OR: [
+            {
+              name: payload.search,
+            },
+            {
+              price: Number(payload.search),
+            },
+            {
+              total_words: Number(payload.search),
+            },
+            {
+              total_images: Number(payload.search),
+            },
+          ],
+        };
       }
+      let packages: Package[];
+
+      packages = await this.prisma.package.findMany({
+        where: whereClause,
+        ...paginate,
+      });
+
       const paginationMeta =
         packages.length > 0
           ? await paginationMetaData('package', payload)
@@ -366,7 +349,7 @@ export class PaymentsService {
       if (!packages) return errorResponse('Packages not found');
       return successResponse('Packages fetched successfully', {
         packages,
-        meta: paginationMeta,
+        meta: packages.length ? paginationMeta : DefaultPaginationMetaData,
       });
     } catch (error) {
       processException(error);
