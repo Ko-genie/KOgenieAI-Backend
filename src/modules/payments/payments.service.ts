@@ -23,6 +23,7 @@ import {
 import { ResponseModel } from 'src/shared/models/response.model';
 import { StripeService } from './stripe/stripe.service';
 import { paginateType } from './dto/query.dto';
+import { IsNumber } from 'class-validator';
 
 @Injectable()
 export class PaymentsService {
@@ -677,9 +678,51 @@ export class PaymentsService {
     });
     return newTransaction;
   }
-  async getAllTransaction(): Promise<ResponseModel> {
+  async getAllTransaction(payload: any): Promise<ResponseModel> {
     try {
+      const whereClause = {
+        OR: [
+            {
+              price: !isNaN(Number(payload.search))
+                ? Number(payload.search)
+                : undefined,
+            },
+            {
+              Package: {
+                name: {
+                  contains: payload.search,
+                },
+              },
+            },
+            {
+              User: {
+                OR: [
+                  {
+                    email: {
+                      contains: payload.search,
+                    },
+                  },
+                  {
+                    first_name: {
+                      contains: payload.search,
+                    },
+                  },
+                  {
+                    last_name: {
+                      contains: payload.search,
+                    },
+                  },
+                  {
+                    phone: { contains: payload.search },
+                  },
+                ],
+              },
+            },
+          ],
+      };
+
       const allTransactions = await this.prisma.paymentTransaction.findMany({
+        where: whereClause,
         include: {
           Package: true,
           User: {
