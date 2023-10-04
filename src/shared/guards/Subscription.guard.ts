@@ -30,12 +30,12 @@ export class SubscriptionGuard implements CanActivate {
       word_limit_exceed,
       package: myPackage,
     }: any = await this.paymentsService.getUserPackage(user);
-    const available_features = myPackage.available_features
-      .split(',')
-      .map(Number);
     if (!package_valid) {
       throw new ForbiddenException('Your package is not valid.');
     }
+    const available_features = myPackage.available_features
+      .split(',')
+      .map(Number);
 
     if (type === 'text') {
       if (word_limit_exceed) {

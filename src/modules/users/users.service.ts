@@ -467,6 +467,11 @@ export class UsersService {
         },
       });
       data['user_count_by_country'] = await this.userListByCountryWise();
+      data['my_codes'] = await this.prisma.generatedCode.findMany({
+        where: {
+          user_id: user.id,
+        },
+      });
       data['my_documents'] = await this.prisma.myDocuments.findMany({
         where: {
           user_id: user.id,

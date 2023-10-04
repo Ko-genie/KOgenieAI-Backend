@@ -5,6 +5,7 @@ import {
   LanguageListJsonArray,
 } from 'src/shared/constants/array.constants';
 import {
+  addPhotoPrefix,
   getAdminSettingsData,
   processException,
   successResponse,
@@ -22,8 +23,13 @@ export class PublicService {
       const data = {};
 
       data['countryList'] = CountryListObjectArray;
+      // site_logo;
       data['settings'] = await getAdminSettingsData(CommonSettingsSlugs);
-
+      if (data['settings']?.site_logo) {
+        data['settings'].site_logo = addPhotoPrefix(
+          data['settings']?.site_logo,
+        );
+      }
       return successResponse('Common settings', data);
     } catch (error) {
       processException(error);

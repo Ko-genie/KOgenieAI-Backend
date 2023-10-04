@@ -87,7 +87,7 @@ export class UserTemplateController {
     return this.templateService.makeTemplateFavourite(user, payload);
   }
 
-  // @Subscription('text')
+  @Subscription('text')
   @Post('generate-code')
   generateOpenAiCode(
     @UserInfo() user: User,
