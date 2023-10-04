@@ -104,22 +104,34 @@ export class TemplateService {
   async getListCategory(payload: any) {
     try {
       const data = {};
+      const whereClause = {
+        OR: [
+          {
+            name: {
+              contains: payload.search,
+            },
+          },
+        ],
+      };
       if (payload.limit || payload.offset) {
         const paginate = await paginatioOptions(payload);
 
         const categoryList = await this.prisma.templateCategory.findMany({
+          where: whereClause,
           ...paginate,
         });
 
-        const paginationMeta = await paginationMetaData(
-          'templateCategory',
-          payload,
-        );
+        const paginationMeta =
+          categoryList.length > 0
+            ? await paginationMetaData('templateCategory', payload)
+            : DefaultPaginationMetaData;
 
         data['list'] = categoryList;
         data['meta'] = paginationMeta;
       } else {
-        const categoryList = await this.prisma.templateCategory.findMany();
+        const categoryList = await this.prisma.templateCategory.findMany({
+          where: whereClause,
+        });
 
         data['list'] = categoryList;
       }
@@ -809,7 +821,7 @@ export class TemplateService {
           : {}),
       };
       const paginate = await paginatioOptions(payload);
-      
+
       const templateList = await this.prisma.template.findMany({
         where: whereCondition,
         include: {
