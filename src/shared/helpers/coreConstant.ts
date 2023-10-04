@@ -115,3 +115,12 @@ export const CodingLevelConstant = {
   INTERMEDIATE: 'intermediate',
   ADVANCE: 'advance',
 };
+
+export const DefaultPaginationMetaData = {
+  total: 0,
+  lastPage: 1,
+  currentPage: 1,
+  perPage: 0,
+  prev: null,
+  next: null,
+};

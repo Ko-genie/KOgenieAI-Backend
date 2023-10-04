@@ -23,7 +23,10 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { MyImages, Template, User } from '@prisma/client';
 import { OpenAi } from '../openai/openai.service';
 import { PaymentsService } from '../payments/payments.service';
-import { coreConstant } from 'src/shared/helpers/coreConstant';
+import {
+  DefaultPaginationMetaData,
+  coreConstant,
+} from 'src/shared/helpers/coreConstant';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { paginateInterface } from 'src/shared/constants/types';
@@ -800,12 +803,15 @@ export class TemplateService {
 
   async getTemplateListForUser(user: User, payload: any) {
     try {
+      const whereCondition = {
+        ...(payload.category_id
+          ? { category_id: Number(payload.category_id) }
+          : {}),
+      };
       const paginate = await paginatioOptions(payload);
-
+      
       const templateList = await this.prisma.template.findMany({
-        where: {
-          category_id: payload.category_id,
-        },
+        where: whereCondition,
         include: {
           templateCategory: true,
           TemplateField: true,
@@ -817,7 +823,10 @@ export class TemplateService {
         ...paginate,
       });
 
-      const paginationMeta = await paginationMetaData('template', payload);
+      const paginationMeta =
+        templateList.length > 0
+          ? await paginationMetaData('template', payload)
+          : DefaultPaginationMetaData;
 
       const data = {
         list: templateList,
