@@ -721,6 +721,8 @@ export class PaymentsService {
           ],
       };
 
+      const paginate = await paginatioOptions(payload);
+
       const allTransactions = await this.prisma.paymentTransaction.findMany({
         where: whereClause,
         include: {
@@ -731,11 +733,20 @@ export class PaymentsService {
             },
           },
         },
+        ...paginate,
       });
-      if (!allTransactions.length) {
-        return errorResponse('No Transaction Found');
-      }
-      return successResponse('Transaction found!', allTransactions);
+
+      const paginationMeta =
+        allTransactions.length > 0
+          ? await paginationMetaData('user', payload)
+          : DefaultPaginationMetaData;
+
+      const data = {
+        list: allTransactions,
+        meta: paginationMeta,
+      };
+
+      return successResponse('Transaction found!', data);
     } catch (error) {
       processException(error);
     }
