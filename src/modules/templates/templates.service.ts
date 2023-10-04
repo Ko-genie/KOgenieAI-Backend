@@ -290,6 +290,22 @@ export class TemplateService {
       const paginate = await paginatioOptions(payload);
 
       const templateList = await this.prisma.template.findMany({
+        where: {
+          OR: [
+            {
+              title: {
+                contains: payload.title,
+              },
+            },
+            {
+              templateCategory: {
+                name: {
+                  contains: payload.search,
+                },
+              },
+            },
+          ],
+        },
         include: {
           templateCategory: true,
           TemplateField: true,
@@ -297,7 +313,10 @@ export class TemplateService {
         ...paginate,
       });
 
-      const paginationMeta = await paginationMetaData('template', payload);
+      const paginationMeta =
+        templateList.length > 0
+          ? await paginationMetaData('template', payload)
+          : DefaultPaginationMetaData;
 
       const data = {
         list: templateList,
