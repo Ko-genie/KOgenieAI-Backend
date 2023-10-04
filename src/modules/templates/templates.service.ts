@@ -769,14 +769,27 @@ export class TemplateService {
     }
   }
 
-  async getDocumentListByPaginateAdmin(payload: paginateInterface) {
+  async getDocumentListByPaginateAdmin(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
 
       const documentList = await this.prisma.myDocuments.findMany({
+        where: {
+          OR: [
+            {
+              title: {
+                contains: payload.search,
+              },
+            },
+          ],
+        },
         ...paginate,
       });
-      const paginationMeta = await paginationMetaData('myDocuments', payload);
+
+      const paginationMeta =
+        documentList.length > 0
+          ? await paginationMetaData('myDocuments', payload)
+          : DefaultPaginationMetaData;
 
       const data = {
         list: documentList,
