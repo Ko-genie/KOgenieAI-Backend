@@ -16,7 +16,10 @@ import { User } from '@prisma/client';
 
 import { ForgotPassMailNotification } from 'src/notifications/user/forgot-pass-mail-notification';
 import { PrismaService } from '../prisma/prisma.service';
-import { coreConstant } from 'src/shared/helpers/coreConstant';
+import {
+  DefaultPaginationMetaData,
+  coreConstant,
+} from 'src/shared/helpers/coreConstant';
 import { UserVerificationCodeService } from '../verification_code/user-verify-code.service';
 import { NotificationService } from 'src/shared/notification/notification.service';
 import { SignupVerificationMailNotification } from 'src/notifications/user/signup-verification-mail-notification';
@@ -151,9 +154,34 @@ export class UsersService {
   // get user list
   async userList(payload: any) {
     try {
+      const search = payload.search ? payload.search : '';
       const paginate = await paginatioOptions(payload);
-      console.log(paginate, 'paginate');
+
       const userList = await this.prisma.user.findMany({
+        where: {
+          OR: [
+            {
+              email: {
+                contains: search,
+              },
+            },
+            {
+              first_name: {
+                contains: search,
+              },
+            },
+            {
+              last_name: {
+                contains: search,
+              },
+            },
+            {
+              user_name: {
+                contains: search,
+              },
+            },
+          ],
+        },
         ...paginate,
       });
 
@@ -162,7 +190,10 @@ export class UsersService {
         return userWithoutPassword;
       });
 
-      const paginationMeta = await paginationMetaData('user', payload);
+      const paginationMeta =
+        userListWithoutPassword.length > 0
+          ? await paginationMetaData('user', payload)
+          : DefaultPaginationMetaData;
 
       const data = {
         list: userListWithoutPassword,
