@@ -803,6 +803,9 @@ export class TemplateService {
       const paginate = await paginatioOptions(payload);
 
       const templateList = await this.prisma.template.findMany({
+        where: {
+          category_id: payload.category_id,
+        },
         include: {
           templateCategory: true,
           TemplateField: true,
