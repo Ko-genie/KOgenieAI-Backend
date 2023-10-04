@@ -69,6 +69,11 @@ export class UserTemplateController {
     return this.templateService.getImageDocumentDetails(id, user);
   }
 
+  @Get('category-list')
+  getListCategoryForUser(@Query() payload: any) {
+    return this.templateService.getListCategoryForUser(payload);
+  }
+
   @Get('get-template-list')
   getTemplateListForUser(@UserInfo() user: User, @Query() payload: any) {
     return this.templateService.getTemplateListForUser(user, payload);

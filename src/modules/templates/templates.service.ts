@@ -127,6 +127,42 @@ export class TemplateService {
     }
   }
 
+  async getListCategoryForUser(payload: any) {
+    try {
+      const data = {};
+      if (payload.limit || payload.offset) {
+        const paginate = await paginatioOptions(payload);
+
+        const categoryList = await this.prisma.templateCategory.findMany({
+          where: {
+            status: coreConstant.ACTIVE,
+          },
+          ...paginate,
+        });
+
+        const paginationMeta = await paginationMetaData(
+          'templateCategory',
+          payload,
+        );
+
+        data['list'] = categoryList;
+        data['meta'] = paginationMeta;
+      } else {
+        const categoryList = await this.prisma.templateCategory.findMany({
+          where: {
+            status: coreConstant.ACTIVE,
+          },
+        });
+
+        data['list'] = categoryList;
+      }
+
+      return successResponse('Category List data', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
   async deleteCategory(id: number) {
     try {
       const checkCategory = await this.prisma.templateCategory.findFirst({
