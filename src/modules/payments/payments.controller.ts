@@ -149,7 +149,7 @@ export class PaymentsController {
   @Get('get-all-transaction')
   getAllTransaction(
     @Query()
-    payload: paginateType,
+    payload: any,
   ): Promise<ResponseModel> {
     return this.paymentsService.getAllTransaction(payload);
   }

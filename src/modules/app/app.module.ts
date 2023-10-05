@@ -21,6 +21,7 @@ import { CheckDemoMode } from 'src/shared/middlewares/check-demo.middleware';
 import { FaqModule } from '../faq/faq.module';
 import { PublicModule } from '../public/public.module';
 import { TrustedOrganizationModule } from '../admin/trusted-organization/trusted.module';
+import { ReviewModule } from '../review/review.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TrustedOrganizationModule } from '../admin/trusted-organization/trusted
     FaqModule,
     PublicModule,
     TrustedOrganizationModule,
+    ReviewModule,
   ],
   providers: [
     {
