@@ -12,6 +12,7 @@ import { UpdateOpenAISettingsDto } from './dto/update-open-ai-settings.dt';
 import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-stripe-settings.dt';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
+import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -115,5 +116,15 @@ export class SettingController {
   @Get('get-github-auth-settings-data')
   getGithubAuthSettingsData() {
     return this.settingService.getGithubAuthSettingsData();
+  }
+
+  @Post('update-landing-page-data')
+  updateLandingPageData(@Body() payload: UpdateLandingPageDataDto) {
+    return this.settingService.updateLandingPageData(payload);
+  }
+
+  @Get('get-landing-page-data')
+  getLlandingPageData() {
+    return this.settingService.getLlandingPageData();
   }
 }

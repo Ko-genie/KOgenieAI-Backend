@@ -620,3 +620,11 @@ export const LanguageListJsonArray = [
     zu: 'Zulu',
   },
 ];
+
+export const LandingPageSlugs = [
+  'landing_page_first_title',
+  'landing_page_first_description',
+  'landing_page_first_btn_text',
+  'landing_page_trusted_org_text',
+  'landing_page_client_title_text',
+];

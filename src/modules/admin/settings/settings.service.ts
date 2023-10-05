@@ -20,6 +20,7 @@ import {
   GeneralSettingsSlugs,
   GithubAuthCredentialsSlugs,
   GoogleAuthCredentialsSlugs,
+  LandingPageSlugs,
   OpenAISettingSlugs,
   OpenAISettingWithoutSecretSlugs,
   PaymentMethodStripeSettingsSlugs,
@@ -33,6 +34,7 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
+import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
 
 @Injectable()
 export class SettingService {
@@ -67,11 +69,6 @@ export class SettingService {
   // update or create data
   async updateOrCreate(slugKey: any, values: any) {
     try {
-      const checkData = await this.prisma.adminSettings.findFirst({
-        where: {
-          slug: slugKey,
-        },
-      });
       const payload = {
         value: String(values),
       };
@@ -512,7 +509,6 @@ export class SettingService {
 
   async updateGithubAuthSettings(payload: UpdateGithubAuthSettingsDto) {
     try {
-      console.log(payload);
       const keyValuePairs = Object.keys(payload).map((key) => ({
         key,
         value: payload[key],
@@ -540,6 +536,40 @@ export class SettingService {
       const data = await getAdminSettingsData(GithubAuthCredentialsSlugs);
 
       return successResponse('Github auth credentials', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateLandingPageData(payload: UpdateLandingPageDataDto) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(LandingPageSlugs);
+
+      return successResponse(
+        'Landing page data is updated successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getLlandingPageData() {
+    try {
+      const data = await getAdminSettingsData(LandingPageSlugs);
+
+      return successResponse('Landing page data!', data);
     } catch (error) {
       processException(error);
     }
