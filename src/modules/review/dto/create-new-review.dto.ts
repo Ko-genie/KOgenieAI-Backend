@@ -1,4 +1,10 @@
-import { IsIn, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import {
   ReviewArray,
   StatusOnOffArray,
@@ -27,6 +33,7 @@ export class CreateNewReviewDto {
   @IsIn(StatusOnOffArray)
   status: number;
 
-  //   @IsNumber()
+  @IsOptional()
+  @IsNumber()
   file_id: number;
 }
