@@ -113,7 +113,7 @@ export class TrustedOrganizationService {
 
   async updateTrustedOrganization(payload: UpdateTrustedOrganizationDto) {
     try {
-      let image_url = '';
+      let image_url = null;
       if (payload.file_id) {
         const fileDetails = await this.prisma.myUploads.findFirst({
           where: {
@@ -125,7 +125,7 @@ export class TrustedOrganizationService {
           return errorResponse('Invalid image request!');
         }
 
-        image_url = fileDetails.file_path;
+        image_url = addPhotoPrefix(fileDetails.file_path);
       }
 
       const trustedOrganizationDetails =

@@ -10,6 +10,7 @@ import {
 import { CreateNewReviewDto } from './dto/create-new-review.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { DefaultPaginationMetaData } from 'src/shared/helpers/coreConstant';
+import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
 export class ReviewService {
@@ -90,6 +91,92 @@ export class ReviewService {
       }
 
       return successResponse('Review List data', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getReviewDetails(id: number) {
+    try {
+      const reviewDetails = await this.prisma.review.findFirst({
+        where: {
+          id: id,
+        },
+      });
+      if (!reviewDetails) {
+        return errorResponse('Invalid request');
+      }
+      return successResponse('Review details', reviewDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async updateReview(payload: UpdateReviewDto) {
+    try {
+      let image_url = null;
+      if (payload.file_id) {
+        const fileDetails = await this.prisma.myUploads.findFirst({
+          where: {
+            id: payload.file_id,
+          },
+        });
+
+        if (!fileDetails) {
+          return errorResponse('Invalid image request!');
+        }
+
+        image_url = addPhotoPrefix(fileDetails.file_path);
+      }
+
+      const reviewDetails = await this.prisma.review.findFirst({
+        where: {
+          id: payload.id,
+        },
+      });
+
+      if (!reviewDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      const updateReview = await this.prisma.review.update({
+        where: {
+          id: reviewDetails.id,
+        },
+        data: {
+          user_name: payload.user_name,
+          designation: payload.designation,
+          user_image_url: image_url,
+          comment: payload.comment,
+          rating: payload.rating,
+          status: payload.status,
+        },
+      });
+
+      return successResponse('Review is updated successfully!', updateReview);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async deleteReview(id: number) {
+    try {
+      const details = await this.prisma.review.findFirst({
+        where: {
+          id: id,
+        },
+      });
+      if (!details) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.review.delete({
+        where: {
+          id: details.id,
+        },
+      });
+
+      return successResponse('Review is deleted successfully!');
     } catch (error) {
       processException(error);
     }
