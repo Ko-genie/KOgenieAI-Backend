@@ -30,6 +30,11 @@ export class PublicService {
           data['settings']?.site_logo,
         );
       }
+      if (data['settings']?.site_fav_icon) {
+        data['settings'].site_fav_icon = addPhotoPrefix(
+          data['settings']?.site_fav_icon,
+        );
+      }
       return successResponse('Common settings', data);
     } catch (error) {
       processException(error);
