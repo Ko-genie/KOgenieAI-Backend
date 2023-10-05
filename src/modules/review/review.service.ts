@@ -9,7 +9,10 @@ import {
 } from 'src/shared/helpers/functions';
 import { CreateNewReviewDto } from './dto/create-new-review.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { DefaultPaginationMetaData } from 'src/shared/helpers/coreConstant';
+import {
+  DefaultPaginationMetaData,
+  coreConstant,
+} from 'src/shared/helpers/coreConstant';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
@@ -177,6 +180,20 @@ export class ReviewService {
       });
 
       return successResponse('Review is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getActiveReviewList() {
+    try {
+      const reviewList = await this.prisma.review.findMany({
+        where: {
+          status: coreConstant.ACTIVE,
+        },
+      });
+
+      return successResponse('Active review list', reviewList);
     } catch (error) {
       processException(error);
     }

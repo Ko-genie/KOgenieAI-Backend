@@ -5,6 +5,8 @@ import { PublicService } from './public.service';
 import { TrustedOrganizationService } from '../admin/trusted-organization/trusted.service';
 import { SettingService } from '../admin/settings/settings.service';
 import { NotificationService } from 'src/shared/notification/notification.service';
+import { ReviewService } from '../review/review.service';
+
 
 @Module({
   imports: [PrismaModule],
@@ -14,6 +16,7 @@ import { NotificationService } from 'src/shared/notification/notification.servic
     TrustedOrganizationService,
     SettingService,
     NotificationService,
+    ReviewService,
   ],
   exports: [PublicService],
 })

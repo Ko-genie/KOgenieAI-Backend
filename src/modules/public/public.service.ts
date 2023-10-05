@@ -12,12 +12,14 @@ import {
 } from 'src/shared/helpers/functions';
 import { TrustedOrganizationService } from '../admin/trusted-organization/trusted.service';
 import { SettingService } from '../admin/settings/settings.service';
+import { ReviewService } from '../review/review.service';
 
 @Injectable()
 export class PublicService {
   constructor(
     private readonly trustedOrganizationService: TrustedOrganizationService,
     private readonly settingService: SettingService,
+    private readonly reviewService: ReviewService,
   ) {}
   async getAllLanguageList() {
     const languageList = LanguageListJsonArray;
@@ -55,8 +57,11 @@ export class PublicService {
 
       const landinPageData = await this.settingService.getLlandingPageData();
 
+      const reviewList = await this.reviewService.getActiveReviewList();
+
       data['landing_data'] = landinPageData.data;
       data['trusted_organizations'] = trustedOrganizations.data;
+      data['review_list'] = reviewList.data;
       return successResponse('Landing page data', data);
     } catch (error) {
       processException(error);
