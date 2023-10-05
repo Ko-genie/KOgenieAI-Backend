@@ -104,15 +104,17 @@ export class TemplateService {
   async getListCategory(payload: any) {
     try {
       const data = {};
-      const whereClause = {
-        OR: [
-          {
-            name: {
-              contains: payload.search,
-            },
-          },
-        ],
-      };
+      const whereClause = payload.search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: payload.search,
+                },
+              },
+            ],
+          }
+        : {};
       if (payload.limit || payload.offset) {
         const paginate = await paginatioOptions(payload);
 
@@ -772,17 +774,17 @@ export class TemplateService {
   async getDocumentListByPaginateAdmin(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
-
-      const documentList = await this.prisma.myDocuments.findMany({
-        where: {
-          OR: [
-            {
-              title: {
-                contains: payload.search,
-              },
+      const whereClause = {
+        OR: [
+          {
+            title: {
+              contains: payload.search ? payload.search : '',
             },
-          ],
-        },
+          },
+        ],
+      };
+      const documentList = await this.prisma.myDocuments.findMany({
+        where: whereClause,
         ...paginate,
       });
 

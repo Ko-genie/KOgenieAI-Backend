@@ -628,3 +628,5 @@ export const LandingPageSlugs = [
   'landing_page_trusted_org_text',
   'landing_page_client_title_text',
 ];
+
+export const ReviewArray = [1, 2, 3, 4, 5];
