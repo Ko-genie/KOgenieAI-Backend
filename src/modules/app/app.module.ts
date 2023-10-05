@@ -20,6 +20,7 @@ import { TemplateModule } from '../templates/templates.module';
 import { CheckDemoMode } from 'src/shared/middlewares/check-demo.middleware';
 import { FaqModule } from '../faq/faq.module';
 import { PublicModule } from '../public/public.module';
+import { TrustedOrganizationModule } from '../admin/trusted-organization/trusted.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { PublicModule } from '../public/public.module';
     TemplateModule,
     FaqModule,
     PublicModule,
+    TrustedOrganizationModule,
   ],
   providers: [
     {
