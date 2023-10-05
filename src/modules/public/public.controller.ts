@@ -15,4 +15,9 @@ export class PublicController {
   commonSettings(): Promise<ResponseModel> {
     return this.publicService.commonSettings();
   }
+
+  @Get('landing-page-data')
+  getLandingPageData(): Promise<ResponseModel> {
+    return this.publicService.getLandingPageData();
+  }
 }

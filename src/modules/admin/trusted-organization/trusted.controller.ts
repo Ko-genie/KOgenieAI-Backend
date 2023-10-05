@@ -11,34 +11,34 @@ import { TrustedOrganizationService } from './trusted.service';
 import { AddNewTrustedOrganizationDto } from './dto/add-new-trusted-organization.dto';
 import { UpdateTrustedOrganizationDto } from './dto/update-trusted-organization.dto';
 
-@Controller('admin-trusted-organization')
+@Controller('admin')
 export class TrustedOrganizationController {
   constructor(
     private readonly trustedOrganizationService: TrustedOrganizationService,
   ) {}
 
-  @Post('add-new')
+  @Post('add-new-trusted-organization')
   addNewTrustedOrganization(@Body() payload: AddNewTrustedOrganizationDto) {
     return this.trustedOrganizationService.addNewTrustedOrganization(payload);
   }
 
-  @Get('list')
+  @Get('get-list-trusted-organization')
   getListOfTrustedOrganization(@Query() payload: any) {
     return this.trustedOrganizationService.getListOfTrustedOrganization(
       payload,
     );
   }
 
-  @Get('details-:id')
+  @Get('trusted-organization-details-:id')
   getTrustedOrganizationDetails(@Param('id') id: number) {
     return this.trustedOrganizationService.getTrustedOrganizationDetails(id);
   }
 
-  @Post('update')
+  @Post('update-trusted-organization')
   updateTrustedOrganization(@Body() payload: UpdateTrustedOrganizationDto) {
     return this.trustedOrganizationService.updateTrustedOrganization(payload);
   }
-  @Delete('delete-:id')
+  @Delete('trusted-organization-delete-:id')
   deleteTrustedOrganization(@Param('id') id: number) {
     return this.trustedOrganizationService.deleteTrustedOrganization(id);
   }

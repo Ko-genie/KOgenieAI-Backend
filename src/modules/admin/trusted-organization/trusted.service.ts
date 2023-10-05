@@ -9,7 +9,10 @@ import {
   processException,
   successResponse,
 } from 'src/shared/helpers/functions';
-import { DefaultPaginationMetaData } from 'src/shared/helpers/coreConstant';
+import {
+  DefaultPaginationMetaData,
+  coreConstant,
+} from 'src/shared/helpers/coreConstant';
 import { UpdateTrustedOrganizationDto } from './dto/update-trusted-organization.dto';
 
 @Injectable()
@@ -157,7 +160,7 @@ export class TrustedOrganizationService {
     }
   }
 
-  async deleteTrustedOrganization(id:number) {
+  async deleteTrustedOrganization(id: number) {
     try {
       const details = await this.prisma.trustedOrganization.findFirst({
         where: {
@@ -175,6 +178,19 @@ export class TrustedOrganizationService {
       });
 
       return successResponse('Trusted organization is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getAllTrustedOrganization() {
+    try {
+      const list = await this.prisma.trustedOrganization.findMany({
+        where: {
+          status: coreConstant.ACTIVE,
+        },
+      });
+      return successResponse('Get all trusted organizations', list);
     } catch (error) {
       processException(error);
     }
