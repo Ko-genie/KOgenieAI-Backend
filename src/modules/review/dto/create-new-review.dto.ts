@@ -27,6 +27,6 @@ export class CreateNewReviewDto {
   @IsIn(StatusOnOffArray)
   status: number;
 
-  @IsNumber()
+  //   @IsNumber()
   file_id: number;
 }

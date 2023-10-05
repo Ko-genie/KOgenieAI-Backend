@@ -289,13 +289,13 @@ model Review{
   id Int @id @default(autoincrement())
   user_name String @db.VarChar(255)
   designation String @db.VarChar(255)
-  user_image_url String @db.Text()
+  user_image_url String?  @db.Text()
   comment String @db.Text()
   rating Int @db.SmallInt()
   status Int @db.SmallInt()
-  User User @relation(fields: [id],references: [id])
+  user User? @relation(fields: [user_id],references: [id])
   user_id Int?
-
+ 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

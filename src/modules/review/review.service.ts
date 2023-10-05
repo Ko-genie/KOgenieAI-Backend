@@ -14,7 +14,7 @@ export class ReviewService {
 
   async createNewReview(payload: CreateNewReviewDto) {
     try {
-      let image_url = '';
+      let image_url = null;
       if (payload.file_id) {
         const fileDetails = await this.prisma.myUploads.findFirst({
           where: {
@@ -38,7 +38,7 @@ export class ReviewService {
           status: payload.status,
         },
       });
-      return successResponse('New review is addedd successfully!');
+      return successResponse('New review is addedd successfully!', newReview);
     } catch (error) {
       processException(error);
     }
