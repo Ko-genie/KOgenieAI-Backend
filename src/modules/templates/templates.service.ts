@@ -770,7 +770,41 @@ export class TemplateService {
       processException(error);
     }
   }
+  async getFavouriteListByPaginate(
+    payload: paginateInterface,
+    user: User,
+  ): Promise<ResponseModel> {
+    try {
+      const paginate = await paginatioOptions(payload);
 
+      const myFavTemplate = await this.prisma.favouriteTemplate.findMany({
+        where: {
+          user_id: user.id,
+          status: coreConstant.ACTIVE,
+        },
+        include: {
+          template: {
+            include: {
+              templateCategory: true,
+            },
+          },
+        },
+        ...paginate,
+      });
+      const paginationMeta =
+        myFavTemplate.length > 0
+          ? await paginationMetaData('myDocuments', payload)
+          : DefaultPaginationMetaData;
+
+      const data = {
+        list: myFavTemplate,
+        meta: paginationMeta,
+      };
+      return successResponse('Favourite Template List', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getDocumentListByPaginateAdmin(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
