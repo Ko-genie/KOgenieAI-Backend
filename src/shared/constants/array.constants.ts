@@ -107,10 +107,6 @@ export const CreativityKeyArray = [
 ];
 
 export const PaymentMethodStripeSettingsSlugs = [
-  'pm_stripe_status_mode',
-  'pm_stripe_default_currency',
-  'pm_stripe_client_id_sandbox',
-  'pm_stripe_secret_key_sandbox',
   'pm_stripe_client_id_live',
   'pm_stripe_secret_key_live',
 ];

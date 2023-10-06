@@ -440,7 +440,6 @@ export class SettingService {
     payload: UpdatePaymentMethodStripeSettingsDto,
   ) {
     try {
-      payload.pm_stripe_default_currency = 'usdt';
       const keyValuePairs = Object.keys(payload).map((key) => ({
         key,
         value: payload[key],
