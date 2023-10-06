@@ -6,7 +6,7 @@ import { TrustedOrganizationService } from '../admin/trusted-organization/truste
 import { SettingService } from '../admin/settings/settings.service';
 import { NotificationService } from 'src/shared/notification/notification.service';
 import { ReviewService } from '../review/review.service';
-
+import { PaymentsService } from '../payments/payments.service';
 
 @Module({
   imports: [PrismaModule],
@@ -17,6 +17,7 @@ import { ReviewService } from '../review/review.service';
     SettingService,
     NotificationService,
     ReviewService,
+    PaymentsService,
   ],
   exports: [PublicService],
 })

@@ -13,6 +13,7 @@ import {
 import { TrustedOrganizationService } from '../admin/trusted-organization/trusted.service';
 import { SettingService } from '../admin/settings/settings.service';
 import { ReviewService } from '../review/review.service';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class PublicService {
@@ -20,6 +21,7 @@ export class PublicService {
     private readonly trustedOrganizationService: TrustedOrganizationService,
     private readonly settingService: SettingService,
     private readonly reviewService: ReviewService,
+    private readonly paymentService: PaymentsService,
   ) {}
   async getAllLanguageList() {
     const languageList = LanguageListJsonArray;
@@ -59,9 +61,13 @@ export class PublicService {
 
       const reviewList = await this.reviewService.getActiveReviewList();
 
+      const packageList =
+        await this.paymentService.getAllActiveSubscriptionPackage();
+
       data['landing_data'] = landinPageData.data;
       data['trusted_organizations'] = trustedOrganizations.data;
       data['review_list'] = reviewList.data;
+      data['package_list'] = packageList.data;
       return successResponse('Landing page data', data);
     } catch (error) {
       processException(error);

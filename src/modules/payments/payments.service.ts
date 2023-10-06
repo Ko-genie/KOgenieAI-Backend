@@ -357,6 +357,20 @@ export class PaymentsService {
     }
   }
 
+  async getAllActiveSubscriptionPackage() {
+    try {
+      const packages = await this.prisma.package.findMany({
+        where: {
+          status: coreConstant.ACTIVE,
+          soft_delete: false,
+        },
+      });
+      return successResponse('Active subscription packages', packages);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
   async subscribeToSubcriptionPackage(
     user: User,
     subcription_package_Id: string,
@@ -682,43 +696,43 @@ export class PaymentsService {
     try {
       const whereClause = {
         OR: [
-            {
-              price: !isNaN(Number(payload.search))
-                ? Number(payload.search)
-                : undefined,
+          {
+            price: !isNaN(Number(payload.search))
+              ? Number(payload.search)
+              : undefined,
+          },
+          {
+            Package: {
+              name: {
+                contains: payload.search,
+              },
             },
-            {
-              Package: {
-                name: {
-                  contains: payload.search,
+          },
+          {
+            User: {
+              OR: [
+                {
+                  email: {
+                    contains: payload.search,
+                  },
                 },
-              },
+                {
+                  first_name: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  last_name: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  phone: { contains: payload.search },
+                },
+              ],
             },
-            {
-              User: {
-                OR: [
-                  {
-                    email: {
-                      contains: payload.search,
-                    },
-                  },
-                  {
-                    first_name: {
-                      contains: payload.search,
-                    },
-                  },
-                  {
-                    last_name: {
-                      contains: payload.search,
-                    },
-                  },
-                  {
-                    phone: { contains: payload.search },
-                  },
-                ],
-              },
-            },
-          ],
+          },
+        ],
       };
 
       const paginate = await paginatioOptions(payload);
