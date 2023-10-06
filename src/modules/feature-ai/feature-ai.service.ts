@@ -124,7 +124,6 @@ export class FeatureAiService {
 
   async updateFeatureOfAi(payload: UpdateFeatureAiDto) {
     try {
-      console.log('sss');
       let image_url = null;
       if (payload.file_id) {
         const fileDetails = await this.prisma.myUploads.findFirst({
