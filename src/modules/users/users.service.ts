@@ -251,14 +251,35 @@ export class UsersService {
       if (exist) {
         return errorResponse('Username has been already taken!');
       }
+
+      let image_url = null;
+      if (payload.file_id) {
+        const fileDetails = await this.prisma.myUploads.findFirst({
+          where: {
+            id: payload.file_id,
+          },
+        });
+
+        if (!fileDetails) {
+          return errorResponse('Invalid image request!');
+        }
+
+        image_url = addPhotoPrefix(fileDetails.file_path);
+      }
+
       const updatedUser = await this.prisma.user.update({
         where: {
           email: user.email,
         },
         data: {
-          ...payload,
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          user_name: payload.user_name,
+          phone: payload.phone,
+          country: payload.country,
           birth_date: new Date(payload.birth_date),
           gender: Number(payload.gender),
+          photo: image_url ? image_url : user.photo,
         },
       });
 
