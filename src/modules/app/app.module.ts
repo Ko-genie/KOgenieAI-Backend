@@ -22,6 +22,7 @@ import { FaqModule } from '../faq/faq.module';
 import { PublicModule } from '../public/public.module';
 import { TrustedOrganizationModule } from '../admin/trusted-organization/trusted.module';
 import { ReviewModule } from '../review/review.module';
+import { FeatureAiModule } from '../feature-ai/feature-ai.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ReviewModule } from '../review/review.module';
     PublicModule,
     TrustedOrganizationModule,
     ReviewModule,
+    FeatureAiModule,
   ],
   providers: [
     {
