@@ -52,6 +52,13 @@ export class UserTemplateController {
   ) {
     return this.templateService.getDocumentListByPaginate(payload, user);
   }
+  @Get('favourite-list')
+  getFavouriteListByPaginate(
+    @Query() payload: paginateInterface,
+    @UserInfo() user: User,
+  ) {
+    return this.templateService.getFavouriteListByPaginate(payload, user);
+  }
   @Get('my-image-list')
   getAllImageDocument(
     @Query() payload: paginateInterface,

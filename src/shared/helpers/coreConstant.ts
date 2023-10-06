@@ -16,6 +16,11 @@ export const coreConstant = {
     SUBSCRIPTION: 1,
     PACKAGE: 2,
   },
+  GENDER: {
+    MALE: 1,
+    FEMALE: 2,
+    OTHERS: 3,
+  },
   OPEN_AI_PRICING: {
     'gpt-4': {
       wordPrice: 0.03, // $0.03 per 1K tokens
