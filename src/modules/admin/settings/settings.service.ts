@@ -542,10 +542,18 @@ export class SettingService {
 
   async updateLandingPageData(payload: UpdateLandingPageDataDto) {
     try {
-      const keyValuePairs = Object.keys(payload).map((key) => ({
-        key,
-        value: payload[key],
-      }));
+      const landing_page_first_img_url = payload.landing_page_first_img_url
+        ? addPhotoPrefix(
+            await fetchMyUploadFilePathById(payload.landing_page_first_img_url),
+          )
+        : await adminSettingsValueBySlug('landing_page_first_img_url');
+
+      const keyValuePairs = Object.entries(payload).map(([key, value]) => {
+        if (key === 'landing_page_first_img_url') {
+          value = landing_page_first_img_url;
+        }
+        return { key, value };
+      });
 
       await Promise.all(
         keyValuePairs.map(async (element) => {

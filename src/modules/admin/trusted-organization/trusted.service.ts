@@ -146,7 +146,9 @@ export class TrustedOrganizationService {
           },
           data: {
             title: payload.title,
-            image_url: image_url,
+            image_url: image_url
+              ? image_url
+              : trustedOrganizationDetails.image_url,
             status: payload.status,
           },
         });
