@@ -264,7 +264,7 @@ export class UsersService {
           return errorResponse('Invalid image request!');
         }
 
-        image_url = addPhotoPrefix(fileDetails.file_path);
+        image_url = fileDetails.file_path;
       }
 
       const updatedUser = await this.prisma.user.update({

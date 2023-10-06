@@ -5,7 +5,7 @@ import fs from 'fs';
 import { PrismaClient } from '../helpers/functions';
 import { coreConstant } from '../helpers/coreConstant';
 
-export const validImageUploadTypesRegex = /jpeg|jpg|png/;
+export const validImageUploadTypesRegex = /jpeg|jpg|png|gif|bmp|webp/;
 export const maxImageUploadSize = 3 * 1024 * 1024; // 3MB
 
 const uploadDirectory = `./${coreConstant.FILE_DESTINATION}`;
