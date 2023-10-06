@@ -7,19 +7,19 @@ import {
   processException,
   successResponse,
 } from 'src/shared/helpers/functions';
-import { CreateNewReviewDto } from './dto/create-new-review.dto';
+import { CreateNewFeatureAiDto } from './dto/create-new-feature.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   DefaultPaginationMetaData,
   coreConstant,
 } from 'src/shared/helpers/coreConstant';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { UpdateFeatureAiDto } from './dto/update-feature.dto';
 
 @Injectable()
-export class ReviewService {
+export class FeatureAiService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createNewReview(payload: CreateNewReviewDto) {
+  async createNewFeatureOfAi(payload: CreateNewFeatureAiDto) {
     try {
       let image_url = null;
       if (payload.file_id) {
@@ -35,30 +35,37 @@ export class ReviewService {
 
         image_url = addPhotoPrefix(fileDetails.file_path);
       }
-      const newReview = await this.prisma.review.create({
+      const newFeature = await this.prisma.featureOfAI.create({
         data: {
-          user_name: payload.user_name,
-          designation: payload.designation,
-          user_image_url: image_url,
-          comment: payload.comment,
-          rating: payload.rating,
+          category_name: payload.category_name,
+          title: payload.title,
+          description: payload.description,
+          file_url: image_url,
           status: payload.status,
         },
       });
-      return successResponse('New review is addedd successfully!', newReview);
+      return successResponse(
+        'New feature of ai is addedd successfully!',
+        newFeature,
+      );
     } catch (error) {
       processException(error);
     }
   }
 
-  async getReviewListForAdmin(payload: any) {
+  async getFeatureAiListForAdmin(payload: any) {
     try {
       const data = {};
       const whereClause = payload.search
         ? {
             OR: [
               {
-                user_name: {
+                category_name: {
+                  contains: payload.search,
+                },
+              },
+              {
+                title: {
                   contains: payload.search,
                 },
               },
@@ -73,50 +80,51 @@ export class ReviewService {
       if (payload.limit || payload.offset) {
         const paginate = await paginatioOptions(payload);
 
-        const reviewList = await this.prisma.review.findMany({
+        const featureOfAIList = await this.prisma.featureOfAI.findMany({
           where: whereClause,
           ...paginate,
         });
 
         const paginationMeta =
-          reviewList.length > 0
-            ? await paginationMetaData('review', payload)
+          featureOfAIList.length > 0
+            ? await paginationMetaData('featureOfAI', payload)
             : DefaultPaginationMetaData;
 
-        data['list'] = reviewList;
+        data['list'] = featureOfAIList;
         data['meta'] = paginationMeta;
       } else {
-        const reviewList = await this.prisma.review.findMany({
+        const featureOfAIList = await this.prisma.featureOfAI.findMany({
           where: whereClause,
         });
 
-        data['list'] = reviewList;
+        data['list'] = featureOfAIList;
       }
 
-      return successResponse('Review List data', data);
+      return successResponse('Feature Ai List data', data);
     } catch (error) {
       processException(error);
     }
   }
 
-  async getReviewDetails(id: number) {
+  async getFeatureOfAiDetails(id: number) {
     try {
-      const reviewDetails = await this.prisma.review.findFirst({
+      const featureDetails = await this.prisma.featureOfAI.findFirst({
         where: {
           id: id,
         },
       });
-      if (!reviewDetails) {
+      if (!featureDetails) {
         return errorResponse('Invalid request');
       }
-      return successResponse('Review details', reviewDetails);
+      return successResponse('Feature of AI details', featureDetails);
     } catch (error) {
       processException(error);
     }
   }
 
-  async updateReview(payload: UpdateReviewDto) {
+  async updateFeatureOfAi(payload: UpdateFeatureAiDto) {
     try {
+      console.log('sss');
       let image_url = null;
       if (payload.file_id) {
         const fileDetails = await this.prisma.myUploads.findFirst({
@@ -132,39 +140,41 @@ export class ReviewService {
         image_url = addPhotoPrefix(fileDetails.file_path);
       }
 
-      const reviewDetails = await this.prisma.review.findFirst({
+      const featureDetails = await this.prisma.featureOfAI.findFirst({
         where: {
           id: payload.id,
         },
       });
 
-      if (!reviewDetails) {
+      if (!featureDetails) {
         return errorResponse('Invalid request!');
       }
-
-      const updateReview = await this.prisma.review.update({
+      console.log(image_url ? 1 : 0);
+      const updateFeatureOfAi = await this.prisma.featureOfAI.update({
         where: {
-          id: reviewDetails.id,
+          id: featureDetails.id,
         },
         data: {
-          user_name: payload.user_name,
-          designation: payload.designation,
-          user_image_url: image_url ? image_url : reviewDetails.user_image_url,
-          comment: payload.comment,
-          rating: payload.rating,
+          category_name: payload.category_name,
+          title: payload.title,
+          description: payload.description,
+          file_url: image_url ? image_url : featureDetails.file_url,
           status: payload.status,
         },
       });
 
-      return successResponse('Review is updated successfully!', updateReview);
+      return successResponse(
+        'Feature of AI is updated successfully!',
+        updateFeatureOfAi,
+      );
     } catch (error) {
       processException(error);
     }
   }
 
-  async deleteReview(id: number) {
+  async deleteFeatureOfAi(id: number) {
     try {
-      const details = await this.prisma.review.findFirst({
+      const details = await this.prisma.featureOfAI.findFirst({
         where: {
           id: id,
         },
@@ -173,27 +183,27 @@ export class ReviewService {
         return errorResponse('Invalid request!');
       }
 
-      await this.prisma.review.delete({
+      await this.prisma.featureOfAI.delete({
         where: {
           id: details.id,
         },
       });
 
-      return successResponse('Review is deleted successfully!');
+      return successResponse('Feature of AI is deleted successfully!');
     } catch (error) {
       processException(error);
     }
   }
 
-  async getActiveReviewList() {
+  async getActiveFeatureOfAiList() {
     try {
-      const reviewList = await this.prisma.review.findMany({
+      const featureOfAIList = await this.prisma.featureOfAI.findMany({
         where: {
           status: coreConstant.ACTIVE,
         },
       });
 
-      return successResponse('Active review list', reviewList);
+      return successResponse('Active feature of ai list', featureOfAIList);
     } catch (error) {
       processException(error);
     }

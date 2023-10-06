@@ -7,6 +7,7 @@ import { SettingService } from '../admin/settings/settings.service';
 import { NotificationService } from 'src/shared/notification/notification.service';
 import { ReviewService } from '../review/review.service';
 import { PaymentsService } from '../payments/payments.service';
+import { FeatureAiService } from '../feature-ai/feature-ai.service';
 
 @Module({
   imports: [PrismaModule],
@@ -18,6 +19,7 @@ import { PaymentsService } from '../payments/payments.service';
     NotificationService,
     ReviewService,
     PaymentsService,
+    FeatureAiService,
   ],
   exports: [PublicService],
 })
