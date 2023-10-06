@@ -1,4 +1,10 @@
-import { IsIn, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { StatusOnOffArray } from 'src/shared/constants/array.constants';
 
 export class AddNewCategoryDto {
@@ -6,7 +12,7 @@ export class AddNewCategoryDto {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   description: string;
 
