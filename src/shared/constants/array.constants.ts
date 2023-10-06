@@ -625,8 +625,21 @@ export const LandingPageSlugs = [
   'landing_page_first_title',
   'landing_page_first_description',
   'landing_page_first_btn_text',
-  'landing_page_trusted_org_text',
-  'landing_page_client_title_text',
+  'landing_page_first_img_url',
+  'landing_page_hw_first_title',
+  'landing_page_hw_first_description',
+  'landing_page_hw_second_title',
+  'landing_page_hw_second_description',
+  'landing_page_hw_third_title',
+  'landing_page_hw_third_description',
+  'landing_page_feature_first_title',
+  'landing_page_feature_first_description',
+  'landing_page_feature_second_title',
+  'landing_page_feature_second_description',
+  'landing_page_feature_third_title',
+  'landing_page_feature_third_description',
+  'landing_page_feature_fourth_title',
+  'landing_page_feature_fourth_description',
 ];
 
 export const ReviewArray = [1, 2, 3, 4, 5];
