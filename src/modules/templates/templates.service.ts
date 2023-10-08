@@ -888,7 +888,6 @@ export class TemplateService {
           ? { category_id: Number(payload.category_id) }
           : {}),
       };
-      const paginate = await paginatioOptions(payload);
 
       const templateList = await this.prisma.template.findMany({
         where: whereCondition,
@@ -900,17 +899,10 @@ export class TemplateService {
         orderBy: {
           updated_at: 'desc',
         },
-        ...paginate,
       });
-
-      const paginationMeta =
-        templateList.length > 0
-          ? await paginationMetaData('template', payload)
-          : DefaultPaginationMetaData;
 
       const data = {
         list: templateList,
-        meta: paginationMeta,
       };
       return successResponse('Template list', data);
     } catch (error) {

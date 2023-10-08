@@ -6,17 +6,12 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { GenerateImageDto } from './dto/generate-image.dto';
 import { TemplateService } from './templates.service';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
-import { SubscriptionGuard } from 'src/shared/guards/Subscription.guard';
 import { Subscription } from 'src/shared/decorators/subcription.decorators';
-import { userInfo } from 'os';
-import { paginateType } from '../payments/dto/query.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
