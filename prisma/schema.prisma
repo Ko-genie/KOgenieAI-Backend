@@ -311,3 +311,12 @@ model FeatureOfAI {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model ProgramingLanguage {
+  id Int @id @default(autoincrement())
+  name String
+  status Int @db.SmallInt()
+  
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
