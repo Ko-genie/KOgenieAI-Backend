@@ -361,6 +361,7 @@ export class PaymentsService {
     try {
       const packages = await this.prisma.package.findMany({
         where: {
+          type: coreConstant.PACKAGE_TYPES.SUBSCRIPTION,
           status: coreConstant.ACTIVE,
           soft_delete: false,
         },
