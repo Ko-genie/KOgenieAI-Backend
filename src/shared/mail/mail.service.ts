@@ -57,7 +57,8 @@ export class MailService {
       try {
         return await transport.send(data, mailConfig);
       } catch (transportError) {
-        throw new Error('Mail credentials are invalid!');
+        // throw new Error('Mail credentials are invalid!');
+        return errorResponse("Mail credentials are invalid!");
       }
     } catch (error) {
       throw new Error(error.message);
