@@ -10,7 +10,9 @@ import {
 import { ProgramingLanguageService } from './programing-language.service';
 import { AddNewProgramingLanguageDto } from './dto/add-programing-language.dto';
 import { UpdateProgramingLanguageDto } from './dto/update-programing-language.dto';
+import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 
+@IsAdmin()
 @Controller('admin-dashboard')
 export class AdminProgramingLanguageController {
   constructor(

@@ -23,6 +23,7 @@ import { PublicModule } from '../public/public.module';
 import { TrustedOrganizationModule } from '../admin/trusted-organization/trusted.module';
 import { ReviewModule } from '../review/review.module';
 import { FeatureAiModule } from '../feature-ai/feature-ai.module';
+import { ProgramingLanguageModule } from '../programing-language/programing-language.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { FeatureAiModule } from '../feature-ai/feature-ai.module';
     TrustedOrganizationModule,
     ReviewModule,
     FeatureAiModule,
+    ProgramingLanguageModule,
   ],
   providers: [
     {

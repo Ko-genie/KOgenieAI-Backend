@@ -8,7 +8,10 @@ import {
   successResponse,
 } from 'src/shared/helpers/functions';
 import { AddNewProgramingLanguageDto } from './dto/add-programing-language.dto';
-import { DefaultPaginationMetaData } from 'src/shared/helpers/coreConstant';
+import {
+  DefaultPaginationMetaData,
+  coreConstant,
+} from 'src/shared/helpers/coreConstant';
 import { UpdateProgramingLanguageDto } from './dto/update-programing-language.dto';
 
 @Injectable()
@@ -143,6 +146,20 @@ export class ProgramingLanguageService {
       });
 
       return successResponse('Programing language is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getAllActiveProgramingLanguageList() {
+    try {
+      const languageList = await this.prisma.programingLanguage.findMany({
+        where: {
+          status: coreConstant.ACTIVE,
+        },
+      });
+
+      return successResponse('Programing language active list', languageList);
     } catch (error) {
       processException(error);
     }
