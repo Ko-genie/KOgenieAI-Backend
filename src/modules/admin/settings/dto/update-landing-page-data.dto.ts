@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateLandingPageDataDto {
   @IsNotEmpty()
@@ -13,7 +13,7 @@ export class UpdateLandingPageDataDto {
   @IsString()
   landing_page_first_btn_text: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   landing_page_first_img_url: number;
 

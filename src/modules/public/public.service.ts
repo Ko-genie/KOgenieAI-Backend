@@ -5,6 +5,7 @@ import {
   LanguageListJsonArray,
 } from 'src/shared/constants/array.constants';
 import {
+  PrismaClient,
   addPhotoPrefix,
   getAdminSettingsData,
   processException,
@@ -15,6 +16,7 @@ import { SettingService } from '../admin/settings/settings.service';
 import { ReviewService } from '../review/review.service';
 import { PaymentsService } from '../payments/payments.service';
 import { FeatureAiService } from '../feature-ai/feature-ai.service';
+import { faqTypeConstant } from 'src/shared/helpers/coreConstant';
 
 @Injectable()
 export class PublicService {
@@ -68,7 +70,11 @@ export class PublicService {
 
       const featureOfAiList =
         await this.featureService.getActiveFeatureOfAiList();
-
+      data['faq'] = await PrismaClient.faq.findMany({
+        where: {
+          type: faqTypeConstant.LANDING_PAGE,
+        },
+      });
       data['landing_data'] = landinPageData.data;
       data['trusted_organizations'] = trustedOrganizations.data;
       data['review_list'] = reviewList.data;
