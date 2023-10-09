@@ -26,6 +26,8 @@ export const CommonSettingsSlugs = [
   'site_fav_icon',
   'google_auth_client_id',
   'github_auth_client_id',
+  'social_login_github_status',
+  'social_login_google_status',
 ];
 
 export const GeneralSettingsSlugs = [
