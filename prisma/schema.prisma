@@ -43,7 +43,7 @@ model User {
   FavouriteTemplate     FavouriteTemplate[]
   GeneratedCode         GeneratedCode[]
   TextTranslateDocument TextTranslateDocument[]
-  Review Review[]
+  Review                Review[]
 }
 
 model Package {
@@ -116,23 +116,23 @@ model TemplateCategory {
 }
 
 model Template {
-  id               Int              @id @default(autoincrement())
-  title            String           @db.VarChar(255)
-  description      String?          @db.LongText()
-  prompt_input     String           @db.Text()
-  prompt           String           @db.Text()
-  color            String?          @db.VarChar(255)
-  icon_tag         String?          @db.VarChar(255)
-  package_type     Int              @default(1)
-  template_type    Int?             @default(1)
-  status           Int              @default(0) @db.SmallInt
-  templateCategory TemplateCategory @relation(fields: [category_id], references: [id])
-  category_id      Int
-  TemplateField    TemplateField[]
-  MyDocuments      MyDocuments[]
-  created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
-  MyImages         MyImages[]
+  id                Int                 @id @default(autoincrement())
+  title             String              @db.VarChar(255)
+  description       String?             @db.LongText()
+  prompt_input      String              @db.Text()
+  prompt            String              @db.Text()
+  color             String?             @db.VarChar(255)
+  icon_tag          String?             @db.VarChar(255)
+  package_type      Int                 @default(1)
+  template_type     Int?                @default(1)
+  status            Int                 @default(0) @db.SmallInt
+  templateCategory  TemplateCategory    @relation(fields: [category_id], references: [id])
+  category_id       Int
+  TemplateField     TemplateField[]
+  MyDocuments       MyDocuments[]
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  MyImages          MyImages[]
   FavouriteTemplate FavouriteTemplate[]
 }
 
@@ -149,17 +149,17 @@ model TemplateField {
 }
 
 model MyDocuments {
-  id               Int      @id @default(autoincrement())
-  title            String   @db.Text()
-  prompt           String   @db.LongText()
-  result           String?  @db.LongText()
+  id               Int       @id @default(autoincrement())
+  title            String    @db.Text()
+  prompt           String    @db.LongText()
+  result           String?   @db.LongText()
   template         Template? @relation(fields: [template_id], references: [id])
   template_id      Int?
-  total_used_words BigInt   @default(0) @db.BigInt()
-  user             User     @relation(fields: [user_id], references: [id])
+  total_used_words BigInt    @default(0) @db.BigInt()
+  user             User      @relation(fields: [user_id], references: [id])
   user_id          Int
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
 }
 
 model MyImages {
@@ -226,24 +226,24 @@ model UserVerificationCodes {
 }
 
 model FavouriteTemplate {
-  id            Int @id @default(autoincrement())
-  user_id       Int
-  template_id   Int
-  status        Int @default(0) @db.SmallInt
+  id          Int @id @default(autoincrement())
+  user_id     Int
+  template_id Int
+  status      Int @default(0) @db.SmallInt
 
-  user User @relation(fields: [user_id], references: [id])
+  user     User     @relation(fields: [user_id], references: [id])
   template Template @relation(fields: [template_id], references: [id])
-  
+
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Faq {
-  id Int @id @default(autoincrement())
-  type Int @default(0) @db.SmallInt
+  id       Int    @id @default(autoincrement())
+  type     Int    @default(0) @db.SmallInt
   question String @db.Text
-  answer String @db.LongText
-  status Int @default(0) @db.SmallInt
+  answer   String @db.LongText
+  status   Int    @default(0) @db.SmallInt
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -264,7 +264,7 @@ model GeneratedCode {
 model TextTranslateDocument {
   id               Int      @id @default(autoincrement())
   title            String   @db.Text()
-  text           String   @db.LongText()
+  text             String   @db.LongText()
   language         String   @db.VarChar(255)
   prompt           String   @db.LongText()
   result           String?  @db.LongText()
@@ -276,47 +276,47 @@ model TextTranslateDocument {
 }
 
 model TrustedOrganization {
-  id Int @id @default(autoincrement())
-  title String @db.VarChar(255)
+  id        Int     @id @default(autoincrement())
+  title     String  @db.VarChar(255)
   image_url String? @db.Text()
-  status Int @default(0) @db.SmallInt
+  status    Int     @default(0) @db.SmallInt
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
-model Review{
-  id Int @id @default(autoincrement())
-  user_name String @db.VarChar(255)
-  designation String @db.VarChar(255)
-  user_image_url String?  @db.Text()
-  comment String @db.Text()
-  rating Int @db.SmallInt()
-  status Int @db.SmallInt()
-  user User? @relation(fields: [user_id],references: [id])
-  user_id Int?
- 
+model Review {
+  id             Int     @id @default(autoincrement())
+  user_name      String  @db.VarChar(255)
+  designation    String  @db.VarChar(255)
+  user_image_url String? @db.Text()
+  comment        String  @db.Text()
+  rating         Int     @db.SmallInt()
+  status         Int     @db.SmallInt()
+  user           User?   @relation(fields: [user_id], references: [id])
+  user_id        Int?
+
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model FeatureOfAI {
-  id Int @id @default(autoincrement())
-  category_name String @db.VarChar(255)
-  title String @db.Text()
-  description String @db.Text()
-  status Int @db.SmallInt()
-  file_url String? @db.VarChar(255)
+  id            Int     @id @default(autoincrement())
+  category_name String  @db.VarChar(255)
+  title         String  @db.Text()
+  description   String  @db.Text()
+  status        Int     @db.SmallInt()
+  file_url      String? @db.VarChar(255)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model ProgramingLanguage {
-  id Int @id @default(autoincrement())
-  name String
-  status Int @db.SmallInt()
-  
+  id     Int    @id @default(autoincrement())
+  name   String
+  status Int    @db.SmallInt()
+
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
