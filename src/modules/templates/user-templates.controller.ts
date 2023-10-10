@@ -153,7 +153,7 @@ export class UserTemplateController {
     return this.templateService.getGeneratedTranslationDetails(id, user);
   }
 
-  @Get('delete-generated-translation-:1')
+  @Delete('delete-generated-translation-:id')
   deleteGeneratedTranslation(@Param('id') id: number) {
     return this.templateService.deleteGeneratedTranslation(id);
   }
