@@ -28,6 +28,8 @@ export const CommonSettingsSlugs = [
   'github_auth_client_id',
   'social_login_github_status',
   'social_login_google_status',
+  "privacy_policy",
+  'terms_condition'
 ];
 
 export const GeneralSettingsSlugs = [

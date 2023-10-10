@@ -59,6 +59,8 @@ export const coreConstant = {
   AVAILABLE_FEATURES: {
     CONTENT_WRITING: 1,
     IMAGE_GENERATION: 2,
+    CODE: 3,
+    TRANSLATION: 4,
   },
 };
 

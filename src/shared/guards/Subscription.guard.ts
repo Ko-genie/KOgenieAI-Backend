@@ -51,7 +51,30 @@ export class SubscriptionGuard implements CanActivate {
         );
       }
     }
-
+    if (type === 'code') {
+      if (word_limit_exceed) {
+        throw new ForbiddenException('Word limit exceeded.');
+      }
+      if (!available_features.includes(coreConstant.AVAILABLE_FEATURES.CODE)) {
+        throw new ForbiddenException(
+          'Ai code feature is not available for your package.',
+        );
+      }
+    }
+    if (type === 'translation') {
+      if (word_limit_exceed) {
+        throw new ForbiddenException('Word limit exceeded.');
+      }
+      if (
+        !available_features.includes(
+          coreConstant.AVAILABLE_FEATURES.TRANSLATION,
+        )
+      ) {
+        throw new ForbiddenException(
+          'Ai Translation feature is not available for your package.',
+        );
+      }
+    }
     if (type === 'image') {
       if (image_limit_exceed) {
         throw new ForbiddenException('Image limit exceeded.');

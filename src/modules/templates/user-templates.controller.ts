@@ -94,7 +94,7 @@ export class UserTemplateController {
     return this.templateService.makeTemplateFavourite(user, payload);
   }
 
-  @Subscription('text')
+  @Subscription('code')
   @Post('generate-code')
   generateOpenAiCode(
     @UserInfo() user: User,
@@ -134,7 +134,7 @@ export class UserTemplateController {
   deleteDocument(@UserInfo() user: User, @Param('id') id: number) {
     return this.templateService.deleteDocument(id, user);
   }
-
+  @Subscription('translation')
   @Post('text-translate')
   textTranslate(@UserInfo() user: User, @Body() payload: TextTranslateDto) {
     return this.templateService.textTranslate(user, payload);
