@@ -748,6 +748,9 @@ export class PaymentsService {
             },
           },
         },
+        orderBy: {
+          created_at: 'desc',
+        },
         ...paginate,
       });
 
