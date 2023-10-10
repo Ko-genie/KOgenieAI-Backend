@@ -33,7 +33,7 @@ export class ReviewService {
           return errorResponse('Invalid image request!');
         }
 
-        image_url = addPhotoPrefix(fileDetails.file_path);
+        image_url = fileDetails.file_path;
       }
       const newReview = await this.prisma.review.create({
         data: {
@@ -92,7 +92,9 @@ export class ReviewService {
 
         data['list'] = reviewList;
       }
-
+      data['list'].map(function (query) {
+        return (query.user_image_url = addPhotoPrefix(query.user_image_url));
+      });
       return successResponse('Review List data', data);
     } catch (error) {
       processException(error);
@@ -129,7 +131,7 @@ export class ReviewService {
           return errorResponse('Invalid image request!');
         }
 
-        image_url = addPhotoPrefix(fileDetails.file_path);
+        image_url = fileDetails.file_path;
       }
 
       const reviewDetails = await this.prisma.review.findFirst({
@@ -191,6 +193,10 @@ export class ReviewService {
         where: {
           status: coreConstant.ACTIVE,
         },
+      });
+
+      reviewList.map(function (query) {
+        return (query.user_image_url = addPhotoPrefix(query.user_image_url));
       });
 
       return successResponse('Active review list', reviewList);

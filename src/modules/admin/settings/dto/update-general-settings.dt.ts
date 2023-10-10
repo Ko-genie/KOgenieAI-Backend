@@ -25,11 +25,11 @@ export class UpdateGeneralSettingsDto {
 
   @IsNotEmpty()
   @IsString()
-  default_country: string;
+  site_copy_right_text: string;
 
   @IsNotEmpty()
   @IsString()
-  default_currency: string;
+  default_country: string;
 
   @IsNotEmpty()
   @IsNumber()

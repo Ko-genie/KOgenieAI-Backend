@@ -33,7 +33,7 @@ export class FeatureAiService {
           return errorResponse('Invalid image request!');
         }
 
-        image_url = addPhotoPrefix(fileDetails.file_path);
+        image_url = fileDetails.file_path;
       }
       const newFeature = await this.prisma.featureOfAI.create({
         data: {
@@ -116,6 +116,7 @@ export class FeatureAiService {
       if (!featureDetails) {
         return errorResponse('Invalid request');
       }
+      featureDetails.file_url = addPhotoPrefix(featureDetails.file_url)
       return successResponse('Feature of AI details', featureDetails);
     } catch (error) {
       processException(error);
@@ -136,7 +137,7 @@ export class FeatureAiService {
           return errorResponse('Invalid image request!');
         }
 
-        image_url = addPhotoPrefix(fileDetails.file_path);
+        image_url = fileDetails.file_path;
       }
 
       const featureDetails = await this.prisma.featureOfAI.findFirst({

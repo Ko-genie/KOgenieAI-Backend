@@ -117,6 +117,10 @@ export class AuthService {
           'Email is not verified! Please verify your email first.',
         );
       }
+
+      if (user.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
+      }
       const data = { sub: user.id, email: user.email };
 
       const accessToken = await this.generateAccessToken(data);
@@ -442,6 +446,11 @@ export class AuthService {
           return errorResponse('User registration failed');
         }
       }
+
+      if (existingUser.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
+      }
+
       const user = await this.validateUserByEmail(getPayload.email);
 
       if (user.email_verified !== coreConstant.IS_VERIFIED) {
@@ -533,6 +542,9 @@ export class AuthService {
         if (!newUser.success) {
           return errorResponse('User registration failed');
         }
+      }
+      if (existingUser.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
       }
       const user = await this.validateUserByEmail(githubUserDetails.email);
 
