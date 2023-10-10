@@ -25,6 +25,10 @@ export class UpdateGeneralSettingsDto {
 
   @IsNotEmpty()
   @IsString()
+  site_copy_right_text: string;
+
+  @IsNotEmpty()
+  @IsString()
   default_country: string;
 
   @IsNotEmpty()

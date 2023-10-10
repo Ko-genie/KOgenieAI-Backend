@@ -28,6 +28,7 @@ export const CommonSettingsSlugs = [
   'github_auth_client_id',
   'social_login_github_status',
   'social_login_google_status',
+  'site_copy_right_text',
 ];
 
 export const GeneralSettingsSlugs = [
@@ -44,6 +45,7 @@ export const GeneralSettingsSlugs = [
   'meta_keywords',
   'site_logo',
   'site_fav_icon',
+  'site_copy_right_text',
 ];
 
 export const SMTPSettingsSlugs = [
