@@ -32,10 +32,6 @@ export class UpdateGeneralSettingsDto {
   default_country: string;
 
   @IsNotEmpty()
-  @IsString()
-  default_currency: string;
-
-  @IsNotEmpty()
   @IsNumber()
   @IsIn([coreConstant.STATUS_ACTIVE, coreConstant.STATUS_INACTIVE])
   social_login_github_status: number;

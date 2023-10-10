@@ -36,7 +36,6 @@ export const GeneralSettingsSlugs = [
   'site_url',
   'site_email',
   'default_country',
-  'default_currency',
   'social_login_github_status',
   'social_login_google_status',
   'google_analytics_tracking_id',
