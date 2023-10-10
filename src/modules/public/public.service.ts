@@ -35,8 +35,6 @@ export class PublicService {
   async commonSettings() {
     try {
       const data = {};
-
-      data['countryList'] = CountryListObjectArray;
       // site_logo;
       data['settings'] = await getAdminSettingsData(CommonSettingsSlugs);
       if (data['settings']?.site_logo) {
@@ -49,6 +47,8 @@ export class PublicService {
           data['settings']?.site_fav_icon,
         );
       }
+      data['countryList'] = CountryListObjectArray;
+      data['language_list'] = LanguageListJsonArray;
       return successResponse('Common settings', data);
     } catch (error) {
       processException(error);
