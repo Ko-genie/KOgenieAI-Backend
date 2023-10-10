@@ -205,6 +205,53 @@ export class UsersService {
     }
   }
 
+  async statusChangeUser(payload: { user_id: number; status_type: number }) {
+    try {
+      const userDetails = await this.prisma.user.findFirst({
+        where: {
+          id: payload.user_id,
+        },
+      });
+      if (!userDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      const data =
+        payload.status_type == 1
+          ? {
+              status:
+                userDetails.status == coreConstant.ACTIVE
+                  ? coreConstant.INACTIVE
+                  : coreConstant.ACTIVE,
+            }
+          : payload.status_type == 2
+          ? {
+              email_verified:
+                userDetails.email_verified == coreConstant.ACTIVE
+                  ? coreConstant.INACTIVE
+                  : coreConstant.ACTIVE,
+            }
+          : payload.status_type == 3
+          ? {
+              phone_verified:
+                userDetails.phone_verified == coreConstant.ACTIVE
+                  ? coreConstant.INACTIVE
+                  : coreConstant.ACTIVE,
+            }
+          : {};
+      await this.prisma.user.update({
+        where: {
+          id: userDetails.id,
+        },
+        data: data,
+      });
+
+      return successResponse('Status is changed successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
   // send forgot password email
   async sendForgotPasswordEmailProcess(email: string) {
     try {
