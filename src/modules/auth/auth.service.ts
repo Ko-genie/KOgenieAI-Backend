@@ -117,6 +117,10 @@ export class AuthService {
           'Email is not verified! Please verify your email first.',
         );
       }
+
+      if (user.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
+      }
       const data = { sub: user.id, email: user.email };
 
       const accessToken = await this.generateAccessToken(data);
