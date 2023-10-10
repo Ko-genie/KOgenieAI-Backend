@@ -182,6 +182,9 @@ export class UsersService {
             },
           ],
         },
+        orderBy: {
+          created_at: 'desc',
+        },
         ...paginate,
       });
 
