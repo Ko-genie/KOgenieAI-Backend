@@ -44,6 +44,7 @@ model User {
   GeneratedCode         GeneratedCode[]
   TextTranslateDocument TextTranslateDocument[]
   Review                Review[]
+  UsesHistory           UsesHistory[]
 }
 
 model Package {
@@ -319,4 +320,17 @@ model ProgramingLanguage {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model UsesHistory {
+  id         Int     @id @default(autoincrement())
+  uses_type  Int     @db.SmallInt()
+  title      String  @db.Text()
+  uses_word  BigInt? @default(0) @db.BigInt()
+  uses_image BigInt? @default(0) @db.BigInt()
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
 }

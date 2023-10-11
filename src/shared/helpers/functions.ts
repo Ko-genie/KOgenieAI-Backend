@@ -11,6 +11,7 @@ import {
 } from '../constants/array.constants';
 import { coreConstant } from './coreConstant';
 import path from 'path';
+import { async } from 'rxjs';
 export let app: NestExpressApplication;
 export let PrismaClient: PrismaService;
 export let myLogger;
@@ -443,3 +444,11 @@ export async function generatePromptForTranslate(
   const prompt = `Please translate this text into ${language} language. My text is ${text}`;
   return prompt;
 }
+
+export async function createNewUsesHistory(
+  userId: number,
+  usesType: number,
+  title: string,
+  usesWord: number,
+  usesImage: number,
+) {}

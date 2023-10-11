@@ -12,6 +12,7 @@ import {
   addPhotoPrefix,
   generatePromptForCode,
   generatePromptForTranslate,
+  createNewUsesHistory,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -191,7 +192,7 @@ export class TemplateService {
       if (checkCategory) {
         await this.prisma.templateCategory.delete({
           where: {
-            id: id,
+            id: checkCategory.id,
           },
         });
 
@@ -574,6 +575,14 @@ export class TemplateService {
         wordCount,
       );
 
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.CONTENT_WRITING,
+        title,
+        wordCount,
+        0,
+      );
+
       return successResponse('Text is generated successfully!', response);
     } catch (error) {
       if (error.error.message) {
@@ -643,6 +652,14 @@ export class TemplateService {
         return errorResponse('Something went wrong!');
       }
       this.paymentService.updateUserUsedImages(userPackageData.id, 1);
+
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.IMAGE_GENERATION,
+        payload.prompt,
+        0,
+        1,
+      );
 
       return successResponse('Image is generated successfully!', response);
     } catch (error) {
@@ -1005,6 +1022,14 @@ export class TemplateService {
         },
       });
 
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.CODE,
+        payload.title,
+        wordCount,
+        0,
+      );
+
       return successResponse('Generate Code successfully!', saveGeneratedCode);
     } catch (error) {
       processException(error);
@@ -1198,6 +1223,13 @@ export class TemplateService {
           },
         });
 
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.TRANSLATION,
+        payload.title,
+        wordCount,
+        0,
+      );
       return successResponse(
         'Generate Transaltion is done successfully!',
         saveGeneratedTranslation,
@@ -1282,6 +1314,78 @@ export class TemplateService {
         },
       });
       return successResponse('Generated translation is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getMyUsesHistoryList(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const usesHistoryList = await this.prisma.usesHistory.findMany({
+        where: {
+          userId: user.id,
+        },
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('usesHistory', payload);
+
+      const data = {
+        list: usesHistoryList,
+        meta: paginationMeta,
+      };
+      return successResponse('My uses history list!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getAllUserUsesHistory(payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+
+      const usesHistoryList = await this.prisma.usesHistory.findMany({
+        where: {
+          User: {
+            OR: [
+              {
+                email: {
+                  contains: payload.search,
+                },
+              },
+              {
+                phone: {
+                  contains: payload.search,
+                },
+              },
+              {
+                first_name: {
+                  contains: payload.search,
+                },
+              },
+              {
+                last_name: {
+                  contains: payload.search,
+                },
+              },
+            ],
+          },
+        },
+        include: {
+          User: true,
+        },
+        ...paginate,
+      });
+
+      const paginationMeta = await paginationMetaData('usesHistory', payload);
+
+      const data = {
+        list: usesHistoryList,
+        meta: paginationMeta,
+      };
+      return successResponse('Uses history list!', data);
     } catch (error) {
       processException(error);
     }

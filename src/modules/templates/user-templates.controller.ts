@@ -157,4 +157,9 @@ export class UserTemplateController {
   deleteGeneratedTranslation(@Param('id') id: number) {
     return this.templateService.deleteGeneratedTranslation(id);
   }
+
+  @Get('get-my-uses-history-list')
+  getMyUsesHistoryList(@UserInfo() user: User, @Query() payload: any) {
+    return this.templateService.getMyUsesHistoryList(user, payload);
+  }
 }

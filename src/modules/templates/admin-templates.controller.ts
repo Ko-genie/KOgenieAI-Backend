@@ -78,4 +78,10 @@ export class AdminTemplateController {
   getUserDocumentDetails(@Param('id') id: number) {
     return this.templateService.getDocumentDetails(id);
   }
+
+  @Get('get-all-user-uses-history')
+  getAllUserUsesHistory(@Query() payload: any)
+  {
+    return this.templateService.getAllUserUsesHistory(payload);
+  }
 }
