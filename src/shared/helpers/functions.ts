@@ -451,4 +451,19 @@ export async function createNewUsesHistory(
   title: string,
   usesWord: number,
   usesImage: number,
-) {}
+) {
+  try {
+    const newUses = await PrismaClient.usesHistory.create({
+      data: {
+        uses_type: usesType,
+        title: title,
+        uses_word: usesWord,
+        uses_image: usesImage,
+        userId: userId,
+      },
+    });
+    return successResponse('New Uses history is created successfully!');
+  } catch (error) {
+    processException(error);
+  }
+}
