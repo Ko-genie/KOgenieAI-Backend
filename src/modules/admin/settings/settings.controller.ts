@@ -13,6 +13,7 @@ import { UpdatePaymentMethodStripeSettingsDto } from './dto/update-payment-strip
 import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.dt';
 import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
 import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
+import { UpdateBraintreeSettingsData } from './dto/update-braintree-settings-data.dto';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -126,5 +127,15 @@ export class SettingController {
   @Get('get-landing-page-data')
   getLlandingPageData() {
     return this.settingService.getLlandingPageData();
+  }
+
+  @Post('update-braintree-settings-data')
+  updateBraintreeSettingsData(@Body() payload: UpdateBraintreeSettingsData) {
+    return this.settingService.updateBraintreeSettingsData(payload);
+  }
+
+  @Get('get-braintree-settings-data')
+  getBraintreeSettingsData() {
+    return this.settingService.getBraintreeSettingsData();
   }
 }

@@ -219,6 +219,14 @@ export class UsersService {
         return errorResponse('Invalid request!');
       }
 
+      if (payload.status_type === 2 && !userDetails.email) {
+        return errorResponse('Email is not provided by user!');
+      }
+
+      if (payload.status_type === 3 && !userDetails.phone) {
+        return errorResponse('Phone number is not provided by user!');
+      }
+
       const data =
         payload.status_type == 1
           ? {
