@@ -34,6 +34,11 @@ export class AdminTemplateController {
     return this.templateService.getListCategory(payload);
   }
 
+  @Get('get-all-active-category-list')
+  getAllActiveCategoryList(@Query() payload: any) {
+    return this.templateService.getAllActiveCategoryList(payload);
+  }
+
   @Delete('delete-category-:id')
   deleteCategory(@Param('id') id: number) {
     return this.templateService.deleteCategory(id);
@@ -80,8 +85,7 @@ export class AdminTemplateController {
   }
 
   @Get('get-all-user-uses-history')
-  getAllUserUsesHistory(@Query() payload: any)
-  {
+  getAllUserUsesHistory(@Query() payload: any) {
     return this.templateService.getAllUserUsesHistory(payload);
   }
 }

@@ -1390,4 +1390,18 @@ export class TemplateService {
       processException(error);
     }
   }
+
+  async getAllActiveCategoryList(payload: any) {
+    try {
+      const categoryList = await this.prisma.templateCategory.findMany({
+        where: {
+          status: coreConstant.ACTIVE,
+        },
+      });
+
+      return successResponse('Category List data', categoryList);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
