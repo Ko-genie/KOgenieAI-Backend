@@ -17,6 +17,7 @@ import { ReviewService } from '../review/review.service';
 import { PaymentsService } from '../payments/payments.service';
 import { FeatureAiService } from '../feature-ai/feature-ai.service';
 import { faqTypeConstant } from 'src/shared/helpers/coreConstant';
+import { SocialMediaService } from '../social-media/social-media.service';
 
 @Injectable()
 export class PublicService {
@@ -26,6 +27,7 @@ export class PublicService {
     private readonly reviewService: ReviewService,
     private readonly paymentService: PaymentsService,
     private readonly featureService: FeatureAiService,
+    private readonly socialMediaService: SocialMediaService,
   ) {}
   async getAllLanguageList() {
     const languageList = LanguageListJsonArray;
@@ -49,6 +51,10 @@ export class PublicService {
       }
       data['countryList'] = CountryListObjectArray;
       data['language_list'] = LanguageListJsonArray;
+      const socialMediaList =
+        await this.socialMediaService.getAllActiveSocialMedia();
+
+      data['social_media_list'] = socialMediaList.data;
       return successResponse('Common settings', data);
     } catch (error) {
       processException(error);
