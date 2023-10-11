@@ -769,4 +769,82 @@ export class PaymentsService {
       processException(error);
     }
   }
+
+  async getMyTransactionList(user: User, payload: any) {
+    try {
+      const whereClause = {
+        userId: user.id,
+        OR: [
+          {
+            price: !isNaN(Number(payload.search))
+              ? Number(payload.search)
+              : undefined,
+          },
+          {
+            Package: {
+              name: {
+                contains: payload.search,
+              },
+            },
+          },
+          {
+            User: {
+              OR: [
+                {
+                  email: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  first_name: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  last_name: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  phone: { contains: payload.search },
+                },
+              ],
+            },
+          },
+        ],
+      };
+
+      const paginate = await paginatioOptions(payload);
+
+      const allTransactions = await this.prisma.paymentTransaction.findMany({
+        where: whereClause,
+        include: {
+          Package: true,
+          User: {
+            include: {
+              UserPurchase: true,
+            },
+          },
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        ...paginate,
+      });
+
+      const paginationMeta =
+        allTransactions.length > 0
+          ? await paginationMetaData('user', payload)
+          : DefaultPaginationMetaData;
+
+      const data = {
+        list: allTransactions,
+        meta: paginationMeta,
+      };
+
+      return successResponse('My Transaction list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
