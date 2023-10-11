@@ -15,6 +15,7 @@ import { NotificationService } from 'src/shared/notification/notification.servic
 import { User } from '@prisma/client';
 import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
+  BraintreeCredentialsSlugs,
   CommonSettingsSlugs,
   CountryListObjectArray,
   GeneralSettingsSlugs,
@@ -35,6 +36,7 @@ import { UpdateGoogleAuthSettingsDto } from './dto/update-google-auth-settings.d
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
 import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
+import { UpdateBraintreeSettingsData } from './dto/update-braintree-settings-data.dto';
 
 @Injectable()
 export class SettingService {
@@ -586,6 +588,41 @@ export class SettingService {
       return successResponse('Landing page data!', data);
     } catch (error) {
       processException(error);
+    }
+  }
+
+  async updateBraintreeSettingsData(payload: UpdateBraintreeSettingsData) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(BraintreeCredentialsSlugs);
+
+      return successResponse(
+        'Braintree credentials is update successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getBraintreeSettingsData()
+  {
+    try {
+      const data = await getAdminSettingsData(BraintreeCredentialsSlugs);
+
+      return successResponse('Braintree credentials credentials', data);
+    } catch (error) {
+      processException(error)
     }
   }
 }

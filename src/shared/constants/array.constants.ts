@@ -28,7 +28,7 @@ export const CommonSettingsSlugs = [
   'github_auth_client_id',
   'social_login_github_status',
   'social_login_google_status',
-  "privacy_policy",
+  'privacy_policy',
   'terms_condition',
   'site_copy_right_text',
 ];
@@ -120,6 +120,12 @@ export const GoogleAuthCredentialsSlugs = [
 export const GithubAuthCredentialsSlugs = [
   'github_auth_client_id',
   'github_auth_client_secret',
+];
+
+export const BraintreeCredentialsSlugs = [
+  'braintree_public_key',
+  'braintree_merchant_id',
+  'braintree_private_key',
 ];
 
 export const ModeStatusArray = [
