@@ -914,7 +914,11 @@ export class TemplateService {
         include: {
           templateCategory: true,
           TemplateField: true,
-          FavouriteTemplate: true,
+          FavouriteTemplate: {
+            where: {
+              user_id: user.id,
+            },
+          },
         },
         orderBy: {
           updated_at: 'desc',
