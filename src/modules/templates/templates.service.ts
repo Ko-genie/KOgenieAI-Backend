@@ -1345,34 +1345,37 @@ export class TemplateService {
   async getAllUserUsesHistory(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
+      const whereClause = payload.search
+        ? {
+            User: {
+              OR: [
+                {
+                  email: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  phone: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  first_name: {
+                    contains: payload.search,
+                  },
+                },
+                {
+                  last_name: {
+                    contains: payload.search,
+                  },
+                },
+              ],
+            },
+          }
+        : {};
 
       const usesHistoryList = await this.prisma.usesHistory.findMany({
-        where: {
-          User: {
-            OR: [
-              {
-                email: {
-                  contains: payload.search,
-                },
-              },
-              {
-                phone: {
-                  contains: payload.search,
-                },
-              },
-              {
-                first_name: {
-                  contains: payload.search,
-                },
-              },
-              {
-                last_name: {
-                  contains: payload.search,
-                },
-              },
-            ],
-          },
-        },
+        where: whereClause,
         include: {
           User: true,
         },
