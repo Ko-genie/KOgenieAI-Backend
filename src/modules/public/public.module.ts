@@ -8,6 +8,7 @@ import { NotificationService } from 'src/shared/notification/notification.servic
 import { ReviewService } from '../review/review.service';
 import { PaymentsService } from '../payments/payments.service';
 import { FeatureAiService } from '../feature-ai/feature-ai.service';
+import { SocialMediaService } from '../social-media/social-media.service';
 
 @Module({
   imports: [PrismaModule],
@@ -20,6 +21,7 @@ import { FeatureAiService } from '../feature-ai/feature-ai.service';
     ReviewService,
     PaymentsService,
     FeatureAiService,
+    SocialMediaService,
   ],
   exports: [PublicService],
 })

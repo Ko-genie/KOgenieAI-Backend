@@ -44,6 +44,7 @@ model User {
   GeneratedCode         GeneratedCode[]
   TextTranslateDocument TextTranslateDocument[]
   Review                Review[]
+  UsesHistory           UsesHistory[]
 }
 
 model Package {
@@ -317,6 +318,29 @@ model ProgramingLanguage {
   name   String
   status Int    @db.SmallInt()
 
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model UsesHistory {
+  id         Int     @id @default(autoincrement())
+  uses_type  Int     @db.SmallInt()
+  title      String  @db.Text()
+  uses_word  BigInt? @default(0) @db.BigInt()
+  uses_image BigInt? @default(0) @db.BigInt()
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
+}
+
+model SocialMedia {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  image_url  String   @db.VarChar(255)
+  status     Int      @db.SmallInt()
+  link       String   @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

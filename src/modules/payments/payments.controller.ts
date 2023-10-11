@@ -185,4 +185,9 @@ export class PaymentsController {
       user,
     );
   }
+
+  @Get('get-my-transaction-list')
+  getMyTransactionList(@UserInfo() user: User, @Query() payload: any) {
+    return this.paymentsService.getMyTransactionList(user, payload);
+  }
 }
