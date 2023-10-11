@@ -1,5 +1,12 @@
 import { AdminSettings } from '@prisma/client';
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 
 export class UpdateGeneralSettingsDto {
@@ -18,29 +25,16 @@ export class UpdateGeneralSettingsDto {
 
   @IsNotEmpty()
   @IsString()
-  default_country: string;
+  site_copy_right_text: string;
 
   @IsNotEmpty()
   @IsString()
-  default_currency: string;
+  default_country: string;
 
   @IsNotEmpty()
   @IsNumber()
   @IsIn([coreConstant.STATUS_ACTIVE, coreConstant.STATUS_INACTIVE])
-  registration_status: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  free_usage_word_upon_registration: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  free_usage_image_upon_registration: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @IsIn([coreConstant.STATUS_ACTIVE, coreConstant.STATUS_INACTIVE])
-  social_login_facebook_status: number;
+  social_login_github_status: number;
 
   @IsNotEmpty()
   @IsNumber()

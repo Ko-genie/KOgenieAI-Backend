@@ -888,7 +888,6 @@ export class TemplateService {
           ? { category_id: Number(payload.category_id) }
           : {}),
       };
-      const paginate = await paginatioOptions(payload);
 
       const templateList = await this.prisma.template.findMany({
         where: whereCondition,
@@ -900,17 +899,10 @@ export class TemplateService {
         orderBy: {
           updated_at: 'desc',
         },
-        ...paginate,
       });
-
-      const paginationMeta =
-        templateList.length > 0
-          ? await paginationMetaData('template', payload)
-          : DefaultPaginationMetaData;
 
       const data = {
         list: templateList,
-        meta: paginationMeta,
       };
       return successResponse('Template list', data);
     } catch (error) {
@@ -1266,6 +1258,30 @@ export class TemplateService {
         'Generated translation details',
         generatedCodeDetails,
       );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async deleteGeneratedTranslation(id: number) {
+    try {
+      const translationDetails =
+        await this.prisma.textTranslateDocument.findFirst({
+          where: {
+            id: id,
+          },
+        });
+
+      if (!translationDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.textTranslateDocument.delete({
+        where: {
+          id: translationDetails.id,
+        },
+      });
+      return successResponse('Generated translation is deleted successfully!');
     } catch (error) {
       processException(error);
     }

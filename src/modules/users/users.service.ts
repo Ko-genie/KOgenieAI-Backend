@@ -182,6 +182,9 @@ export class UsersService {
             },
           ],
         },
+        orderBy: {
+          created_at: 'desc',
+        },
         ...paginate,
       });
 
@@ -200,6 +203,53 @@ export class UsersService {
         meta: paginationMeta,
       };
       return successResponse('User List', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async statusChangeUser(payload: { user_id: number; status_type: number }) {
+    try {
+      const userDetails = await this.prisma.user.findFirst({
+        where: {
+          id: payload.user_id,
+        },
+      });
+      if (!userDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      const data =
+        payload.status_type == 1
+          ? {
+              status:
+                userDetails.status == coreConstant.ACTIVE
+                  ? coreConstant.INACTIVE
+                  : coreConstant.ACTIVE,
+            }
+          : payload.status_type == 2
+          ? {
+              email_verified:
+                userDetails.email_verified == coreConstant.ACTIVE
+                  ? coreConstant.INACTIVE
+                  : coreConstant.ACTIVE,
+            }
+          : payload.status_type == 3
+          ? {
+              phone_verified:
+                userDetails.phone_verified == coreConstant.ACTIVE
+                  ? coreConstant.INACTIVE
+                  : coreConstant.ACTIVE,
+            }
+          : {};
+      await this.prisma.user.update({
+        where: {
+          id: userDetails.id,
+        },
+        data: data,
+      });
+
+      return successResponse('Status is changed successfully!');
     } catch (error) {
       processException(error);
     }
@@ -251,14 +301,35 @@ export class UsersService {
       if (exist) {
         return errorResponse('Username has been already taken!');
       }
+
+      let image_url = null;
+      if (payload.file_id) {
+        const fileDetails = await this.prisma.myUploads.findFirst({
+          where: {
+            id: payload.file_id,
+          },
+        });
+
+        if (!fileDetails) {
+          return errorResponse('Invalid image request!');
+        }
+
+        image_url = fileDetails.file_path;
+      }
+
       const updatedUser = await this.prisma.user.update({
         where: {
           email: user.email,
         },
         data: {
-          ...payload,
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          user_name: payload.user_name,
+          phone: payload.phone,
+          country: payload.country,
           birth_date: new Date(payload.birth_date),
           gender: Number(payload.gender),
+          photo: image_url ? image_url : user.photo,
         },
       });
 

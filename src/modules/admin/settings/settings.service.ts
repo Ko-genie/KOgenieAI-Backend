@@ -162,7 +162,7 @@ export class SettingService {
 
       data['packageAndSubscriptions'] = await this.prisma.package.findMany();
 
-      data['latest_transaction_list'] =
+      const latestTransactionList =
         await this.prisma.paymentTransaction.findMany({
           take: 10,
           orderBy: {
@@ -183,6 +183,12 @@ export class SettingService {
           },
         });
 
+      latestTransactionList.map(function (query) {
+        return (query.User.photo = query.User.photo
+          ? addPhotoPrefix(query.User.photo)
+          : null);
+      });
+      data['latest_transaction_list'] = latestTransactionList;
       data['user_count_by_country'] = await this.userListByCountryWise();
 
       const currentYear = new Date().getFullYear();
@@ -543,9 +549,7 @@ export class SettingService {
   async updateLandingPageData(payload: UpdateLandingPageDataDto) {
     try {
       const landing_page_first_img_url = payload.landing_page_first_img_url
-        ? addPhotoPrefix(
-            await fetchMyUploadFilePathById(payload.landing_page_first_img_url),
-          )
+        ? await fetchMyUploadFilePathById(payload.landing_page_first_img_url)
         : await adminSettingsValueBySlug('landing_page_first_img_url');
 
       const keyValuePairs = Object.entries(payload).map(([key, value]) => {
@@ -574,7 +578,10 @@ export class SettingService {
 
   async getLlandingPageData() {
     try {
-      const data = await getAdminSettingsData(LandingPageSlugs);
+      const data: any = await getAdminSettingsData(LandingPageSlugs);
+      data.landing_page_first_img_url = addPhotoPrefix(
+        data.landing_page_first_img_url,
+      );
 
       return successResponse('Landing page data!', data);
     } catch (error) {

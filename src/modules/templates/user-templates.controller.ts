@@ -6,17 +6,12 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { GenerateImageDto } from './dto/generate-image.dto';
 import { TemplateService } from './templates.service';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
-import { SubscriptionGuard } from 'src/shared/guards/Subscription.guard';
 import { Subscription } from 'src/shared/decorators/subcription.decorators';
-import { userInfo } from 'os';
-import { paginateType } from '../payments/dto/query.dto';
 import { paginateInterface } from 'src/shared/constants/types';
 import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
@@ -99,7 +94,7 @@ export class UserTemplateController {
     return this.templateService.makeTemplateFavourite(user, payload);
   }
 
-  @Subscription('text')
+  @Subscription('code')
   @Post('generate-code')
   generateOpenAiCode(
     @UserInfo() user: User,
@@ -139,7 +134,7 @@ export class UserTemplateController {
   deleteDocument(@UserInfo() user: User, @Param('id') id: number) {
     return this.templateService.deleteDocument(id, user);
   }
-
+  @Subscription('translation')
   @Post('text-translate')
   textTranslate(@UserInfo() user: User, @Body() payload: TextTranslateDto) {
     return this.templateService.textTranslate(user, payload);
@@ -156,5 +151,10 @@ export class UserTemplateController {
     @UserInfo() user: User,
   ) {
     return this.templateService.getGeneratedTranslationDetails(id, user);
+  }
+
+  @Delete('delete-generated-translation-:id')
+  deleteGeneratedTranslation(@Param('id') id: number) {
+    return this.templateService.deleteGeneratedTranslation(id);
   }
 }

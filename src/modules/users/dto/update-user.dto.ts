@@ -28,21 +28,30 @@ export class UpdateUserDto {
 
   @IsString()
   last_name: string;
-  
+
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   user_name: string;
 
+  @IsOptional()
   @IsString()
   phone: string;
 
+  @IsOptional()
   @IsString()
   country: string;
 
+  @IsOptional()
   @Type(() => Date)
   @IsDate()
   birth_date: Date;
 
   @IsNotEmpty()
+  @IsNumber()
   gender: number;
+
+  @IsOptional()
+  @IsNumber()
+  file_id: number;
 }

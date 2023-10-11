@@ -40,7 +40,10 @@ import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { GoogleSignInDto } from './dto/googleCred.dto';
 import { OAuth2Client } from 'google-auth-library';
-import { GoogleAuthCredentialsSlugs } from 'src/shared/constants/array.constants';
+import {
+  GithubAuthCredentialsSlugs,
+  GoogleAuthCredentialsSlugs,
+} from 'src/shared/constants/array.constants';
 import axios from 'axios';
 
 @Injectable()
@@ -113,6 +116,10 @@ export class AuthService {
         return errorResponse(
           'Email is not verified! Please verify your email first.',
         );
+      }
+
+      if (user.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
       }
       const data = { sub: user.id, email: user.email };
 
@@ -439,6 +446,11 @@ export class AuthService {
           return errorResponse('User registration failed');
         }
       }
+
+      if (existingUser.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
+      }
+
       const user = await this.validateUserByEmail(getPayload.email);
 
       if (user.email_verified !== coreConstant.IS_VERIFIED) {
@@ -472,11 +484,37 @@ export class AuthService {
   }
 
   async githubLogin(payload: any, browserInfo?: any) {
-    const headers = {
-      Authorization: `Bearer ${payload.accessToken}`,
-    };
-
     try {
+      const code: string = payload.code ? payload.code : '';
+
+      const githubCredentials: any = await getAdminSettingsData(
+        GithubAuthCredentialsSlugs,
+      );
+
+      const gitHubFirstResponse: any = await axios.post(
+        'https://github.com/login/oauth/access_token',
+        {
+          client_id: githubCredentials.github_auth_client_id,
+          client_secret: githubCredentials.github_auth_client_secret,
+          code: code,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+          },
+        },
+      );
+
+      const gitHubFirstResponseData = gitHubFirstResponse.data;
+
+      if (gitHubFirstResponseData.error) {
+        return errorResponse(gitHubFirstResponseData.error_description);
+      }
+
+      const headers = {
+        Authorization: `Bearer ${gitHubFirstResponseData.access_token}`,
+      };
+
       const githubResponse = await axios.get('https://api.github.com/user', {
         headers,
       });
@@ -504,6 +542,9 @@ export class AuthService {
         if (!newUser.success) {
           return errorResponse('User registration failed');
         }
+      }
+      if (existingUser.status === coreConstant.INACTIVE) {
+        return errorResponse('Your Account is disabled by admin!');
       }
       const user = await this.validateUserByEmail(githubUserDetails.email);
 
@@ -534,9 +575,10 @@ export class AuthService {
       return successResponse('Login successful', userData);
     } catch (error) {
       if (error.response) {
-        console.error('GitHub API Error Response:', error.response.data);
+        console.error('GitHub API Error Response:', error);
         return errorResponse('response error', error.response.data);
       }
+      processException(error);
     }
   }
 }
