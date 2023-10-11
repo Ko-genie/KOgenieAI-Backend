@@ -153,4 +153,36 @@ export class PaymentsController {
   ): Promise<ResponseModel> {
     return this.paymentsService.getAllTransaction(payload);
   }
+  @Get('create-braintree-client-token')
+  createBraintreeClientToken(): Promise<ResponseModel> {
+    return this.paymentsService.createBraintreeClientToken();
+  }
+  @Post('subscribe-braintree')
+  processBraintreePaymentTransaction(
+    @Body('amount') amount: number,
+    @Body('paymentMethodNonce') paymentMethodNonce: string,
+    @UserInfo() user: User,
+    @Body('subcription_package_Id') subcription_package_Id: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.processBraintreePaymentTransaction(
+      amount,
+      paymentMethodNonce,
+      subcription_package_Id,
+      user,
+    );
+  }
+  @Post('add-package-to-subscription-braintree')
+  addPackageToSubscriptionBraintree(
+    @Body('amount') amount: number,
+    @Body('paymentMethodNonce') paymentMethodNonce: string,
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.addPackageToSubscriptionBraintree(
+      amount,
+      paymentMethodNonce,
+      packageId,
+      user,
+    );
+  }
 }

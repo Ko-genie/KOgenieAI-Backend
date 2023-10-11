@@ -24,11 +24,13 @@ import { ResponseModel } from 'src/shared/models/response.model';
 import { StripeService } from './stripe/stripe.service';
 import { paginateType } from './dto/query.dto';
 import { IsNumber } from 'class-validator';
+import { BraintreeService } from './braintree/braintree.service';
 
 @Injectable()
 export class PaymentsService {
   constructor(private readonly prisma: PrismaService) {}
   stripe = new StripeService();
+  braintreeService = new BraintreeService();
 
   async createPackageService(
     packageInfo: CreatePaymentDto,
@@ -225,7 +227,6 @@ export class PaymentsService {
         );
       }
 
-      // Calculate the end_date based on the start_date and duration
       const start_date = new Date();
       const duration =
         packageData.duration === coreConstant.PACKAGE_DURATION.WEEKLY
@@ -765,6 +766,147 @@ export class PaymentsService {
       };
 
       return successResponse('Transaction found!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async createBraintreeClientToken(): Promise<ResponseModel> {
+    try {
+      const clientToken = await this.braintreeService.getClientToken();
+      return successResponse('Braintree client token created successfully', {
+        clientToken,
+      });
+    } catch (error) {
+      console.log(error, 'errorerrorerrorerror');
+      processException(error);
+    }
+  }
+  async processBraintreePaymentTransaction(
+    amount: number,
+    paymentMethodNonce: string,
+    subcription_package_Id: string,
+    user: User,
+  ): Promise<ResponseModel> {
+    try {
+      const { package_valid, package: myPack }: any = await this.getUserPackage(
+        user,
+      );
+      if (package_valid) {
+        return errorResponse('User already subscribed to a package');
+      }
+      if (!subcription_package_Id) {
+        return errorResponse('No package id provided');
+      }
+
+      const packageData: Package | null = await this.prisma.package.findFirst({
+        where: {
+          id: Number(subcription_package_Id),
+          soft_delete: false,
+          status: coreConstant.ACTIVE,
+        },
+      });
+
+      if (!packageData) {
+        return errorResponse("Package can't be found");
+      }
+
+      const transaction = await this.braintreeService.createTransaction(
+        amount,
+        paymentMethodNonce,
+      );
+      if (!transaction) {
+        return errorResponse('Purchase failed!');
+      }
+
+      const start_date = new Date();
+      const duration =
+        packageData.duration === coreConstant.PACKAGE_DURATION.WEEKLY
+          ? 7
+          : packageData.duration === coreConstant.PACKAGE_DURATION.MONTHLY
+          ? 30
+          : 365;
+      const end_date = new Date(start_date);
+      end_date.setDate(end_date.getDate() + duration);
+      const purchedPackage = await this.prisma.userPurchasedPackage.create({
+        data: {
+          start_date: start_date,
+          end_date: end_date,
+          status: coreConstant.ACTIVE,
+          total_words: packageData.total_words,
+          total_images: packageData.total_images,
+          user_id: user.id,
+          package_id: packageData.id,
+          payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
+          available_features: packageData.available_features,
+        },
+      });
+
+      if (!purchedPackage) {
+        return errorResponse("Package can't be purchased");
+      }
+      this.addTransaction(
+        coreConstant.PAYMENT_METHODS.STRIPE,
+        packageData.id,
+        user.id,
+        Number(packageData.price),
+      );
+      return successResponse('Package purchased successfully', purchedPackage);
+    } catch (error) {
+      return errorResponse(
+        'Braintree payment transaction processed successfully',
+      );
+    }
+  }
+  async addPackageToSubscriptionBraintree(
+    amount: number,
+    paymentMethodNonce: string,
+    packageId: string,
+    user: User,
+  ): Promise<ResponseModel> {
+    try {
+      if (!packageId || !paymentMethodNonce || amount) {
+        return errorResponse('Invalid data please provide data properly');
+      }
+      const { package_valid, package: SubcribedPackage } =
+        await this.getUserPackage(user);
+      if (!package_valid) {
+        return errorResponse(
+          'Please subscribe before adding package to subscription',
+        );
+      }
+      const getPackageToAdd = await this.prisma.package.findFirst({
+        where: {
+          id: Number(packageId),
+          type: coreConstant.PACKAGE_TYPES.PACKAGE,
+        },
+      });
+      if (!getPackageToAdd) {
+        return errorResponse('Package not found!');
+      }
+      const transaction = await this.braintreeService.createTransaction(
+        amount,
+        paymentMethodNonce,
+      );
+      if (!transaction) {
+        return errorResponse('Purchase failed!');
+      }
+      const userUpdatedPackage = await this.prisma.userPurchasedPackage.update({
+        where: {
+          id: Number(SubcribedPackage.id),
+        },
+        data: {
+          total_words:
+            Number(SubcribedPackage.total_words) +
+            Number(getPackageToAdd.total_words),
+          total_images:
+            Number(SubcribedPackage.total_images) +
+            Number(getPackageToAdd.total_images),
+        },
+      });
+      if (!userUpdatedPackage) {
+        return errorResponse('Purchase failed!');
+      }
+      return successResponse('Purchased successfully!', userUpdatedPackage);
     } catch (error) {
       processException(error);
     }
