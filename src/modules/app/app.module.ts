@@ -24,6 +24,7 @@ import { TrustedOrganizationModule } from '../admin/trusted-organization/trusted
 import { ReviewModule } from '../review/review.module';
 import { FeatureAiModule } from '../feature-ai/feature-ai.module';
 import { ProgramingLanguageModule } from '../programing-language/programing-language.module';
+import { SocialMediaModule } from '../social-media/social-media.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ProgramingLanguageModule } from '../programing-language/programing-lang
     ReviewModule,
     FeatureAiModule,
     ProgramingLanguageModule,
+    SocialMediaModule,
   ],
   providers: [
     {
