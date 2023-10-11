@@ -901,6 +901,9 @@ export class TemplateService {
   async getTemplateListForUser(user: User, payload: any) {
     try {
       const whereCondition = {
+        templateCategory: {
+          status: coreConstant.ACTIVE,
+        },
         ...(payload.category_id
           ? { category_id: Number(payload.category_id) }
           : {}),
