@@ -887,6 +887,7 @@ export class PaymentsService {
         amount,
         paymentMethodNonce,
       );
+      console.log(transaction, 'transaction');
       if (!transaction) {
         return errorResponse('Purchase failed!');
       }
