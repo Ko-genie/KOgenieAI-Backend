@@ -864,7 +864,7 @@ export class PaymentsService {
     user: User,
   ): Promise<ResponseModel> {
     try {
-      if (!packageId || !paymentMethodNonce || amount) {
+      if (!packageId || !paymentMethodNonce || !amount) {
         return errorResponse('Invalid data please provide data properly');
       }
       const { package_valid, package: SubcribedPackage } =
@@ -964,7 +964,7 @@ export class PaymentsService {
           User: {
             select: {
               ...exclude('user', ['password']),
-              UserPurchase:true
+              UserPurchase: true,
             },
           },
         },
