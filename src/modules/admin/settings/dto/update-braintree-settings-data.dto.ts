@@ -21,5 +21,9 @@ export class UpdateBraintreeSettingsData {
 
   @IsNotEmpty()
   @IsString()
-  tokenization_keys: string;
+  braintree_tokenization_keys: string;
+
+  @IsNotEmpty()
+  @IsString()
+  braintree_google_merchant_id: string;
 }
