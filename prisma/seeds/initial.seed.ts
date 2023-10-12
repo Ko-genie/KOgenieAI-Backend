@@ -34,7 +34,6 @@ export async function initialSeed(prisma: PrismaClient) {
       skipDuplicates: true,
     });
 
-    console.log('Initial seed completed successfully.');
   } catch (error) {
     console.error('Error seeding the database:', error);
     throw error; // Rethrow the error for proper error handling higher up the call stack.

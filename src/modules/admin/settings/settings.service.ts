@@ -52,7 +52,7 @@ export class SettingService {
         _count: true,
       });
 
-      console.log(userList);
+      (userList);
 
       return successResponse('Country wise user list', userList);
     } catch (error) {
