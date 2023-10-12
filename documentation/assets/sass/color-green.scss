@@ -1,30 +1,33 @@
-@import "bootstrap/functions";
-@import "bootstrap/variables";
+@import 'bootstrap/functions';
+@import 'bootstrap/variables';
 
 /*============================
 		COLOR Green
 ==============================*/
 
-$primary-color: 			$green;
-$primary-color-hover: 		darken($primary-color, 7%);
+$primary-color: $green;
+$primary-color-hover: darken($primary-color, 7%);
 
 ::selection {
-    background: $primary-color;
+  background: $primary-color;
 }
 
-a, a:focus {
+a,
+a:focus {
   color: $primary-color;
 }
-a:hover, a:active {
-    color: $primary-color-hover;
+a:hover,
+a:active {
+  color: $primary-color-hover;
 }
 
 .primary-menu {
   ul.navbar-nav > li {
-    &:hover > a:not(.btn), & > a.active:not(.btn) {
+    &:hover > a:not(.btn),
+    & > a.active:not(.btn) {
       color: $primary-color;
     }
-	&.dropdown {
+    &.dropdown {
       .dropdown-menu li {
         &:hover > a:not(.btn) {
           color: $primary-color;
@@ -33,15 +36,16 @@ a:hover, a:active {
     }
   }
   &.navbar-line-under-text ul.navbar-nav > li {
-	> a:not(.btn):after {
-		border-color: $primary-color;
-		}
-	}
+    > a:not(.btn):after {
+      border-color: $primary-color;
+    }
+  }
 }
 
 /*=== Side Navigation ===*/
-.idocs-navigation {
-  .nav .nav .nav-item .nav-link.active:after, &.docs-navigation-dark .nav .nav .nav-item .nav-link.active:after {
+.wizai-navigation {
+  .nav .nav .nav-item .nav-link.active:after,
+  &.docs-navigation-dark .nav .nav .nav-item .nav-link.active:after {
     border-color: $primary-color;
   }
 }
@@ -50,8 +54,8 @@ a:hover, a:active {
 .accordion {
   .card-header {
     a:hover.collapsed {
-		color: $primary-color!important;
-	}
+      color: $primary-color !important;
+    }
   }
   &:not(.accordion-alternate) .card-header a {
     background-color: $primary-color;
@@ -60,7 +64,10 @@ a:hover, a:active {
 }
 
 /* Nav */
-.nav:not(.nav-pills) .nav-item .nav-link.active, .nav:not(.nav-pills) .nav-item .nav-link:hover{color: $primary-color;}
+.nav:not(.nav-pills) .nav-item .nav-link.active,
+.nav:not(.nav-pills) .nav-item .nav-link:hover {
+  color: $primary-color;
+}
 .nav-tabs {
   .nav-item .nav-link {
     &.active {
@@ -69,7 +76,7 @@ a:hover, a:active {
       }
       color: #0c2f55;
     }
-	&:not(.active):hover {
+    &:not(.active):hover {
       color: $primary-color;
     }
   }
@@ -81,7 +88,9 @@ a:hover, a:active {
     }
   }
 }
-.nav-pills .nav-link:not(.active):hover{color: $primary-color;}
+.nav-pills .nav-link:not(.active):hover {
+  color: $primary-color;
+}
 
 #footer {
   .nav {
@@ -113,31 +122,40 @@ a:hover, a:active {
 }
 
 /* Extras */
-.bg-primary, .badge-primary {
-	background-color: $primary-color !important;
+.bg-primary,
+.badge-primary {
+  background-color: $primary-color !important;
 }
-.text-primary, .btn-light, .btn-outline-light:hover, .btn-link, .btn-outline-light:not(:disabled):not(.disabled).active, .btn-outline-light:not(:disabled):not(.disabled):active {
-	color: $primary-color !important;
+.text-primary,
+.btn-light,
+.btn-outline-light:hover,
+.btn-link,
+.btn-outline-light:not(:disabled):not(.disabled).active,
+.btn-outline-light:not(:disabled):not(.disabled):active {
+  color: $primary-color !important;
 }
 .btn-link:hover {
-	color: $primary-color-hover !important;
+  color: $primary-color-hover !important;
 }
 
-.text-muted{
-	color:#8e9a9d!important;
+.text-muted {
+  color: #8e9a9d !important;
 }
-.text-light{
-	color:#dee3e4!important;
+.text-light {
+  color: #dee3e4 !important;
 }
 
-a.bg-primary:focus, a.bg-primary:hover, button.bg-primary:focus, button.bg-primary:hover{
-	background-color: $primary-color-hover!important;
+a.bg-primary:focus,
+a.bg-primary:hover,
+button.bg-primary:focus,
+button.bg-primary:hover {
+  background-color: $primary-color-hover !important;
 }
 .border-primary {
-	border-color: $primary-color !important;
+  border-color: $primary-color !important;
 }
 
-.btn-primary{
+.btn-primary {
   background-color: $primary-color;
   border-color: $primary-color;
   &:hover {
@@ -146,42 +164,48 @@ a.bg-primary:focus, a.bg-primary:hover, button.bg-primary:focus, button.bg-prima
   }
 }
 
-.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active{
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active {
   background-color: $primary-color-hover;
   border-color: $primary-color-hover;
-  
 }
 
-.btn-primary.focus, .btn-primary:focus{
-	background-color: $primary-color-hover;
-    border-color: $primary-color-hover;
+.btn-primary.focus,
+.btn-primary:focus {
+  background-color: $primary-color-hover;
+  border-color: $primary-color-hover;
 }
 
-.btn-outline-primary, .btn-outline-primary:not(:disabled):not(.disabled).active, .btn-outline-primary:not(:disabled):not(.disabled):active{
+.btn-outline-primary,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.btn-outline-primary:not(:disabled):not(.disabled):active {
   color: $primary-color;
   border-color: $primary-color;
   &:hover {
     background-color: $primary-color;
     border-color: $primary-color;
-	color: #fff;
+    color: #fff;
   }
 }
 
 .progress-bar,
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link, .dropdown-item.active, .dropdown-item:active{
-	background-color: $primary-color;
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link,
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: $primary-color;
 }
 .page-item.active .page-link,
 .custom-radio .custom-control-input:checked ~ .custom-control-label:before,
 .custom-control-input:checked ~ .custom-control-label::before,
 .custom-checkbox .custom-control-input:checked ~ .custom-control-label:before,
-.custom-control-input:checked ~ .custom-control-label:before{
-	background-color: $primary-color;
-	border-color: $primary-color;
+.custom-control-input:checked ~ .custom-control-label:before {
+  background-color: $primary-color;
+  border-color: $primary-color;
 }
-.list-group-item.active{
-	background-color: $primary-color;
-	border-color: $primary-color;
+.list-group-item.active {
+  background-color: $primary-color;
+  border-color: $primary-color;
 }
 .page-link {
   color: $primary-color;
