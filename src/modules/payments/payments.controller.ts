@@ -160,13 +160,13 @@ export class PaymentsController {
   @Post('subscribe-braintree')
   processBraintreePaymentTransaction(
     @Body('amount') amount: number,
-    @Body('paymentMethodNonce') paymentMethodNonce: string,
+    @Body('payment_method_nonce') payment_method_nonce: string,
     @UserInfo() user: User,
     @Body('subcription_package_Id') subcription_package_Id: string,
   ): Promise<ResponseModel> {
     return this.paymentsService.processBraintreePaymentTransaction(
       amount,
-      paymentMethodNonce,
+      payment_method_nonce,
       subcription_package_Id,
       user,
     );
@@ -174,13 +174,13 @@ export class PaymentsController {
   @Post('add-package-to-subscription-braintree')
   addPackageToSubscriptionBraintree(
     @Body('amount') amount: number,
-    @Body('paymentMethodNonce') paymentMethodNonce: string,
+    @Body('payment_method_nonce') payment_method_nonce: string,
     @UserInfo() user: User,
     @Body('packageId') packageId: string,
   ): Promise<ResponseModel> {
     return this.paymentsService.addPackageToSubscriptionBraintree(
       amount,
-      paymentMethodNonce,
+      payment_method_nonce,
       packageId,
       user,
     );
