@@ -125,6 +125,7 @@ export const GithubAuthCredentialsSlugs = [
 ];
 
 export const BraintreeCredentialsSlugs = [
+  'braintree_payment_mode',
   'braintree_public_key',
   'braintree_merchant_id',
   'braintree_private_key',
