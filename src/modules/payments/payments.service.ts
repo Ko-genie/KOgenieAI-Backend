@@ -7,7 +7,7 @@ import {
   User,
   UserPurchasedPackage,
 } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService, exclude } from '../prisma/prisma.service';
 import {
   DefaultPaginationMetaData,
   coreConstant,
@@ -23,7 +23,6 @@ import {
 import { ResponseModel } from 'src/shared/models/response.model';
 import { StripeService } from './stripe/stripe.service';
 import { paginateType } from './dto/query.dto';
-import { IsNumber } from 'class-validator';
 
 @Injectable()
 export class PaymentsService {
@@ -821,8 +820,9 @@ export class PaymentsService {
         include: {
           Package: true,
           User: {
-            include: {
-              UserPurchase: true,
+            select: {
+              ...exclude('user', ['password']),
+              UserPurchase:true
             },
           },
         },
@@ -831,7 +831,7 @@ export class PaymentsService {
         },
         ...paginate,
       });
-
+      // UserPurchase
       const paginationMeta =
         allTransactions.length > 0
           ? await paginationMetaData('user', payload)

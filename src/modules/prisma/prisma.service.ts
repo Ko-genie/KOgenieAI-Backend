@@ -5,6 +5,9 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { prismaExclude } from 'prisma-exclude';
+
+export const exclude = prismaExclude(new PrismaClient()); 
 
 @Injectable()
 export class PrismaService
