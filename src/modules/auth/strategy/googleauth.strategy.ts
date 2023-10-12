@@ -14,7 +14,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['profile', 'email'],
     });
     
-    console.log('sdasdas',this.configService.get<MailConfig>('mail'))
   }
 
   async validate(

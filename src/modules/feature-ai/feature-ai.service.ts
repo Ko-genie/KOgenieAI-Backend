@@ -149,7 +149,6 @@ export class FeatureAiService {
       if (!featureDetails) {
         return errorResponse('Invalid request!');
       }
-      console.log(image_url ? 1 : 0);
       const updateFeatureOfAi = await this.prisma.featureOfAI.update({
         where: {
           id: featureDetails.id,

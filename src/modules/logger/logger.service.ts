@@ -124,7 +124,6 @@ export class MyLogger implements LoggerService {
         )} [${color.green(this.context)}] ${message}`;
         break;
     }
-    console.log(result); // TODO: DON'T remove this console.log
 
     this.logger.close();
   }

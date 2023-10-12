@@ -178,7 +178,6 @@ export class PaymentsService {
         amount * 100,
         'USD',
       );
-      console.log(intent, 'intent');
       if (!intent) {
         return errorResponse('Stripe payment intent can not be created');
       }
