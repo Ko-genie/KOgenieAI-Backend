@@ -12,4 +12,8 @@ export class UpdateBraintreeSettingsData {
   @IsNotEmpty()
   @IsString()
   braintree_private_key: string;
+
+  @IsNotEmpty()
+  @IsString()
+  tokenization_keys: string;
 }

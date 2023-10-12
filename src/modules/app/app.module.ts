@@ -72,10 +72,18 @@ export class AppModule implements NestModule {
 
     consumer
       .apply(CheckDemoMode)
-      .exclude({
-        path: `/user/generate-content`,
-        method: RequestMethod.POST,
-      })
+      .exclude(
+        {
+          path: `/user/generate-content`,
+          method: RequestMethod.POST,
+        },
+        { path: '/auth/login', method: RequestMethod.POST },
+        { path: '/user/generate-image', method: RequestMethod.POST },
+        { path: '/user/generate-image', method: RequestMethod.POST },
+        { path: '/user/make-template-favourite', method: RequestMethod.POST },
+        { path: '/user/generate-code', method: RequestMethod.POST },
+        { path: '/user/text-translate', method: RequestMethod.POST },
+      )
       .forRoutes('*');
   }
 }

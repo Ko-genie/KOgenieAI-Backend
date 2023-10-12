@@ -31,6 +31,8 @@ export const CommonSettingsSlugs = [
   'privacy_policy',
   'terms_condition',
   'site_copy_right_text',
+  'pm_stripe_client_id_live',
+  'pm_stripe_secret_key_live',
 ];
 
 export const GeneralSettingsSlugs = [
@@ -126,6 +128,7 @@ export const BraintreeCredentialsSlugs = [
   'braintree_public_key',
   'braintree_merchant_id',
   'braintree_private_key',
+  'tokenization_keys',
 ];
 
 export const ModeStatusArray = [

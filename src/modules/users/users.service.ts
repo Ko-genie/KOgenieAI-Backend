@@ -561,6 +561,7 @@ export class UsersService {
           },
           where: {
             user_id: user.id,
+            status: coreConstant.ACTIVE,
           },
         });
       data['word_left'] =
