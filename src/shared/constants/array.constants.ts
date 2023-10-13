@@ -1,5 +1,6 @@
 import {
   CodingLevelConstant,
+  coreConstant,
   creativityConstant,
   faqTypeConstant,
   inputFieldTypeConstant,
@@ -652,3 +653,10 @@ export const LandingPageSlugs = [
 ];
 
 export const ReviewArray = [1, 2, 3, 4, 5];
+
+export const AvailableFeaturesArray = [
+  coreConstant.AVAILABLE_FEATURES.CODE,
+  coreConstant.AVAILABLE_FEATURES.CONTENT_WRITING,
+  coreConstant.AVAILABLE_FEATURES.IMAGE_GENERATION,
+  coreConstant.AVAILABLE_FEATURES.TRANSLATION,
+];

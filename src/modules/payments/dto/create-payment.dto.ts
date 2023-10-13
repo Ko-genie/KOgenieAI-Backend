@@ -8,25 +8,26 @@ import {
   IsJSON,
 } from 'class-validator';
 import { IsIn } from 'class-validator';
+import { AvailableFeaturesArray } from 'src/shared/constants/array.constants';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { IsNotNegative } from 'src/shared/validator/not-negative.validator';
 
 export class CreatePaymentDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   @IsNotNegative('price') // Apply the custom validator
   price: number;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   @IsIn([
     coreConstant.PACKAGE_DURATION.MONTHLY,
     coreConstant.PACKAGE_DURATION.WEEKLY,
@@ -34,34 +35,36 @@ export class CreatePaymentDto {
   ])
   duration: number;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   type: number;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   total_words: number;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   total_images: number;
 
-  @IsInt()
   @IsNotEmpty()
+  @IsInt()
   status: number;
 
   @IsOptional()
   @IsString()
   image_url?: string;
 
-  @IsString()
   @IsNotEmpty()
-  available_features: string;
+  @IsNumber()
+  @IsIn(AvailableFeaturesArray)
+  available_features: number;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   model_name: string;
 
+  @IsOptional()
   @IsString()
   feature_description_lists: string;
 }

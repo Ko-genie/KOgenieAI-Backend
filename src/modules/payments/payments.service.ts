@@ -36,6 +36,26 @@ export class PaymentsService {
     packageInfo: CreatePaymentDto,
   ): Promise<ResponseModel> {
     try {
+      if (
+        (packageInfo.available_features ===
+          coreConstant.AVAILABLE_FEATURES.CODE ||
+          packageInfo.available_features ===
+            coreConstant.AVAILABLE_FEATURES.CONTENT_WRITING ||
+          packageInfo.available_features ===
+            coreConstant.AVAILABLE_FEATURES.TRANSLATION) &&
+        packageInfo.total_words === 0
+      ) {
+        return errorResponse('Total word must be greater than 0!');
+      }
+
+      if (
+        packageInfo.available_features ===
+          coreConstant.AVAILABLE_FEATURES.IMAGE_GENERATION &&
+        packageInfo.total_images === 0
+      ) {
+        return errorResponse('Total image must be greater than 0!');
+      }
+
       const CreatedPackage = await this.prisma.package.create({
         data: {
           name: packageInfo.name,
@@ -58,7 +78,7 @@ export class PaymentsService {
               ? coreConstant.ACTIVE
               : coreConstant.INACTIVE,
           image_url: packageInfo.image_url,
-          available_features: packageInfo.available_features,
+          available_features: String(packageInfo.available_features),
           feature_description_lists: packageInfo.feature_description_lists,
           model_name: packageInfo.model_name,
         },
