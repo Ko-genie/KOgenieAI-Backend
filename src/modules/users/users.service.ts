@@ -30,6 +30,8 @@ import { isNumber } from 'class-validator';
 import { User as UserEntity } from './entities/user.entity';
 import { randomUUID } from 'crypto';
 import { OpenAi } from '../openai/openai.service';
+import { ChangePasswordDto } from '../auth/dto/change-password.dto';
+import { compare } from 'bcrypt';
 
 // export type User = any;
 @Injectable()
@@ -639,6 +641,48 @@ export class UsersService {
         data['my_images'].push(img);
       });
       return successResponse('User dashboard api data!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async changePassword(user: User, payload: ChangePasswordDto) {
+    try {
+      const userDetails = await this.prisma.user.findFirst({
+        where: {
+          email: user.email,
+        },
+      });
+
+      if (!userDetails) {
+        return errorResponse('Invalid Request!');
+      }
+
+      const isPasswordValid = await compare(
+        payload.current_password,
+        userDetails.password,
+      );
+
+      if (!isPasswordValid) {
+        return errorResponse('Your current password is not match!');
+      }
+
+      if (payload.password !== payload.confirm_password) {
+        return errorResponse('Password and confirm password do not match!');
+      }
+
+      const hashPassword = await hashedPassword(payload.password);
+
+      await this.prisma.user.update({
+        where: {
+          id: userDetails.id,
+        },
+        data: {
+          password: hashPassword,
+        },
+      });
+
+      return successResponse('Password is changed successfully!');
     } catch (error) {
       processException(error);
     }

@@ -45,6 +45,7 @@ import {
   GoogleAuthCredentialsSlugs,
 } from 'src/shared/constants/array.constants';
 import axios from 'axios';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -375,6 +376,8 @@ export class AuthService {
       processException(error);
     }
   }
+
+  
   async verifyEmail(
     payload: VerifyEmailCredentialsDto,
   ): Promise<ResponseModel> {

@@ -22,6 +22,7 @@ import { query } from 'express';
 import { userInfo } from 'os';
 import { use } from 'passport';
 import { User as UserEntity } from './entities/user.entity';
+import { ChangePasswordDto } from '../auth/dto/change-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -100,13 +101,18 @@ export class UserController {
     return this.userService.updateEmail(user, payload);
   }
 
-  @Post("test-text-gen")
-  testTextGen(@Body() payload: { text: string }) { 
+  @Post('test-text-gen')
+  testTextGen(@Body() payload: { text: string }) {
     return this.userService.testTextGen(payload);
   }
 
   @Get('dashboard')
   getUserDashboardData(@UserInfo() user: User) {
     return this.userService.getUserDashboardData(user);
+  }
+
+  @Post('change-password')
+  changePassword(@UserInfo() user: User, @Body() payload: ChangePasswordDto) {
+    return this.userService.changePassword(user,payload);
   }
 }
