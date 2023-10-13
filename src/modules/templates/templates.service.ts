@@ -189,17 +189,29 @@ export class TemplateService {
         },
       });
 
-      if (checkCategory) {
-        await this.prisma.templateCategory.delete({
-          where: {
-            id: checkCategory.id,
-          },
-        });
-
-        return successResponse('Category is deleted successfully!');
-      } else {
+      if (!checkCategory) {
         return errorResponse('Category is not found!');
       }
+
+      const checkTemplateList = await this.prisma.template.findMany({
+        where: {
+          category_id: checkCategory.id,
+        },
+      });
+      
+      if (checkTemplateList.length > 0) {
+        return errorResponse(
+          'Remove this category from template, then try to delete!',
+        );
+      }
+
+      await this.prisma.templateCategory.delete({
+        where: {
+          id: checkCategory.id,
+        },
+      });
+
+      return successResponse('Category is deleted successfully!');
     } catch (error) {
       processException(error);
     }
@@ -496,7 +508,7 @@ export class TemplateService {
 
         await prisma.template.delete({
           where: {
-            id: id,
+            id: templateDetails.id,
           },
         });
 
@@ -906,6 +918,13 @@ export class TemplateService {
         },
         ...(payload.category_id
           ? { category_id: Number(payload.category_id) }
+          : {}),
+        ...(payload.search
+          ? {
+              title: {
+                contains: payload.search,
+              },
+            }
           : {}),
       };
 

@@ -25,6 +25,7 @@ import { StripeService } from './stripe/stripe.service';
 import { paginateType } from './dto/query.dto';
 import { IsNumber } from 'class-validator';
 import { BraintreeService } from './braintree/braintree.service';
+import { AvailableFeaturesArray } from 'src/shared/constants/array.constants';
 
 @Injectable()
 export class PaymentsService {
@@ -36,6 +37,36 @@ export class PaymentsService {
     packageInfo: CreatePaymentDto,
   ): Promise<ResponseModel> {
     try {
+      const checkForWord = [
+        coreConstant.AVAILABLE_FEATURES.CODE,
+        coreConstant.AVAILABLE_FEATURES.CONTENT_WRITING,
+        coreConstant.AVAILABLE_FEATURES.TRANSLATION,
+      ];
+
+      const checkForImage = [coreConstant.AVAILABLE_FEATURES.IMAGE_GENERATION];
+
+      const InputAvailableFeaturesArray = packageInfo.available_features
+        .split(',')
+        .map(Number);
+
+      if (
+        InputAvailableFeaturesArray.some((element) =>
+          checkForWord.includes(element),
+        ) &&
+        packageInfo.total_words === 0
+      ) {
+        return errorResponse('Total word must be greater than 0!');
+      }
+
+      if (
+        InputAvailableFeaturesArray.some((element) =>
+          checkForImage.includes(element),
+        ) &&
+        packageInfo.total_images === 0
+      ) {
+        return errorResponse('Total image must be greater than 0!');
+      }
+
       const CreatedPackage = await this.prisma.package.create({
         data: {
           name: packageInfo.name,
@@ -58,7 +89,7 @@ export class PaymentsService {
               ? coreConstant.ACTIVE
               : coreConstant.INACTIVE,
           image_url: packageInfo.image_url,
-          available_features: packageInfo.available_features,
+          available_features: String(packageInfo.available_features),
           feature_description_lists: packageInfo.feature_description_lists,
           model_name: packageInfo.model_name,
         },
@@ -498,6 +529,12 @@ export class PaymentsService {
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }
+      this.addTransaction(
+        coreConstant.PAYMENT_METHODS.STRIPE,
+        getPackageToAdd.id,
+        user.id,
+        Number(getPackageToAdd.price),
+      );
       return successResponse('Purchased successfully!', userUpdatedPackage);
     } catch (error) {
       processException(error);
@@ -757,7 +794,7 @@ export class PaymentsService {
 
       const paginationMeta =
         allTransactions.length > 0
-          ? await paginationMetaData('user', payload)
+          ? await paginationMetaData('paymentTransaction', payload)
           : DefaultPaginationMetaData;
 
       const data = {
@@ -844,8 +881,8 @@ export class PaymentsService {
       if (!purchedPackage) {
         return errorResponse("Package can't be purchased");
       }
-      this.addTransaction(
-        coreConstant.PAYMENT_METHODS.STRIPE,
+      await this.addTransaction(
+        coreConstant.PAYMENT_METHODS.BRAINTREE,
         packageData.id,
         user.id,
         Number(packageData.price),
@@ -887,7 +924,7 @@ export class PaymentsService {
         amount,
         paymentMethodNonce,
       );
-      console.log(transaction, 'transaction');
+
       if (!transaction) {
         return errorResponse('Purchase failed!');
       }
@@ -908,6 +945,14 @@ export class PaymentsService {
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }
+
+      await this.addTransaction(
+        coreConstant.PAYMENT_METHODS.BRAINTREE,
+        getPackageToAdd.id,
+        user.id,
+        Number(getPackageToAdd.price),
+      );
+
       return successResponse('Purchased successfully!', userUpdatedPackage);
     } catch (error) {
       processException(error);
@@ -978,7 +1023,7 @@ export class PaymentsService {
       // UserPurchase
       const paginationMeta =
         allTransactions.length > 0
-          ? await paginationMetaData('user', payload)
+          ? await paginationMetaData('paymentTransaction', payload)
           : DefaultPaginationMetaData;
 
       const data = {
