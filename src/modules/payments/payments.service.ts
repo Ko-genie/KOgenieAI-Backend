@@ -528,6 +528,12 @@ export class PaymentsService {
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }
+      this.addTransaction(
+        coreConstant.PAYMENT_METHODS.STRIPE,
+        getPackageToAdd.id,
+        user.id,
+        Number(getPackageToAdd.price),
+      );
       return successResponse('Purchased successfully!', userUpdatedPackage);
     } catch (error) {
       processException(error);
@@ -874,8 +880,8 @@ export class PaymentsService {
       if (!purchedPackage) {
         return errorResponse("Package can't be purchased");
       }
-      this.addTransaction(
-        coreConstant.PAYMENT_METHODS.STRIPE,
+      await this.addTransaction(
+        coreConstant.PAYMENT_METHODS.BRAINTREE,
         packageData.id,
         user.id,
         Number(packageData.price),
@@ -917,7 +923,7 @@ export class PaymentsService {
         amount,
         paymentMethodNonce,
       );
-      console.log(transaction, 'transaction');
+
       if (!transaction) {
         return errorResponse('Purchase failed!');
       }
@@ -937,6 +943,14 @@ export class PaymentsService {
       if (!userUpdatedPackage) {
         return errorResponse('Purchase failed!');
       }
+
+      await this.addTransaction(
+        coreConstant.PAYMENT_METHODS.BRAINTREE,
+        getPackageToAdd.id,
+        user.id,
+        Number(getPackageToAdd.price),
+      );
+
       return successResponse('Purchased successfully!', userUpdatedPackage);
     } catch (error) {
       processException(error);
