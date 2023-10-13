@@ -907,6 +907,13 @@ export class TemplateService {
         ...(payload.category_id
           ? { category_id: Number(payload.category_id) }
           : {}),
+        ...(payload.search
+          ? {
+              title: {
+                contains: payload.search,
+              },
+            }
+          : {}),
       };
 
       const templateList = await this.prisma.template.findMany({
