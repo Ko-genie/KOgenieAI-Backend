@@ -496,7 +496,7 @@ export class TemplateService {
 
         await prisma.template.delete({
           where: {
-            id: id,
+            id: templateDetails.id,
           },
         });
 
