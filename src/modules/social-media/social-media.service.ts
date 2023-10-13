@@ -103,6 +103,10 @@ export class SocialMediaService {
       if (!socialMediaDetails) {
         return errorResponse('Invalid request');
       }
+
+      socialMediaDetails.image_url = addPhotoPrefix(
+        socialMediaDetails.image_url,
+      );
       return successResponse('Social Media details', socialMediaDetails);
     } catch (error) {
       processException(error);
