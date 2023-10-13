@@ -56,9 +56,8 @@ export class CreatePaymentDto {
   image_url?: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  @IsIn(AvailableFeaturesArray)
-  available_features: number;
+  @IsString()
+  available_features: string;
 
   @IsNotEmpty()
   @IsString()

@@ -25,6 +25,7 @@ import { StripeService } from './stripe/stripe.service';
 import { paginateType } from './dto/query.dto';
 import { IsNumber } from 'class-validator';
 import { BraintreeService } from './braintree/braintree.service';
+import { AvailableFeaturesArray } from 'src/shared/constants/array.constants';
 
 @Injectable()
 export class PaymentsService {
@@ -36,21 +37,31 @@ export class PaymentsService {
     packageInfo: CreatePaymentDto,
   ): Promise<ResponseModel> {
     try {
+      const checkForWord = [
+        coreConstant.AVAILABLE_FEATURES.CODE,
+        coreConstant.AVAILABLE_FEATURES.CONTENT_WRITING,
+        coreConstant.AVAILABLE_FEATURES.TRANSLATION,
+      ];
+
+      const checkForImage = [coreConstant.AVAILABLE_FEATURES.IMAGE_GENERATION];
+
+      const InputAvailableFeaturesArray = packageInfo.available_features
+        .split(',')
+        .map(Number);
+
       if (
-        (packageInfo.available_features ===
-          coreConstant.AVAILABLE_FEATURES.CODE ||
-          packageInfo.available_features ===
-            coreConstant.AVAILABLE_FEATURES.CONTENT_WRITING ||
-          packageInfo.available_features ===
-            coreConstant.AVAILABLE_FEATURES.TRANSLATION) &&
+        InputAvailableFeaturesArray.some((element) =>
+          checkForWord.includes(element),
+        ) &&
         packageInfo.total_words === 0
       ) {
         return errorResponse('Total word must be greater than 0!');
       }
 
       if (
-        packageInfo.available_features ===
-          coreConstant.AVAILABLE_FEATURES.IMAGE_GENERATION &&
+        InputAvailableFeaturesArray.some((element) =>
+          checkForImage.includes(element),
+        ) &&
         packageInfo.total_images === 0
       ) {
         return errorResponse('Total image must be greater than 0!');
