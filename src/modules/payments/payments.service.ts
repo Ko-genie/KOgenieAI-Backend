@@ -756,7 +756,7 @@ export class PaymentsService {
 
       const paginationMeta =
         allTransactions.length > 0
-          ? await paginationMetaData('user', payload)
+          ? await paginationMetaData('paymentTransaction', payload)
           : DefaultPaginationMetaData;
 
       const data = {
@@ -976,7 +976,7 @@ export class PaymentsService {
       // UserPurchase
       const paginationMeta =
         allTransactions.length > 0
-          ? await paginationMetaData('user', payload)
+          ? await paginationMetaData('paymentTransaction', payload)
           : DefaultPaginationMetaData;
 
       const data = {
