@@ -492,6 +492,7 @@ export class PaymentsService {
           total_images:
             Number(SubcribedPackage.total_images) +
             Number(getPackageToAdd.total_images),
+          available_features: getPackageToAdd.available_features,
         },
       });
       if (!userUpdatedPackage) {
@@ -901,6 +902,7 @@ export class PaymentsService {
           total_images:
             Number(SubcribedPackage.total_images) +
             Number(getPackageToAdd.total_images),
+          available_features: getPackageToAdd.available_features,
         },
       });
       if (!userUpdatedPackage) {
