@@ -116,7 +116,7 @@ export class FeatureAiService {
       if (!featureDetails) {
         return errorResponse('Invalid request');
       }
-      featureDetails.file_url = addPhotoPrefix(featureDetails.file_url)
+      featureDetails.file_url = addPhotoPrefix(featureDetails.file_url);
       return successResponse('Feature of AI details', featureDetails);
     } catch (error) {
       processException(error);
@@ -201,8 +201,13 @@ export class FeatureAiService {
           status: coreConstant.ACTIVE,
         },
       });
+      let prepareData = [];
+      featureOfAIList.map((item) => {
+        item.file_url = addPhotoPrefix(item.file_url);
+        prepareData.push(item);
+      });
 
-      return successResponse('Active feature of ai list', featureOfAIList);
+      return successResponse('Active feature of ai list', prepareData);
     } catch (error) {
       processException(error);
     }
