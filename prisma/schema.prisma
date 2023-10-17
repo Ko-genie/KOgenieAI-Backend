@@ -344,3 +344,10 @@ model SocialMedia {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model BlogCategory {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(255)
+  image_url String @db.VarChar(255)
+  status    Int    @db.SmallInt()
+}
