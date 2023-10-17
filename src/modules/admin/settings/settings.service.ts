@@ -52,7 +52,7 @@ export class SettingService {
         _count: true,
       });
 
-      (userList);
+      userList;
 
       return successResponse('Country wise user list', userList);
     } catch (error) {
@@ -554,9 +554,16 @@ export class SettingService {
         ? await fetchMyUploadFilePathById(payload.landing_page_first_img_url)
         : await adminSettingsValueBySlug('landing_page_first_img_url');
 
+      const landing_page_logo_url = payload.landing_page_logo_url
+        ? await fetchMyUploadFilePathById(payload.landing_page_logo_url)
+        : await adminSettingsValueBySlug('landing_page_logo_url');
+
       const keyValuePairs = Object.entries(payload).map(([key, value]) => {
         if (key === 'landing_page_first_img_url') {
           value = landing_page_first_img_url;
+        }
+        if (key === 'landing_page_logo_url') {
+          value = landing_page_logo_url;
         }
         return { key, value };
       });
@@ -584,6 +591,7 @@ export class SettingService {
       data.landing_page_first_img_url = addPhotoPrefix(
         data.landing_page_first_img_url,
       );
+      data.landing_page_logo_url = addPhotoPrefix(data.landing_page_logo_url);
 
       return successResponse('Landing page data!', data);
     } catch (error) {
@@ -615,14 +623,13 @@ export class SettingService {
     }
   }
 
-  async getBraintreeSettingsData()
-  {
+  async getBraintreeSettingsData() {
     try {
       const data = await getAdminSettingsData(BraintreeCredentialsSlugs);
 
       return successResponse('Braintree credentials credentials', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 }
