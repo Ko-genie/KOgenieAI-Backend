@@ -554,9 +554,16 @@ export class SettingService {
         ? await fetchMyUploadFilePathById(payload.landing_page_first_img_url)
         : await adminSettingsValueBySlug('landing_page_first_img_url');
 
+      const landing_page_logo_url = payload.landing_page_logo_url
+        ? await fetchMyUploadFilePathById(payload.landing_page_logo_url)
+        : await adminSettingsValueBySlug('landing_page_logo_url');
+
       const keyValuePairs = Object.entries(payload).map(([key, value]) => {
         if (key === 'landing_page_first_img_url') {
           value = landing_page_first_img_url;
+        }
+        if (key === 'landing_page_logo_url') {
+          value = landing_page_logo_url;
         }
         return { key, value };
       });
