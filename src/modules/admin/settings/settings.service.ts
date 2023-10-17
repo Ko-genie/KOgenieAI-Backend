@@ -52,7 +52,7 @@ export class SettingService {
         _count: true,
       });
 
-      (userList);
+      userList;
 
       return successResponse('Country wise user list', userList);
     } catch (error) {
@@ -584,6 +584,7 @@ export class SettingService {
       data.landing_page_first_img_url = addPhotoPrefix(
         data.landing_page_first_img_url,
       );
+      data.landing_page_logo_url = addPhotoPrefix(data.landing_page_logo_url);
 
       return successResponse('Landing page data!', data);
     } catch (error) {
@@ -615,14 +616,13 @@ export class SettingService {
     }
   }
 
-  async getBraintreeSettingsData()
-  {
+  async getBraintreeSettingsData() {
     try {
       const data = await getAdminSettingsData(BraintreeCredentialsSlugs);
 
       return successResponse('Braintree credentials credentials', data);
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
 }

@@ -17,6 +17,10 @@ export class UpdateLandingPageDataDto {
   @IsNumber()
   landing_page_first_img_url: number;
 
+  @IsOptional()
+  @IsNumber()
+  landing_page_logo_url: number;
+
   @IsNotEmpty()
   @IsString()
   landing_page_hw_first_title: string;

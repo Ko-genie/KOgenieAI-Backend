@@ -636,6 +636,7 @@ export const LandingPageSlugs = [
   'landing_page_first_description',
   'landing_page_first_btn_text',
   'landing_page_first_img_url',
+  'landing_page_logo_url',
   'landing_page_hw_first_title',
   'landing_page_hw_first_description',
   'landing_page_hw_second_title',
