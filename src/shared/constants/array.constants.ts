@@ -29,7 +29,9 @@ export const CommonSettingsSlugs = [
   'github_auth_client_id',
   'social_login_github_status',
   'social_login_google_status',
+  'privacy_policy_status',
   'privacy_policy',
+  'terms_condition_status',
   'terms_condition',
   'site_copy_right_text',
   'pm_stripe_client_id_live',
@@ -624,7 +626,6 @@ export const LanguageListJsonArray = [
   },
   { code: 'Pāli PI', name: 'Pāli', nativeName: 'पाऴि' },
 ];
-
 
 export const LandingPageSlugs = [
   'landing_page_first_title',
