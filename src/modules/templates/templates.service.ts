@@ -198,7 +198,7 @@ export class TemplateService {
           category_id: checkCategory.id,
         },
       });
-      
+
       if (checkTemplateList.length > 0) {
         return errorResponse(
           'Remove this category from template, then try to delete!',
@@ -556,7 +556,7 @@ export class TemplateService {
       const prompt = templateDetails.prompt;
 
       const finalPrompt = await setDynamicValueInPrompt(prompt, payload);
-
+      console.log(finalPrompt, 'finalPrompt');
       await this.openaiService.init();
       const response = await this.openaiService.textCompletion(
         finalPrompt,
