@@ -67,7 +67,12 @@ export const SMTPSettingsSlugs = [
   'smtp_encryption',
 ];
 
-export const TermsConditionSlugs = ['privacy_policy', 'terms_condition'];
+export const TermsConditionSlugs = [
+  'privacy_policy_status',
+  'privacy_policy',
+  'terms_condition_status',
+  'terms_condition',
+];
 
 export const OpenAISettingSlugs = [
   'open_ai_secret',
