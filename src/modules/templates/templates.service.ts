@@ -822,7 +822,7 @@ export class TemplateService {
       });
       const paginationMeta =
         myFavTemplate.length > 0
-          ? await paginationMetaData('myDocuments', payload)
+          ? await paginationMetaData('favouriteTemplate', payload)
           : DefaultPaginationMetaData;
 
       const data = {
@@ -955,6 +955,16 @@ export class TemplateService {
 
   async makeTemplateFavourite(user: User, payload: MakeTemplateFavourite) {
     try {
+      const checkTemplate = await this.prisma.template.findFirst({
+        where: {
+          id: payload.template_id,
+        },
+      });
+
+      if (!checkTemplate) {
+        return errorResponse('Invalid Request!');
+      }
+
       const favouriteTemplateDetails =
         await this.prisma.favouriteTemplate.findFirst({
           where: {
