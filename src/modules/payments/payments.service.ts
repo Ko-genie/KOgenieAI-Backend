@@ -491,7 +491,7 @@ export class PaymentsService {
         await this.getUserPackage(user);
       if (!package_valid) {
         return errorResponse(
-          'Please subscribe before adding package to subscription',
+          'Please subscribe before adding a package to subscription',
         );
       }
       const getPackageToAdd = await this.prisma.package.findFirst({
@@ -512,6 +512,25 @@ export class PaymentsService {
           'Stripe payment intent could not be verified or has not succeeded',
         );
       }
+      const userPurchasedPackage =
+        await this.prisma.userPurchasedPackage.findUnique({
+          where: {
+            id: Number(SubcribedPackage.id),
+          },
+        });
+      if (!userPurchasedPackage) {
+        return errorResponse('User package not found!');
+      }
+
+      // Split existing available features into an array and merge with new package features
+      const existingFeatures =
+        userPurchasedPackage.available_features.split(',');
+      const newFeatures = getPackageToAdd.available_features.split(',');
+      const mergedFeatures = [...existingFeatures, ...newFeatures];
+
+      // Convert merged features back to a comma-separated string
+      const updatedAvailableFeatures = mergedFeatures.join(',');
+
       const userUpdatedPackage = await this.prisma.userPurchasedPackage.update({
         where: {
           id: Number(SubcribedPackage.id),
@@ -523,7 +542,7 @@ export class PaymentsService {
           total_images:
             Number(SubcribedPackage.total_images) +
             Number(getPackageToAdd.total_images),
-          available_features: getPackageToAdd.available_features,
+          available_features: updatedAvailableFeatures,
         },
       });
       if (!userUpdatedPackage) {
@@ -908,7 +927,7 @@ export class PaymentsService {
         await this.getUserPackage(user);
       if (!package_valid) {
         return errorResponse(
-          'Please subscribe before adding package to subscription',
+          'Please subscribe before adding a package to subscription',
         );
       }
       const getPackageToAdd = await this.prisma.package.findFirst({
@@ -928,6 +947,23 @@ export class PaymentsService {
       if (!transaction) {
         return errorResponse('Purchase failed!');
       }
+      const userPurchasedPackage =
+        await this.prisma.userPurchasedPackage.findUnique({
+          where: {
+            id: Number(SubcribedPackage.id),
+          },
+        });
+      if (!userPurchasedPackage) {
+        return errorResponse('User package not found!');
+      }
+
+      const existingFeatures =
+        userPurchasedPackage.available_features.split(',');
+      const newFeatures = getPackageToAdd.available_features.split(',');
+      const mergedFeatures = [...existingFeatures, ...newFeatures];
+
+      const updatedAvailableFeatures = mergedFeatures.join(',');
+
       const userUpdatedPackage = await this.prisma.userPurchasedPackage.update({
         where: {
           id: Number(SubcribedPackage.id),
@@ -939,7 +975,7 @@ export class PaymentsService {
           total_images:
             Number(SubcribedPackage.total_images) +
             Number(getPackageToAdd.total_images),
-          available_features: getPackageToAdd.available_features,
+          available_features: updatedAvailableFeatures,
         },
       });
       if (!userUpdatedPackage) {
@@ -958,6 +994,7 @@ export class PaymentsService {
       processException(error);
     }
   }
+
   async getMyTransactionList(user: User, payload: any) {
     try {
       const whereClause = {
