@@ -556,7 +556,7 @@ export class TemplateService {
       const prompt = templateDetails.prompt;
 
       const finalPrompt = await setDynamicValueInPrompt(prompt, payload);
-
+      console.log(finalPrompt, 'finalPrompt');
       await this.openaiService.init();
       const response = await this.openaiService.textCompletion(
         finalPrompt,
