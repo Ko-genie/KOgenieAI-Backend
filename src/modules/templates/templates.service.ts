@@ -998,7 +998,7 @@ export class TemplateService {
 
       if (updateFavouriteTemplate.status === coreConstant.ACTIVE) {
         return successResponse('Template is marked as favourite!');
-      }
+      }else
       {
         return successResponse('Template is removed from favourite!');
       }
