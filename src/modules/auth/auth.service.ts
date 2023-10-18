@@ -377,7 +377,6 @@ export class AuthService {
     }
   }
 
-  
   async verifyEmail(
     payload: VerifyEmailCredentialsDto,
   ): Promise<ResponseModel> {
@@ -441,6 +440,7 @@ export class AuthService {
             password: hashPassword,
             provider: 'google',
             email_verified: coreConstant.IS_VERIFIED,
+            status: coreConstant.ACTIVE,
           },
           false,
         );
@@ -538,6 +538,7 @@ export class AuthService {
             password: hashPassword,
             provider: 'github',
             email_verified: coreConstant.IS_VERIFIED,
+            status: coreConstant.ACTIVE,
           },
           false,
         );
