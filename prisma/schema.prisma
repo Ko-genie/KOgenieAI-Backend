@@ -203,7 +203,7 @@ model UserTokens {
   userId       Int
   refreshToken String   @db.LongText()
   family       String   @unique
-  browserInfo  String?
+  browserInfo  String?  @db.LongText()
   expiresAt    DateTime
 
   created_at DateTime @default(now())
