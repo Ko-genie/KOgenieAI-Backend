@@ -83,6 +83,7 @@ export class AppModule implements NestModule {
         { path: '/user/make-template-favourite', method: RequestMethod.POST },
         { path: '/user/generate-code', method: RequestMethod.POST },
         { path: '/user/text-translate', method: RequestMethod.POST },
+        { path: '/auth/google-login', method: RequestMethod.POST },
       )
       .forRoutes('*');
   }

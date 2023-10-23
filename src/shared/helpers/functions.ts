@@ -62,18 +62,17 @@ export function processException(e) {
       !e.response.hasOwnProperty('data')) ||
     !e.hasOwnProperty('response')
   ) {
-    console.error(e.stack);
-    myLogger.error(e.stack);
+    // myLogger.error(e);
   }
-  throw e;
+  // throw e;
 }
 function checkPrismaError(e) {
   if (
     e instanceof Prisma.PrismaClientKnownRequestError ||
     e instanceof Prisma.PrismaClientUnknownRequestError
   ) {
-    console.error(e.stack);
-    throw new Error('Something went wrong.');
+    // throw new Error('Something went wrong.');
+    return errorResponse('Something went wrong.');
   }
 }
 export function successResponse(msg?: string, data?: object): ResponseModel {

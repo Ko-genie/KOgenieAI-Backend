@@ -448,10 +448,10 @@ export class AuthService {
         if (!newUser.success) {
           return errorResponse('User registration failed');
         }
-      }
-
-      if (existingUser.status === coreConstant.INACTIVE) {
-        return errorResponse('Your Account is disabled by admin!');
+      } else {
+        if (existingUser.status === coreConstant.INACTIVE) {
+          return errorResponse('Your Account is disabled by admin!');
+        }
       }
 
       const user = await this.validateUserByEmail(getPayload.email);
@@ -546,10 +546,12 @@ export class AuthService {
         if (!newUser.success) {
           return errorResponse('User registration failed');
         }
+      } else {
+        if (existingUser.status === coreConstant.INACTIVE) {
+          return errorResponse('Your Account is disabled by admin!');
+        }
       }
-      if (existingUser.status === coreConstant.INACTIVE) {
-        return errorResponse('Your Account is disabled by admin!');
-      }
+
       const user = await this.validateUserByEmail(githubUserDetails.email);
 
       if (user.email_verified !== coreConstant.IS_VERIFIED) {
