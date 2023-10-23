@@ -1380,6 +1380,11 @@ export class TemplateService {
       const usesHistoryList = await this.prisma.usesHistory.findMany({
         where: {
           userId: user.id,
+          OR: {
+            title: {
+              contains: payload.search ? payload.search : '',
+            },
+          },
         },
         ...paginate,
       });
