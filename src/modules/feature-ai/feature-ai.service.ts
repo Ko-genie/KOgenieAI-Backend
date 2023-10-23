@@ -69,11 +69,6 @@ export class FeatureAiService {
                   contains: payload.search,
                 },
               },
-              {
-                designation: {
-                  contains: payload.search,
-                },
-              },
             ],
           }
         : {};
