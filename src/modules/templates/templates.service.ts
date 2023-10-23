@@ -762,14 +762,22 @@ export class TemplateService {
       processException(error);
     }
   }
-  async getDocumentListByPaginate(payload: paginateInterface, user: User) {
+  async getDocumentListByPaginate(payload: any, user: User) {
     try {
       const paginate = await paginatioOptions(payload);
+      const whereClause = {
+        user_id: user.id,
+        OR: [
+          {
+            title: {
+              contains: payload.search ? payload.search : '',
+            },
+          },
+        ],
+      };
 
       const documentList = await this.prisma.myDocuments.findMany({
-        where: {
-          user_id: user.id,
-        },
+        where: whereClause,
         include: {
           template: {
             select: {
@@ -998,8 +1006,7 @@ export class TemplateService {
 
       if (updateFavouriteTemplate.status === coreConstant.ACTIVE) {
         return successResponse('Template is marked as favourite!');
-      }else
-      {
+      } else {
         return successResponse('Template is removed from favourite!');
       }
     } catch (error) {
@@ -1075,11 +1082,17 @@ export class TemplateService {
   async getGeneratedCodeListOfUser(user: User, payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
+      const whereClause = {
+        user_id: user.id,
+        OR: {
+          title: {
+            contains: payload.search ? payload.search : '',
+          },
+        },
+      };
 
       const generatedCodeList = await this.prisma.generatedCode.findMany({
-        where: {
-          user_id: user.id,
-        },
+        where: whereClause,
         ...paginate,
       });
 
@@ -1283,6 +1296,11 @@ export class TemplateService {
         ...(user && user.role === coreConstant.USER_ROLE_USER
           ? { user_id: user.id }
           : {}),
+        OR: {
+          title: {
+            contains: payload.search ? payload.search : '',
+          },
+        },
       };
       const generatedTranslationList =
         await this.prisma.textTranslateDocument.findMany({

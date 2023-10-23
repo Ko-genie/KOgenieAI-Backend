@@ -41,10 +41,7 @@ export class UserTemplateController {
   }
 
   @Get('document-list')
-  getDocumentListByPaginate(
-    @Query() payload: paginateInterface,
-    @UserInfo() user: User,
-  ) {
+  getDocumentListByPaginate(@Query() payload: any, @UserInfo() user: User) {
     return this.templateService.getDocumentListByPaginate(payload, user);
   }
   @Get('favourite-list')
