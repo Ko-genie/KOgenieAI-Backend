@@ -303,13 +303,11 @@ export class TemplateService {
   async getTemplateList(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
-
-      const templateList = await this.prisma.template.findMany({
-        where: {
+      const whereCondition = payload.search? {
           OR: [
             {
               title: {
-                contains: payload.title,
+                contains: payload.search,
               },
             },
             {
@@ -320,7 +318,10 @@ export class TemplateService {
               },
             },
           ],
-        },
+        }: {};
+
+      const templateList = await this.prisma.template.findMany({
+        where: whereCondition,
         include: {
           templateCategory: true,
           TemplateField: true,
