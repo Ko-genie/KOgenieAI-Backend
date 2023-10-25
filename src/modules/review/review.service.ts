@@ -80,7 +80,7 @@ export class ReviewService {
 
         const paginationMeta =
           reviewList.length > 0
-            ? await paginationMetaData('review', payload)
+            ? await paginationMetaData('review', payload, whereClause)
             : DefaultPaginationMetaData;
 
         data['list'] = reviewList;

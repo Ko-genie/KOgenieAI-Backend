@@ -72,7 +72,7 @@ export class SocialMediaService {
 
         const paginationMeta =
           socialMediaList.length > 0
-            ? await paginationMetaData('review', payload)
+            ? await paginationMetaData('socialMedia', payload, whereClause)
             : DefaultPaginationMetaData;
 
         data['list'] = socialMediaList;

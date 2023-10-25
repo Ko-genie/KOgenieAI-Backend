@@ -77,7 +77,11 @@ export class TrustedOrganizationService {
 
       const paginationMeta =
         listOfTrustedOrganization.length > 0
-          ? await paginationMetaData('trustedOrganization', payload)
+          ? await paginationMetaData(
+              'trustedOrganization',
+              payload,
+              whereClause,
+            )
           : DefaultPaginationMetaData;
 
       const data = {

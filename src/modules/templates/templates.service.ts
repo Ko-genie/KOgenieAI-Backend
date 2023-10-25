@@ -303,22 +303,24 @@ export class TemplateService {
   async getTemplateList(payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
-      const whereCondition = payload.search? {
-          OR: [
-            {
-              title: {
-                contains: payload.search,
-              },
-            },
-            {
-              templateCategory: {
-                name: {
+      const whereCondition = payload.search
+        ? {
+            OR: [
+              {
+                title: {
                   contains: payload.search,
                 },
               },
-            },
-          ],
-        }: {};
+              {
+                templateCategory: {
+                  name: {
+                    contains: payload.search,
+                  },
+                },
+              },
+            ],
+          }
+        : {};
 
       const templateList = await this.prisma.template.findMany({
         where: whereCondition,
@@ -710,8 +712,8 @@ export class TemplateService {
     try {
       const paginate = await paginatioOptions(paginationOptions);
       const whereCondition = {
-          user_id: user.id,
-        }
+        user_id: user.id,
+      };
 
       let imageDocuments = await this.prisma.myImages.findMany({
         where: whereCondition,
@@ -799,7 +801,11 @@ export class TemplateService {
         },
         ...paginate,
       });
-      const paginationMeta = await paginationMetaData('myDocuments', payload);
+      const paginationMeta = await paginationMetaData(
+        'myDocuments',
+        payload,
+        whereClause,
+      );
 
       const data = {
         list: documentList,
@@ -816,12 +822,13 @@ export class TemplateService {
   ): Promise<ResponseModel> {
     try {
       const paginate = await paginatioOptions(payload);
+      const whereCondition = {
+        user_id: user.id,
+        status: coreConstant.ACTIVE,
+      };
 
       const myFavTemplate = await this.prisma.favouriteTemplate.findMany({
-        where: {
-          user_id: user.id,
-          status: coreConstant.ACTIVE,
-        },
+        where: whereCondition,
         include: {
           template: {
             include: {
@@ -833,7 +840,11 @@ export class TemplateService {
       });
       const paginationMeta =
         myFavTemplate.length > 0
-          ? await paginationMetaData('favouriteTemplate', payload)
+          ? await paginationMetaData(
+              'favouriteTemplate',
+              payload,
+              whereCondition,
+            )
           : DefaultPaginationMetaData;
 
       const data = {
@@ -864,7 +875,7 @@ export class TemplateService {
 
       const paginationMeta =
         documentList.length > 0
-          ? await paginationMetaData('myDocuments', payload)
+          ? await paginationMetaData('myDocuments', payload, whereClause)
           : DefaultPaginationMetaData;
 
       const data = {
@@ -1099,7 +1110,11 @@ export class TemplateService {
         ...paginate,
       });
 
-      const paginationMeta = await paginationMetaData('generatedCode', payload);
+      const paginationMeta = await paginationMetaData(
+        'generatedCode',
+        payload,
+        whereClause,
+      );
 
       const data = {
         list: generatedCodeList,
@@ -1314,6 +1329,7 @@ export class TemplateService {
       const paginationMeta = await paginationMetaData(
         'textTranslateDocument',
         payload,
+        whereCondition,
       );
 
       const data = {
@@ -1379,16 +1395,17 @@ export class TemplateService {
   async getMyUsesHistoryList(user: User, payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
-
-      const usesHistoryList = await this.prisma.usesHistory.findMany({
-        where: {
+      const whereCondition = {
           userId: user.id,
           OR: {
             title: {
               contains: payload.search ? payload.search : '',
             },
           },
-        },
+      }
+      
+      const usesHistoryList = await this.prisma.usesHistory.findMany({
+        where: whereCondition,
         ...paginate,
       });
 
@@ -1444,7 +1461,7 @@ export class TemplateService {
         ...paginate,
       });
 
-      const paginationMeta = await paginationMetaData('usesHistory', payload);
+      const paginationMeta = await paginationMetaData('usesHistory', payload,whereClause);
 
       const data = {
         list: usesHistoryList,

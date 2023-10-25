@@ -60,7 +60,11 @@ export class ProgramingLanguageService {
 
         const paginationMeta =
           languageList.length > 0
-            ? await paginationMetaData('programingLanguage', payload)
+            ? await paginationMetaData(
+                'programingLanguage',
+                payload,
+                whereClause,
+              )
             : DefaultPaginationMetaData;
 
         data['list'] = languageList;

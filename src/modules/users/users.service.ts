@@ -158,32 +158,33 @@ export class UsersService {
     try {
       const search = payload.search ? payload.search : '';
       const paginate = await paginatioOptions(payload);
+      const whereCondition = {
+        OR: [
+          {
+            email: {
+              contains: search,
+            },
+          },
+          {
+            first_name: {
+              contains: search,
+            },
+          },
+          {
+            last_name: {
+              contains: search,
+            },
+          },
+          {
+            user_name: {
+              contains: search,
+            },
+          },
+        ],
+      };
 
       const userList = await this.prisma.user.findMany({
-        where: {
-          OR: [
-            {
-              email: {
-                contains: search,
-              },
-            },
-            {
-              first_name: {
-                contains: search,
-              },
-            },
-            {
-              last_name: {
-                contains: search,
-              },
-            },
-            {
-              user_name: {
-                contains: search,
-              },
-            },
-          ],
-        },
+        where: whereCondition,
         orderBy: {
           created_at: 'desc',
         },
@@ -197,7 +198,7 @@ export class UsersService {
 
       const paginationMeta =
         userListWithoutPassword.length > 0
-          ? await paginationMetaData('user', payload)
+          ? await paginationMetaData('user', payload, whereCondition)
           : DefaultPaginationMetaData;
 
       const data = {

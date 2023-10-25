@@ -82,7 +82,7 @@ export class FeatureAiService {
 
         const paginationMeta =
           featureOfAIList.length > 0
-            ? await paginationMetaData('featureOfAI', payload)
+            ? await paginationMetaData('featureOfAI', payload, whereClause)
             : DefaultPaginationMetaData;
 
         data['list'] = featureOfAIList;

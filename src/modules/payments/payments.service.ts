@@ -303,13 +303,15 @@ export class PaymentsService {
           ? coreConstant.PACKAGE_TYPES.SUBSCRIPTION
           : coreConstant.PACKAGE_TYPES.PACKAGE;
 
+      const whereCondition ={
+            type: queryType,
+            soft_delete: false,
+      }
+      
       let packages: Package[];
       if (payload.type) {
         packages = await this.prisma.package.findMany({
-          where: {
-            type: queryType,
-            soft_delete: false,
-          },
+          where: whereCondition,
           ...paginate,
         });
       } else {
@@ -321,7 +323,11 @@ export class PaymentsService {
           ...paginate,
         });
       }
-      const paginationMeta = await paginationMetaData('package', payload);
+      const paginationMeta = await paginationMetaData(
+        'package',
+        payload,
+        whereCondition,
+      );
 
       if (!packages) return errorResponse('Packages not found');
       return successResponse('Packages fetched successfully', {
@@ -375,7 +381,7 @@ export class PaymentsService {
 
       const paginationMeta =
         packages.length > 0
-          ? await paginationMetaData('package', payload)
+          ? await paginationMetaData('package', payload, whereClause)
           : DefaultPaginationMetaData;
 
       if (!packages) return errorResponse('Packages not found');
@@ -813,7 +819,7 @@ export class PaymentsService {
 
       const paginationMeta =
         allTransactions.length > 0
-          ? await paginationMetaData('paymentTransaction', payload)
+          ? await paginationMetaData('paymentTransaction', payload, whereClause)
           : DefaultPaginationMetaData;
 
       const data = {
@@ -1060,7 +1066,7 @@ export class PaymentsService {
       // UserPurchase
       const paginationMeta =
         allTransactions.length > 0
-          ? await paginationMetaData('paymentTransaction', payload)
+          ? await paginationMetaData('paymentTransaction', payload, whereClause)
           : DefaultPaginationMetaData;
 
       const data = {

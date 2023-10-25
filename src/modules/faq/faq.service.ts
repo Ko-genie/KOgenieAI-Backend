@@ -34,14 +34,19 @@ export class FaqService {
     try {
       const data = {};
       const paginate = await paginatioOptions(payload);
+      const whereCondition = {
+        type: payload.type !== undefined ? Number(payload.type) : undefined,
+      };
 
       const faqList = await this.prisma.faq.findMany({
-        where: {
-          type: payload.type !== undefined ? Number(payload.type) : undefined,
-        },
+        where: whereCondition,
         ...paginate,
       });
-      const paginationMeta = await paginationMetaData('faq', payload);
+      const paginationMeta = await paginationMetaData(
+        'faq',
+        payload,
+        whereCondition,
+      );
 
       data['list'] = faqList;
       data['meta'] = paginationMeta;
