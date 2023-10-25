@@ -584,6 +584,7 @@ export class UsersService {
         where: {
           user_id: user.id,
         },
+        take: 5,
       });
       data['my_documents'] = await this.prisma.myDocuments.findMany({
         where: {
