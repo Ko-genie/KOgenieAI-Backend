@@ -709,11 +709,12 @@ export class TemplateService {
   ): Promise<ResponseModel> {
     try {
       const paginate = await paginatioOptions(paginationOptions);
+      const whereCondition = {
+          user_id: user.id,
+        }
 
       let imageDocuments = await this.prisma.myImages.findMany({
-        where: {
-          user_id: user.id,
-        },
+        where: whereCondition,
         orderBy: {
           created_at: 'desc',
         },
@@ -727,6 +728,7 @@ export class TemplateService {
       const paginationMeta = await paginationMetaData(
         'myImages',
         paginationOptions,
+        whereCondition,
       );
 
       const data = {

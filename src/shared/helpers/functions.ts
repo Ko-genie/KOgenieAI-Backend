@@ -164,8 +164,14 @@ export async function paginatioOptions(payload: any) {
   return data;
 }
 
-export async function paginationMetaData(model: string, payload: any) {
-  const total = await PrismaClient[model].count();
+export async function paginationMetaData(
+  model: string,
+  payload: any,
+  whereCondition = {},
+) {
+  const total = await PrismaClient[model].count({
+    where: whereCondition,
+  });
 
   const limitOffset = await formatLimitOffset(payload);
 
