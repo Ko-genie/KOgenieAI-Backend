@@ -90,6 +90,10 @@ export class UserTemplateController {
   getUserTranscriptionDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getUserTranscriptionDetails(id, user);
   }
+  @Delete('delete-transcription-:id')
+  deleteTranscriptionDetails(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.deleteTranscriptionDetails(id, user);
+  }
   @Get('image-details-:id')
   getImageDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getImageDocumentDetails(id, user);

@@ -1271,7 +1271,35 @@ export class TemplateService {
       processException(error);
     }
   }
+  async deleteTranscriptionDetails(id: number, user: User) {
+    try {
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+      const documentDetails =
+        await this.prisma.generatedTranscription.findFirst({
+          where: whereCondition,
+        });
 
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.generatedCode.delete({
+        where: {
+          id: documentDetails.id,
+        },
+      });
+
+      return successResponse('Translated Document is deleted successfully!');
+    } catch (error) {
+      console.log(error, 'error');
+      processException(error);
+    }
+  }
   async deleteGeneratedCode(id: number, user: User) {
     try {
       const whereCondition = {
