@@ -13,7 +13,7 @@ import {
   generatePromptForCode,
   generatePromptForTranslate,
   createNewUsesHistory,
-  convertBinaryToMP3,
+  convertToMP3,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -1092,7 +1092,7 @@ export class TemplateService {
       processException(error);
     }
   }
-  async transcriptionGenerateOpenAi(user: User, file: string) {
+  async transcriptionGenerateOpenAi(user: User, file: File) {
     try {
       const checkUserPackageResponse: any =
         await this.paymentService.checkSubscriptionStatus(user);
@@ -1107,7 +1107,7 @@ export class TemplateService {
           'Your word limit exceed, please, purchase an addiotional package!',
         );
       }
-      const mp3File: any = await convertBinaryToMP3(file,'/uploads/a.mp3');
+      const mp3File: any = await convertToMP3(file,'/uploads/a.mp3');
       console.log(mp3File, 'responseOpenAi');
 
       await this.openaiService.init();

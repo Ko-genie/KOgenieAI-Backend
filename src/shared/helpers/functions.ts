@@ -5,10 +5,7 @@ import { AdminSettings, Prisma, Template } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
 import sharp from 'sharp';
-const Lame = require('node-lame').Lame;
-const fs = require('fs').promises;
-const os = require('os');
-const lamejs = require('lamejs');
+const ffmpeg = require('fluent-ffmpeg');
 
 import {
   CreativityKeyArray,
@@ -184,38 +181,23 @@ export function fileToBlob(file, callback) {
   reader.readAsArrayBuffer(file);
 }
 
-export async function convertBinaryToMP3(binaryData, outputFilePath) {
-  return new Promise((resolve, reject) => {
-    try {
-      // Create a writable stream to write the MP3 data to the output file
-      const uploadDirectory = `./${coreConstant.FILE_DESTINATION}`;
-
-      const imagePath = path.join(uploadDirectory, Date.now() + '.mp3');
-
-      // Create a Lame encoder
-      const encoder = new Lame({
-        output: imagePath,
-        bitrate: 192, // Adjust the bitrate as needed
-      });
-
-      // Write the binary audio data to the encoder
-      encoder
-        .setBuffer(binaryData)
-        .encode()
-        .then(() => {
-          // Close the encoder and the output stream
-          encoder.close();
-
-          resolve(outputFilePath);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    } catch (error) {
-      reject(error);
-    }
-  });
+export function convertToMP3(audioBuffer, callback) {
+  ffmpeg()
+    .input(audioBuffer)
+    .inputFormat('wav') // Adjust the input format as needed (e.g., 'mp3', 'ogg', etc.)
+    .audioCodec('libmp3lame')
+    .toFormat('mp3')
+    .on('end', () => {
+      console.log('Conversion finished.');
+      callback(null);
+    })
+    .on('error', (err) => {
+      console.error('Error:', err);
+      callback(err);
+    })
+    .toBuffer();
 }
+
 export async function paginationMetaData(
   model: string,
   payload: any,

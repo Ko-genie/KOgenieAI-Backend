@@ -42,13 +42,14 @@ export class UserTemplateController {
   ) {
     return this.templateService.generateImage(user, payload);
   }
+  @UseInterceptors(FileInterceptor('audio'))
   @Post('generate-transcription')
   async transcriptionGenerateOpenAiController(
-    @Body('binary') binary:string,
+    @UploadedFile() audio: any,
     @UserInfo() user: User,
   ) {
     const transcriptionResult =
-      await this.templateService.transcriptionGenerateOpenAi(user, binary);
+      await this.templateService.transcriptionGenerateOpenAi(user, audio);
     return transcriptionResult;
   }
 
