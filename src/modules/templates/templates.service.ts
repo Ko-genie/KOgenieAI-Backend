@@ -1288,7 +1288,7 @@ export class TemplateService {
         return errorResponse('Invalid request!');
       }
 
-      await this.prisma.generatedCode.delete({
+      await this.prisma.generatedTranscription.delete({
         where: {
           id: documentDetails.id,
         },
