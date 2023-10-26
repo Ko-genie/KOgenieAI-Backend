@@ -5,7 +5,6 @@ import { AdminSettings, Prisma, Template } from '@prisma/client';
 const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
 import sharp from 'sharp';
-const ffmpeg = require('fluent-ffmpeg');
 import * as fs from 'fs';
 
 import {
