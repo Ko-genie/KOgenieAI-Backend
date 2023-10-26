@@ -13,6 +13,7 @@ import {
   generatePromptForCode,
   generatePromptForTranslate,
   createNewUsesHistory,
+  convertBinaryToMP3,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -1027,7 +1028,6 @@ export class TemplateService {
       processException(error);
     }
   }
-
   async generateOpenAiCode(user: User, payload: GenerateOpenAiCodeDto) {
     try {
       const checkUserPackageResponse: any =
@@ -1092,7 +1092,65 @@ export class TemplateService {
       processException(error);
     }
   }
+  async transcriptionGenerateOpenAi(user: User, file: string) {
+    try {
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
 
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData: any = checkUserPackageResponse.data;
+
+      if (userPackageData.word_limit_exceed) {
+        return errorResponse(
+          'Your word limit exceed, please, purchase an addiotional package!',
+        );
+      }
+      const mp3File: any = await convertBinaryToMP3(file,'/uploads/a.mp3');
+      console.log(mp3File, 'responseOpenAi');
+
+      await this.openaiService.init();
+      const responseOpenAi = await this.openaiService.transcriptionGenerate(
+        mp3File,
+      );
+
+      // if (!responseOpenAi) {
+      //   return errorResponse('Something went wrong!');
+      // }
+
+      // const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      // const wordCount = wordCountMultilingual(resultOfPrompt);
+
+      // await this.paymentService.updateUserUsedWords(
+      //   userPackageData.id,
+      //   wordCount,
+      // );
+
+      // const saveGeneratedCode = await this.prisma.generatedCode.create({
+      //   data: {
+      //     title: payload.title,
+      //     prompt: promot,
+      //     result: resultOfPrompt,
+      //     total_used_words: wordCount,
+      //     user_id: user.id,
+      //   },
+      // });
+
+      // await createNewUsesHistory(
+      //   user.id,
+      //   coreConstant.AVAILABLE_FEATURES.CODE,
+      //   payload.title,
+      //   wordCount,
+      //   0,
+      // );
+
+      return successResponse('Generate Code successfully!', responseOpenAi);
+    } catch (error) {
+      console.log(error, 'TTTTTTTTTTTTT');
+      processException(error);
+    }
+  }
   async getGeneratedCodeListOfUser(user: User, payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
@@ -1396,14 +1454,14 @@ export class TemplateService {
     try {
       const paginate = await paginatioOptions(payload);
       const whereCondition = {
-          userId: user.id,
-          OR: {
-            title: {
-              contains: payload.search ? payload.search : '',
-            },
+        userId: user.id,
+        OR: {
+          title: {
+            contains: payload.search ? payload.search : '',
           },
-      }
-      
+        },
+      };
+
       const usesHistoryList = await this.prisma.usesHistory.findMany({
         where: whereCondition,
         ...paginate,
@@ -1461,7 +1519,11 @@ export class TemplateService {
         ...paginate,
       });
 
-      const paginationMeta = await paginationMetaData('usesHistory', payload,whereClause);
+      const paginationMeta = await paginationMetaData(
+        'usesHistory',
+        payload,
+        whereClause,
+      );
 
       const data = {
         list: usesHistoryList,

@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import * as path from 'path';
+const bodyParser = require('body-parser');
 
 import { AppModule } from './modules/app/app.module';
 import { API_PREFIX } from './shared/constants/global.constants';
@@ -23,6 +24,8 @@ async function bootstrap() {
     }),
   );
   app.use(cookieParser());
+  app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit for JSON requests
+  app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' })); // Increase the limit for URL-encoded requests
 
   app.useStaticAssets(
     path.join(__dirname, `../../${coreConstant.FILE_DESTINATION}`),

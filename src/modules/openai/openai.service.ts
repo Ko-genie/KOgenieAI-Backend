@@ -57,6 +57,15 @@ export class OpenAi {
 
     return imageResponse;
   }
+  async transcriptionGenerate(
+    file: File,
+  ): Promise<Openai.Audio.Transcriptions.Transcription> {
+    const audioResponse = await this.openai.audio.transcriptions.create({
+      file: file,
+      model: 'whisper-1',
+    });
+    return audioResponse;
+  }
   async listModels(): Promise<string[]> {
     const model = coreConstant.OPEN_AI_MODEL_NAMES;
     return model;

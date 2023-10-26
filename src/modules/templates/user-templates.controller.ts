@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GenerateImageDto } from './dto/generate-image.dto';
 import { TemplateService } from './templates.service';
@@ -17,6 +19,7 @@ import { MakeTemplateFavourite } from './dto/make-template-favourite.dto';
 import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { TextTranslateDto } from './dto/text-translate.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserTemplateController {
@@ -38,6 +41,15 @@ export class UserTemplateController {
     payload: GenerateImageDto,
   ) {
     return this.templateService.generateImage(user, payload);
+  }
+  @Post('generate-transcription')
+  async transcriptionGenerateOpenAiController(
+    @Body('binary') binary:string,
+    @UserInfo() user: User,
+  ) {
+    const transcriptionResult =
+      await this.templateService.transcriptionGenerateOpenAi(user, binary);
+    return transcriptionResult;
   }
 
   @Get('document-list')
@@ -99,7 +111,6 @@ export class UserTemplateController {
   ) {
     return this.templateService.generateOpenAiCode(user, payload);
   }
-
   @Get('get-generated-code-list')
   getGeneratedCodeListOfUser(@UserInfo() user: User, @Query() payload: any) {
     return this.templateService.getGeneratedCodeListOfUser(user, payload);
