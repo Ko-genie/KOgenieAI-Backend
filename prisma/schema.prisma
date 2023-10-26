@@ -33,18 +33,19 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  UserTokens            UserTokens[]
-  UserVerificationCodes UserVerificationCodes[]
-  UserPurchase          UserPurchasedPackage[]
-  MyDocuments           MyDocuments[]
-  MyUploads             MyUploads[]
-  PaymentTransaction    PaymentTransaction[]
-  MyImages              MyImages[]
-  FavouriteTemplate     FavouriteTemplate[]
-  GeneratedCode         GeneratedCode[]
-  TextTranslateDocument TextTranslateDocument[]
-  Review                Review[]
-  UsesHistory           UsesHistory[]
+  UserTokens             UserTokens[]
+  UserVerificationCodes  UserVerificationCodes[]
+  UserPurchase           UserPurchasedPackage[]
+  MyDocuments            MyDocuments[]
+  MyUploads              MyUploads[]
+  PaymentTransaction     PaymentTransaction[]
+  MyImages               MyImages[]
+  FavouriteTemplate      FavouriteTemplate[]
+  GeneratedCode          GeneratedCode[]
+  TextTranslateDocument  TextTranslateDocument[]
+  Review                 Review[]
+  UsesHistory            UsesHistory[]
+  GeneratedTranscription GeneratedTranscription[]
 }
 
 model Package {
@@ -254,6 +255,16 @@ model GeneratedCode {
   id               Int      @id @default(autoincrement())
   title            String   @db.Text()
   prompt           String   @db.LongText()
+  result           String?  @db.LongText()
+  total_used_words BigInt   @default(0) @db.BigInt()
+  user             User     @relation(fields: [user_id], references: [id])
+  user_id          Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model GeneratedTranscription {
+  id               Int      @id @default(autoincrement())
   result           String?  @db.LongText()
   total_used_words BigInt   @default(0) @db.BigInt()
   user             User     @relation(fields: [user_id], references: [id])

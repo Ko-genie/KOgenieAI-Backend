@@ -6,6 +6,7 @@ const crypto = require('crypto');
 import * as bcrypt from 'bcrypt';
 import sharp from 'sharp';
 const ffmpeg = require('fluent-ffmpeg');
+import * as fs from 'fs';
 
 import {
   CreativityKeyArray,
@@ -181,22 +182,19 @@ export function fileToBlob(file, callback) {
   reader.readAsArrayBuffer(file);
 }
 
-export function convertToMP3(audioBuffer, callback) {
-  ffmpeg()
-    .input(audioBuffer)
-    .inputFormat('wav') // Adjust the input format as needed (e.g., 'mp3', 'ogg', etc.)
-    .audioCodec('libmp3lame')
-    .toFormat('mp3')
-    .on('end', () => {
-      console.log('Conversion finished.');
-      callback(null);
-    })
-    .on('error', (err) => {
-      console.error('Error:', err);
-      callback(err);
-    })
-    .toBuffer();
+export async function saveAudioLocally(file: any, filePath: string) {
+  return new Promise((resolve, reject) => {
+    const buffer = Buffer.from(file.buffer, 'base64'); // Convert from base64
+    fs.writeFile(filePath, buffer, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(filePath);
+      }
+    });
+  });
 }
+
 
 export async function paginationMetaData(
   model: string,

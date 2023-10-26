@@ -20,7 +20,8 @@ import { GenerateOpenAiCodeDto } from './dto/generate-code.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { TextTranslateDto } from './dto/text-translate.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import * as fs from 'fs';
+import * as path from 'path';
 @Controller('user')
 export class UserTemplateController {
   constructor(private readonly templateService: TemplateService) {}
@@ -48,11 +49,19 @@ export class UserTemplateController {
     @UploadedFile() audio: any,
     @UserInfo() user: User,
   ) {
+    const baseDir = path.resolve(__dirname, '../../../..');
+    const uniqueFilename = Date.now() + '-' + audio.originalname;
+    const filePath = path.join(baseDir, 'uploads', uniqueFilename);
+    fs.writeFileSync(filePath, audio.buffer);
     const transcriptionResult =
-      await this.templateService.transcriptionGenerateOpenAi(user, audio);
+      await this.templateService.transcriptionGenerateOpenAi(user, filePath);
+
     return transcriptionResult;
   }
-
+  @Get('transcription-list')
+  getTransacriptionsByPaginate(@Query() payload: any, @UserInfo() user: User) {
+    return this.templateService.getTransacriptionsByPaginate(payload, user);
+  }
   @Get('document-list')
   getDocumentListByPaginate(@Query() payload: any, @UserInfo() user: User) {
     return this.templateService.getDocumentListByPaginate(payload, user);

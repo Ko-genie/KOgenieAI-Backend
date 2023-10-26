@@ -46,8 +46,6 @@
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
-    "ffmpeg-static": "^5.2.0",
-    "fluent-ffmpeg": "^2.1.2",
     "google-auth-library": "^9.0.0",
     "handlebars": "^4.7.7",
     "json-bigint": "^1.0.0",

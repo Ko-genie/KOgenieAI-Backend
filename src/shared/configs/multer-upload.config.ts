@@ -68,3 +68,4 @@ export const multerUploadConfig: MulterOptions = {
     fileSize: maxImageUploadSize,
   },
 };
+const maxAudioUploadSize = 50 * 1024 * 1024; // Maximum file size (50MB) - adjust as needed

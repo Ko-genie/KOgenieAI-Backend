@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import Openai from 'openai';
+import fs from 'fs';
+
 import { SettingService } from '../admin/settings/settings.service';
 import {
   countWords,
@@ -58,13 +60,17 @@ export class OpenAi {
     return imageResponse;
   }
   async transcriptionGenerate(
-    file: File,
+    filePath: any,
   ): Promise<Openai.Audio.Transcriptions.Transcription> {
-    const audioResponse = await this.openai.audio.transcriptions.create({
-      file: file,
-      model: 'whisper-1',
-    });
-    return audioResponse;
+    try {
+      const audioResponse = await this.openai.audio.transcriptions.create({
+        file: fs.createReadStream(filePath),
+        model: 'whisper-1',        
+      });
+      return audioResponse;
+    } catch (error) {
+      console.log(error);
+    }
   }
   async listModels(): Promise<string[]> {
     const model = coreConstant.OPEN_AI_MODEL_NAMES;

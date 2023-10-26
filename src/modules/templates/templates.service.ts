@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+const fs = require('fs');
+const path = require('path');
 import {
   checkValidationForContentGenerateUseTemplate,
   saveBase64ImageAsJpg,
@@ -13,7 +15,7 @@ import {
   generatePromptForCode,
   generatePromptForTranslate,
   createNewUsesHistory,
-  convertToMP3,
+  saveAudioLocally,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -817,6 +819,44 @@ export class TemplateService {
       processException(error);
     }
   }
+  async getTransacriptionsByPaginate(payload: any, user: User) {
+    try {
+      const paginate = await paginatioOptions(payload);
+      const whereClause = {
+        user_id: user.id,
+        OR: [
+          {
+            result: {
+              contains: payload.search ? payload.search : '',
+            },
+          },
+        ],
+      };
+
+      const transacriptionsList =
+        await this.prisma.generatedTranscription.findMany({
+          where: whereClause,
+          orderBy: {
+            created_at: 'desc',
+          },
+          ...paginate,
+        });
+      const paginationMeta = await paginationMetaData(
+        'generatedTranscription',
+        payload,
+        whereClause,
+      );
+
+      const data = {
+        list: transacriptionsList,
+        meta: paginationMeta,
+      };
+      return successResponse('Transacriptions List by paginate', data);
+    } catch (error) {
+      console.log(error, 'error');
+      processException(error);
+    }
+  }
   async getFavouriteListByPaginate(
     payload: paginateInterface,
     user: User,
@@ -1092,7 +1132,7 @@ export class TemplateService {
       processException(error);
     }
   }
-  async transcriptionGenerateOpenAi(user: User, file: File) {
+  async transcriptionGenerateOpenAi(user: User, filePath: any) {
     try {
       const checkUserPackageResponse: any =
         await this.paymentService.checkSubscriptionStatus(user);
@@ -1100,57 +1140,66 @@ export class TemplateService {
       if (checkUserPackageResponse.success === false) {
         return checkUserPackageResponse;
       }
+
       const userPackageData: any = checkUserPackageResponse.data;
 
       if (userPackageData.word_limit_exceed) {
         return errorResponse(
-          'Your word limit exceed, please, purchase an addiotional package!',
+          'Your word limit exceeded; please purchase an additional package!',
         );
       }
-      const mp3File: any = await convertToMP3(file,'/uploads/a.mp3');
-      console.log(mp3File, 'responseOpenAi');
-
       await this.openaiService.init();
       const responseOpenAi = await this.openaiService.transcriptionGenerate(
-        mp3File,
+        filePath,
       );
 
-      // if (!responseOpenAi) {
-      //   return errorResponse('Something went wrong!');
-      // }
+      if (!responseOpenAi.text) {
+        return errorResponse('Something went wrong!');
+      }
 
-      // const resultOfPrompt = responseOpenAi.choices[0].message.content;
-      // const wordCount = wordCountMultilingual(resultOfPrompt);
+      const wordCount = wordCountMultilingual(responseOpenAi.text);
 
-      // await this.paymentService.updateUserUsedWords(
-      //   userPackageData.id,
-      //   wordCount,
-      // );
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
 
-      // const saveGeneratedCode = await this.prisma.generatedCode.create({
-      //   data: {
-      //     title: payload.title,
-      //     prompt: promot,
-      //     result: resultOfPrompt,
-      //     total_used_words: wordCount,
-      //     user_id: user.id,
-      //   },
-      // });
+      const saveGeneratedTranscription =
+        await this.prisma.generatedTranscription.create({
+          data: {
+            result: responseOpenAi.text,
+            total_used_words: wordCount,
+            user_id: user.id,
+          },
+        });
 
-      // await createNewUsesHistory(
-      //   user.id,
-      //   coreConstant.AVAILABLE_FEATURES.CODE,
-      //   payload.title,
-      //   wordCount,
-      //   0,
-      // );
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.CODE,
+        responseOpenAi.text.slice(0, 10),
+        wordCount,
+        0,
+      );
 
-      return successResponse('Generate Code successfully!', responseOpenAi);
+      if (responseOpenAi.text && filePath) {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error('Error deleting file:', err);
+          } else {
+            console.log('File deleted successfully:', filePath);
+          }
+        });
+      }
+
+      return successResponse(
+        'Transcription generated successfully!',
+        saveGeneratedTranscription,
+      );
     } catch (error) {
-      console.log(error, 'TTTTTTTTTTTTT');
       processException(error);
     }
   }
+
   async getGeneratedCodeListOfUser(user: User, payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
