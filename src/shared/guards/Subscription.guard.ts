@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 import { PaymentsService } from 'src/modules/payments/payments.service';
 import { coreConstant } from '../helpers/coreConstant';
+import { getAdminSettingsData } from '../helpers/functions';
+import { OpenAISettingSlugs } from '../constants/array.constants';
 
 @Injectable()
 export class SubscriptionGuard implements CanActivate {
@@ -19,7 +21,10 @@ export class SubscriptionGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-
+    const response: any = await getAdminSettingsData(OpenAISettingSlugs);
+    if (!response.open_ai_secret) {
+      throw new ForbiddenException('Admin has not set the settings for open ai!');
+    }
     const type =
       this.reflector.get<string>('subscriptionType', context.getHandler()) ||
       'image';
@@ -58,6 +63,16 @@ export class SubscriptionGuard implements CanActivate {
       if (!available_features.includes(coreConstant.AVAILABLE_FEATURES.CODE)) {
         throw new ForbiddenException(
           'Ai code feature is not available for your package.',
+        );
+      }
+    }
+    if (type === 'transcription') {
+      if (word_limit_exceed) {
+        throw new ForbiddenException('Word limit exceeded.');
+      }
+      if (!available_features.includes(coreConstant.AVAILABLE_FEATURES.CODE)) {
+        throw new ForbiddenException(
+          'Ai speech to text feature is not available for your package.',
         );
       }
     }

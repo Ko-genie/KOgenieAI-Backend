@@ -949,6 +949,23 @@ export class TemplateService {
       processException(error);
     }
   }
+  async getUserTranscriptionDetails(id: number, user: User) {
+    try {
+      const TranscriptionDetails =
+        await this.prisma.generatedTranscription.findFirst({
+          where: {
+            id: id,
+            user_id: user.id,
+          },
+        });
+      if (!TranscriptionDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Transcription details', TranscriptionDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getUserDocumentDetails(id: number, user: User) {
     try {
       const documentDetails = await this.prisma.myDocuments.findFirst({

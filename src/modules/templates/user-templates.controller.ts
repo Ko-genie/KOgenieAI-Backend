@@ -43,6 +43,7 @@ export class UserTemplateController {
   ) {
     return this.templateService.generateImage(user, payload);
   }
+  @Subscription('transcription')
   @UseInterceptors(FileInterceptor('audio'))
   @Post('generate-transcription')
   async transcriptionGenerateOpenAiController(
@@ -84,6 +85,10 @@ export class UserTemplateController {
   @Get('document-details-:id')
   getUserDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getUserDocumentDetails(id, user);
+  }
+  @Get('transcription-details-:id')
+  getUserTranscriptionDetails(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.getUserTranscriptionDetails(id, user);
   }
   @Get('image-details-:id')
   getImageDocumentDetails(@Param('id') id: number, @UserInfo() user: User) {

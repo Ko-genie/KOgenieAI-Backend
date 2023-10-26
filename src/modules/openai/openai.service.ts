@@ -65,7 +65,7 @@ export class OpenAi {
     try {
       const audioResponse = await this.openai.audio.transcriptions.create({
         file: fs.createReadStream(filePath),
-        model: 'whisper-1',        
+        model: 'whisper-1',
       });
       return audioResponse;
     } catch (error) {
