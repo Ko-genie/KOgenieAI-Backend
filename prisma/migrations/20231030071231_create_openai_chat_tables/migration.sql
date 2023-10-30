@@ -9,7 +9,7 @@ CREATE TABLE `OpenAiChatCategory` (
     `color` VARCHAR(255) NOT NULL,
     `prompt` MEDIUMTEXT NOT NULL,
     `status` SMALLINT NOT NULL DEFAULT 0,
-    `image_url` VARCHAR(255) NOT NULL,
+    `image_url` VARCHAR(255) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 

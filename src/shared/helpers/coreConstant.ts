@@ -132,3 +132,4 @@ export const DefaultPaginationMetaData = {
   prev: null,
   next: null,
 };
+

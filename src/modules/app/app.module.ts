@@ -25,6 +25,7 @@ import { ReviewModule } from '../review/review.module';
 import { FeatureAiModule } from '../feature-ai/feature-ai.module';
 import { ProgramingLanguageModule } from '../programing-language/programing-language.module';
 import { SocialMediaModule } from '../social-media/social-media.module';
+import { OpenAiChatModule } from '../openai-chat/openai-chat.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { SocialMediaModule } from '../social-media/social-media.module';
     FeatureAiModule,
     ProgramingLanguageModule,
     SocialMediaModule,
+    OpenAiChatModule,
   ],
   providers: [
     {

@@ -194,7 +194,6 @@ export async function saveAudioLocally(file: any, filePath: string) {
   });
 }
 
-
 export async function paginationMetaData(
   model: string,
   payload: any,
@@ -502,4 +501,14 @@ export async function createNewUsesHistory(
   } catch (error) {
     processException(error);
   }
+}
+
+export async function createSlug(categoryName): Promise<string> {
+  // Remove leading and trailing white spaces
+  categoryName = categoryName.trim();
+
+  // Replace spaces with hyphens and convert to lowercase
+  const slug = categoryName.replace(/\s+/g, '-').toLowerCase();
+
+  return slug;
 }
