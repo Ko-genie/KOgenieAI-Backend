@@ -366,16 +366,17 @@ model BlogCategory {
 }
 
 model OpenAiChatCategory {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(255)
-  slug        String  @db.VarChar(255)
-  description String  @db.MediumText()
-  role        String  @db.VarChar(255)
-  human_name  String  @db.VarChar(255)
-  color       String  @db.VarChar(255)
-  prompt      String  @db.MediumText()
-  status      Int     @default(0) @db.SmallInt()
-  image_url   String? @db.VarChar(255)
+  id            Int     @id @default(autoincrement())
+  name          String  @db.VarChar(255)
+  slug          String  @db.VarChar(255)
+  description   String  @db.MediumText()
+  role          String  @db.VarChar(255)
+  human_name    String  @db.VarChar(255)
+  color         String  @db.VarChar(255)
+  prompt_prefix String? @db.MediumText()
+  help_with     String  @db.MediumText()
+  status        Int     @default(0) @db.SmallInt()
+  image_url     String? @db.VarChar(255)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -399,10 +400,11 @@ model UserOpenAiChat {
 }
 
 model UserOpenAiChatMessages {
-  id          Int    @id @default(autoincrement())
-  input       String @db.Text()
-  output      String @db.Text()
-  total_words Int    @default(0) @db.Int()
+  id          Int     @id @default(autoincrement())
+  role        String? @db.VarChar(255)
+  input       String? @db.Text()
+  output      String? @db.Text()
+  total_words Int     @default(0) @db.Int()
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

@@ -7,7 +7,8 @@ CREATE TABLE `OpenAiChatCategory` (
     `role` VARCHAR(255) NOT NULL,
     `human_name` VARCHAR(255) NOT NULL,
     `color` VARCHAR(255) NOT NULL,
-    `prompt` MEDIUMTEXT NOT NULL,
+    `prompt_prefix` MEDIUMTEXT NULL,
+    `help_with` MEDIUMTEXT NOT NULL,
     `status` SMALLINT NOT NULL DEFAULT 0,
     `image_url` VARCHAR(255) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -32,8 +33,9 @@ CREATE TABLE `UserOpenAiChat` (
 -- CreateTable
 CREATE TABLE `UserOpenAiChatMessages` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `input` TEXT NOT NULL,
-    `output` TEXT NOT NULL,
+    `role` VARCHAR(255) NULL,
+    `input` TEXT NULL,
+    `output` TEXT NULL,
     `total_words` INTEGER NOT NULL DEFAULT 0,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,

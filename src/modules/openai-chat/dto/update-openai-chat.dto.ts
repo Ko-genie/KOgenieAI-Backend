@@ -7,7 +7,11 @@ import {
 } from 'class-validator';
 import { StatusOnOffArray } from 'src/shared/constants/array.constants';
 
-export class CreateOpenAiChatCategoryDto {
+export class UpdateOpenAiChatCategoryDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+
   @IsNotEmpty()
   @IsString()
   name: string;
