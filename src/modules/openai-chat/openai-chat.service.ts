@@ -234,4 +234,34 @@ export class OpenAiChatService {
       processException(error);
     }
   }
+
+  async getOpenAiChatCategoryList(user: User, id: number, payload: any) {
+    try {
+      const list = await this.prisma.userOpenAiChat.findMany({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+      });
+
+      return successResponse('Category wise chat list', list);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getOpenAiChatList(user: User, id: number, payload: any) {
+    try {
+      const chatList = await this.prisma.userOpenAiChatMessages.findMany({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+      });
+
+      return successResponse('Chat list', chatList);
+    } catch (error) {
+      processException(error);
+    }
+  }
 }

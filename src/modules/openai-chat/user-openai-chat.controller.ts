@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { StartNewChat } from './dto/start-new-chat.dto';
@@ -11,5 +11,23 @@ export class UserOpenAiChatController {
   @Post('start-new-chat')
   startNewChat(@UserInfo() user: User, @Body() payload: StartNewChat) {
     return this.openAiChatService.startNewChat(user, payload);
+  }
+
+  @Get('get-openai-chat-category-list-:id')
+  getOpenAiChatCategoryList(
+    @UserInfo() user: User,
+    @Param('id') id: number,
+    @Query() payload: any,
+  ) {
+    return this.openAiChatService.getOpenAiChatCategoryList(user, id, payload);
+  }
+
+  @Get('get-openai-chat-list-:id')
+  getOpenAiChatList(
+    @UserInfo() user: User,
+    @Param('id') id: number,
+    @Query() payload: any,
+  ) {
+    return this.openAiChatService.getOpenAiChatList(user, id, payload);
   }
 }
