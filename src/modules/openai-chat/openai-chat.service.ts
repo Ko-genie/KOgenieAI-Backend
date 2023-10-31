@@ -8,6 +8,7 @@ import {
   paginationMetaData,
   processException,
   successResponse,
+  wordCountMultilingual,
 } from 'src/shared/helpers/functions';
 import {
   DefaultPaginationMetaData,
@@ -271,14 +272,23 @@ export class OpenAiChatService {
         userPackageData.model,
       );
 
+      const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
+
       const openAiChat = await this.prisma.userOpenAiChatMessages.create({
         data: {
           role: RoleTypeForOpenAiChat.Assistant,
-          content: responseOpenAi.choices[0].message.content,
+          content: resultOfPrompt,
           userId: user.id,
           userOpenAiChatId: userOpenAiChat.id,
+          total_words: wordCount,
         },
       });
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
 
       return successResponse('New chat is created successfully!', openAiChat);
     } catch (error) {
@@ -373,15 +383,23 @@ export class OpenAiChatService {
         1,
         userPackageData.model,
       );
+      const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
 
       await this.prisma.userOpenAiChatMessages.create({
         data: {
           role: RoleTypeForOpenAiChat.Assistant,
-          content: responseOpenAi.choices[0].message.content,
+          content: resultOfPrompt,
           userId: user.id,
           userOpenAiChatId: checkOpenAiChat.id,
+          total_words: wordCount,
         },
       });
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
 
       const latestChatList = await this.prisma.userOpenAiChatMessages.findMany({
         where: {
@@ -392,7 +410,7 @@ export class OpenAiChatService {
           created_at: 'desc',
         },
       });
-      
+
       return successResponse('Message Send successfully!', latestChatList);
     } catch (error) {
       processException(error);
