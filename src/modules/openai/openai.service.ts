@@ -72,6 +72,27 @@ export class OpenAi {
       console.log(error);
     }
   }
+
+  async chatCompletions(
+    messages: [],
+    number_of_result: number,
+    model_name: string,
+  ): Promise<any> {
+    const response: any = await getAdminSettingsData(OpenAISettingSlugs);
+    const completion = await this.openai.chat.completions.create({
+      messages: messages,
+      model: model_name ? model_name : 'gpt-3.5-turbo',
+      temperature: Number(response?.open_ai_temperature)
+        ? Number(response?.open_ai_temperature)
+        : 0,
+      max_tokens: Number(response?.open_ai_max_output_length)
+        ? Number(response?.open_ai_max_output_length)
+        : 20,
+      n: Number(number_of_result),
+    });
+    return completion;
+  }
+
   async listModels(): Promise<string[]> {
     const model = coreConstant.OPEN_AI_MODEL_NAMES;
     return model;

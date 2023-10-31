@@ -401,9 +401,9 @@ model UserOpenAiChat {
 
 model UserOpenAiChatMessages {
   id          Int     @id @default(autoincrement())
-  role        String? @db.VarChar(255)
-  input       String? @db.Text()
-  output      String? @db.Text()
+  role        String  @db.VarChar(255)
+  content     String  @db.Text()
+  response    String? @db.LongText()
   total_words Int     @default(0) @db.Int()
 
   created_at DateTime @default(now())

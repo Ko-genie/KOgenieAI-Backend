@@ -133,3 +133,8 @@ export const DefaultPaginationMetaData = {
   next: null,
 };
 
+export const RoleTypeForOpenAiChat = {
+  System: 'system',
+  Assistant: 'assistant',
+  User: 'user',
+};

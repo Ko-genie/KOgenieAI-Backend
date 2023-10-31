@@ -33,9 +33,9 @@ CREATE TABLE `UserOpenAiChat` (
 -- CreateTable
 CREATE TABLE `UserOpenAiChatMessages` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `role` VARCHAR(255) NULL,
-    `input` TEXT NULL,
-    `output` TEXT NULL,
+    `role` VARCHAR(255) NOT NULL,
+    `content` TEXT NOT NULL,
+    `response` LONGTEXT NULL,
     `total_words` INTEGER NOT NULL DEFAULT 0,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
