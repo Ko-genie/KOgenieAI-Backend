@@ -207,6 +207,29 @@ export class OpenAiChatService {
       if (!checkCategory) {
         return errorResponse('Invalid Request!');
       }
+      const userOpenAiChat = await this.prisma.userOpenAiChat.create({
+        data: {
+          title: checkCategory.name + ' Chat',
+          userId: user.id,
+          openAiChatCategoryId: checkCategory.id,
+        },
+      });
+      const output =
+        'Hi! I am ' +
+        checkCategory.human_name +
+        " and I'm " +
+        checkCategory.role +
+        '. ' +
+        checkCategory.help_with;
+      const openAiChat = await this.prisma.userOpenAiChatMessages.create({
+        data: {
+          role: 'system',
+          output: output,
+          userId: user.id,
+          userOpenAiChatId: userOpenAiChat.id,
+        },
+      });
+      return successResponse('New chat is created successfully!', openAiChat);
     } catch (error) {
       processException(error);
     }
