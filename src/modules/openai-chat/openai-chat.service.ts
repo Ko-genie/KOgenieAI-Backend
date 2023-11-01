@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOpenAiChatCategoryDto } from './dto/create-openai-chat.dto';
 import {
+  addPhotoPrefix,
   createSlug,
   errorResponse,
   paginatioOptions,
@@ -88,6 +89,10 @@ export class OpenAiChatService {
         ...paginate,
       });
 
+      list.map(function (query) {
+        return (query.image_url = addPhotoPrefix(query.image_url));
+      });
+
       const paginationMeta =
         list.length > 0
           ? await paginationMetaData(
@@ -124,6 +129,10 @@ export class OpenAiChatService {
         ...paginate,
       });
 
+      list.map(function (query) {
+        return (query.image_url = addPhotoPrefix(query.image_url));
+      });
+
       const paginationMeta =
         list.length > 0
           ? await paginationMetaData(
@@ -155,6 +164,10 @@ export class OpenAiChatService {
             id: id,
           },
         });
+
+      openAiChatCategoryDetails.image_url = addPhotoPrefix(
+        openAiChatCategoryDetails.image_url,
+      );
 
       if (openAiChatCategoryDetails) {
         return successResponse(
