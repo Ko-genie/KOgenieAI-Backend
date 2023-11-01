@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { StartNewChat } from './dto/start-new-chat.dto';
@@ -6,6 +14,7 @@ import { OpenAiChatService } from './openai-chat.service';
 import { SendOpenAiChatMessageDto } from './dto/send-openai-chat-message.dto';
 import { Subscription } from 'src/shared/decorators/subcription.decorators';
 import { use } from 'passport';
+import { UpdateOpenAiChatDto } from './dto/update-openai-chat.dto';
 
 @Controller('user')
 export class UserOpenAiChatController {
@@ -58,10 +67,13 @@ export class UserOpenAiChatController {
   @Post('update-chat-title')
   updateChatTitle(
     @UserInfo() user: User,
-    payload: {
-      title: string;
-    },
+    @Body() payload: UpdateOpenAiChatDto,
   ) {
-    return this.openAiChatService.updateChatTitle();
+    return this.openAiChatService.updateChatTitle(user, payload);
+  }
+
+  @Delete('delete-openai-chat-details-:id')
+  deleteOpenAiChatDetails(@UserInfo() user: User, @Param('id') id: number) {
+    return this.openAiChatService.deleteOpenAiChatDetails(user, id);
   }
 }

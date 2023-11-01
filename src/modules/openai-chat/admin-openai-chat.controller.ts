@@ -8,8 +8,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { OpenAiChatService } from './openai-chat.service';
-import { CreateOpenAiChatCategoryDto } from './dto/create-openai-chat.dto';
-import { UpdateOpenAiChatCategoryDto } from './dto/update-openai-chat.dto';
+import { CreateOpenAiChatCategoryDto } from './dto/create-openai-chat-category.dto';
+import { UpdateOpenAiChatCategoryDto } from './dto/update-openai-chat-category.dto';
 import { IsAdmin } from 'src/shared/decorators/is-admin.decorator';
 import { StartNewChat } from './dto/start-new-chat.dto';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
@@ -44,5 +44,4 @@ export class AdminOpenAiChatController {
   deleteOpenAiChatCategory(@Param('id') id: number) {
     return this.openAiChatService.deleteOpenAiChatCategory(id);
   }
-
 }

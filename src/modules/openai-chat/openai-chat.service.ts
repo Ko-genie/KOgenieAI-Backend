@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateOpenAiChatCategoryDto } from './dto/create-openai-chat.dto';
+import { CreateOpenAiChatCategoryDto } from './dto/create-openai-chat-category.dto';
 import {
   addPhotoPrefix,
   createSlug,
@@ -16,13 +16,15 @@ import {
   RoleTypeForOpenAiChat,
   coreConstant,
 } from 'src/shared/helpers/coreConstant';
-import { UpdateOpenAiChatCategoryDto } from './dto/update-openai-chat.dto';
+import { UpdateOpenAiChatCategoryDto } from './dto/update-openai-chat-category.dto';
 import { User } from '@prisma/client';
 import { StartNewChat } from './dto/start-new-chat.dto';
 import { SendOpenAiChatMessageDto } from './dto/send-openai-chat-message.dto';
 import { PaymentsService } from '../payments/payments.service';
 import { OpenAi } from '../openai/openai.service';
 import { async } from 'rxjs';
+import { UpdateOpenAiChatDto } from './dto/update-openai-chat.dto';
+import { title } from 'process';
 
 @Injectable()
 export class OpenAiChatService {
@@ -478,5 +480,66 @@ export class OpenAiChatService {
     }
   }
 
-  async updateChatTitle() {}
+  async updateChatTitle(user: User, payload: UpdateOpenAiChatDto) {
+    try {
+      const checkChat = await this.prisma.userOpenAiChat.findFirst({
+        where: {
+          id: payload.chat_id,
+          userId: user.id,
+        },
+      });
+
+      if (!checkChat) {
+        return errorResponse('Invalid Request!');
+      }
+
+      const updateChat = await this.prisma.userOpenAiChat.update({
+        where: {
+          id: checkChat.id,
+        },
+        data: {
+          title: payload.title,
+        },
+      });
+
+      return successResponse(
+        'Your Chat details is updated successfully!',
+        updateChat,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async deleteOpenAiChatDetails(user: User, id: number) {
+    try {
+      const checkChat = await this.prisma.userOpenAiChat.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+      });
+
+      if (!checkChat) {
+        return errorResponse('Invalid Request!');
+      }
+
+      await this.prisma.userOpenAiChatMessages.deleteMany({
+        where: {
+          userOpenAiChatId: checkChat.id,
+          userId: user.id,
+        },
+      });
+
+      await this.prisma.userOpenAiChat.delete({
+        where: {
+          id: checkChat.id,
+        },
+      });
+
+      return successResponse('Your chat is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
 }
