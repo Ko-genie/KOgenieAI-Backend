@@ -372,6 +372,20 @@ export class OpenAiChatService {
             },
           },
         },
+        include: {
+          OpenAiChatCategory: {
+            select: {
+              image_url: true,
+            },
+          },
+        },
+      });
+
+      list.map((item) => {
+        return (item.OpenAiChatCategory.image_url = item.OpenAiChatCategory
+          ?.image_url
+          ? addPhotoPrefix(item.OpenAiChatCategory.image_url)
+          : item.OpenAiChatCategory?.image_url);
       });
 
       return successResponse('Category wise chat list', list);
