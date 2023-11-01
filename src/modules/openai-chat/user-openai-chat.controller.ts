@@ -23,7 +23,7 @@ export class UserOpenAiChatController {
   @Get('get-openai-chat-category-list')
   getOpenAiActiveChatCategoryList(
     @UserInfo() user: User,
-    @Body() payload: any,
+    @Query() payload: any,
   ) {
     return this.openAiChatService.getOpenAiActiveChatCategoryList(
       user,
