@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateOpenAiChatCategoryDto } from './dto/create-openai-chat-category.dto';
 import {
   addPhotoPrefix,
+  createNewUsesHistory,
   createSlug,
   errorResponse,
   paginatioOptions,
@@ -345,6 +346,14 @@ export class OpenAiChatService {
         wordCount,
       );
 
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.CODE,
+        userOpenAiChat.title,
+        wordCount,
+        0,
+      );
+
       return successResponse('New chat is created successfully!', openAiChat);
     } catch (error) {
       processException(error);
@@ -473,6 +482,14 @@ export class OpenAiChatService {
           created_at: 'desc',
         },
       });
+
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.CODE,
+        checkOpenAiChat.title,
+        wordCount,
+        0,
+      );
 
       return successResponse('Message Send successfully!', latestChatList);
     } catch (error) {
