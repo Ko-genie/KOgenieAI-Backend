@@ -62,6 +62,7 @@ export const coreConstant = {
     IMAGE_GENERATION: 2,
     CODE: 3,
     TRANSLATION: 4,
+    CHAT_BOT: 5,
   },
 };
 
