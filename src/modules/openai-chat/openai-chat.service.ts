@@ -13,6 +13,7 @@ import {
 import {
   DefaultPaginationMetaData,
   RoleTypeForOpenAiChat,
+  coreConstant,
 } from 'src/shared/helpers/coreConstant';
 import { UpdateOpenAiChatCategoryDto } from './dto/update-openai-chat.dto';
 import { User } from '@prisma/client';
@@ -102,6 +103,45 @@ export class OpenAiChatService {
       };
 
       return successResponse('Open Ai Chat Category list with paginate', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async getOpenAiActiveChatCategoryList(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+      const whereCondition = payload.search
+        ? {
+            status: coreConstant.ACTIVE,
+            name: {
+              contains: payload.search,
+            },
+          }
+        : {};
+      const list = await this.prisma.openAiChatCategory.findMany({
+        where: whereCondition,
+        ...paginate,
+      });
+
+      const paginationMeta =
+        list.length > 0
+          ? await paginationMetaData(
+              'openAiChatCategory',
+              payload,
+              whereCondition,
+            )
+          : DefaultPaginationMetaData;
+
+      const data = {
+        list: list,
+        meta: paginationMeta,
+      };
+
+      return successResponse(
+        'Open Ai active Chat Category list with paginate',
+        data,
+      );
     } catch (error) {
       processException(error);
     }
@@ -311,16 +351,24 @@ export class OpenAiChatService {
     }
   }
 
-  async getOpenAiChatList(user: User, id: number, payload: any) {
+  async getOpenAiChatDetails(user: User, id: number, payload: any) {
     try {
-      const chatList = await this.prisma.userOpenAiChatMessages.findMany({
+      const checkChat = await this.prisma.userOpenAiChat.findFirst({
         where: {
           id: id,
+        },
+      });
+      if (!checkChat) {
+        return errorResponse('Invalid Request!');
+      }
+      const chatDetails = await this.prisma.userOpenAiChatMessages.findMany({
+        where: {
+          userOpenAiChatId: checkChat.id,
           userId: user.id,
         },
       });
 
-      return successResponse('Chat list', chatList);
+      return successResponse('Chat details', chatDetails);
     } catch (error) {
       processException(error);
     }
@@ -416,4 +464,6 @@ export class OpenAiChatService {
       processException(error);
     }
   }
+
+  async updateChatTitle() {}
 }
