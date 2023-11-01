@@ -225,7 +225,7 @@ export class OpenAiChatService {
           color: payload.color,
           prompt_prefix: 'As a ' + payload.role,
           status: payload.status,
-          image_url: image_url,
+          image_url: image_url ? image_url : checkCategory.image_url,
           help_with: payload.help_with,
         },
       });
