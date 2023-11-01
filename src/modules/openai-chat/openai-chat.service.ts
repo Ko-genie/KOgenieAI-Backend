@@ -497,9 +497,6 @@ export class OpenAiChatService {
           userId: user.id,
           userOpenAiChatId: checkOpenAiChat.id,
         },
-        orderBy: {
-          created_at: 'desc',
-        },
       });
 
       await createNewUsesHistory(
