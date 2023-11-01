@@ -125,7 +125,7 @@ export class OpenAiChatService {
               contains: payload.search,
             },
           }
-        : {};
+        : { status: coreConstant.ACTIVE };
       const list = await this.prisma.openAiChatCategory.findMany({
         where: whereCondition,
         ...paginate,
