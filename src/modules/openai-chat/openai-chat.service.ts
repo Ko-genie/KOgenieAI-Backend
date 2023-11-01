@@ -364,8 +364,13 @@ export class OpenAiChatService {
     try {
       const list = await this.prisma.userOpenAiChat.findMany({
         where: {
-          id: id,
+          openAiChatCategoryId: id,
           userId: user.id,
+          OR: {
+            title: {
+              contains: payload.search ? payload.search : '',
+            },
+          },
         },
       });
 
