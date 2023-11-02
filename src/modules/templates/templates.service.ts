@@ -16,6 +16,7 @@ import {
   generatePromptForTranslate,
   createNewUsesHistory,
   saveAudioLocally,
+  generatePromptForJson,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -38,6 +39,7 @@ import { UpdateDocumentDto } from './dto/update-document.dto';
 import { LanguageListJsonArray } from 'src/shared/constants/array.constants';
 import { title } from 'process';
 import { TextTranslateDto } from './dto/text-translate.dto';
+import { JsonGenerate } from './dto/json-generate.dto';
 
 @Injectable()
 export class TemplateService {
@@ -1452,6 +1454,75 @@ export class TemplateService {
       return successResponse(
         'Generate Transaltion is done successfully!',
         saveGeneratedTranslation,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+  async generateJsonForCsv(user: User, payload: JsonGenerate) {
+    try {
+      const checkUserPackageResponse: any =
+        await this.paymentService.checkSubscriptionStatus(user);
+
+      if (checkUserPackageResponse.success === false) {
+        return checkUserPackageResponse;
+      }
+      const userPackageData: any = checkUserPackageResponse.data;
+
+      if (userPackageData.word_limit_exceed) {
+        return errorResponse(
+          'Your word limit exceed, please, purchase an addiotional package!',
+        );
+      }
+
+      const promot: string = await generatePromptForJson(
+        payload.topic,
+      );
+
+      await this.openaiService.init();
+      const responseOpenAi = await this.openaiService.textCompletion(
+        promot,
+        1,
+        userPackageData.model,
+      );
+
+      if (!responseOpenAi) {
+        return errorResponse('Something went wrong!');
+      }
+
+      const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const wordCount = wordCountMultilingual(resultOfPrompt);
+
+      await this.paymentService.updateUserUsedWords(
+        userPackageData.id,
+        wordCount,
+      );
+
+      // const saveGeneratedTranslation =
+      //   await this.prisma.textTranslateDocument.create({
+      //     data: {
+      //       title: payload.title,
+      //       text: payload.text,
+      //       language: payload.language,
+      //       prompt: promot,
+      //       result: resultOfPrompt,
+      //       total_used_words: wordCount,
+      //       user_id: user.id,
+      //     },
+      //   });
+
+      // await createNewUsesHistory(
+      //   user.id,
+      //   coreConstant.AVAILABLE_FEATURES.TRANSLATION,
+      //   payload.title,
+      //   wordCount,
+      //   0,
+      // );
+      console.log(resultOfPrompt, 'resultOfPrompt');
+      return successResponse(
+        'Generate Transaltion is done successfully!',
+        resultOfPrompt,
       );
     } catch (error) {
       processException(error);

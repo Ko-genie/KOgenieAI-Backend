@@ -22,6 +22,7 @@ import { TextTranslateDto } from './dto/text-translate.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as path from 'path';
+import { JsonGenerate } from './dto/json-generate.dto';
 @Controller('user')
 export class UserTemplateController {
   constructor(private readonly templateService: TemplateService) {}
@@ -129,6 +130,11 @@ export class UserTemplateController {
     @Body() payload: GenerateOpenAiCodeDto,
   ) {
     return this.templateService.generateOpenAiCode(user, payload);
+  }
+  // @Subscription('code')
+  @Post('generate-csv')
+  generateJsonForCsv(@UserInfo() user: User, @Body() payload: JsonGenerate) {
+    return this.templateService.generateJsonForCsv(user, payload);
   }
   @Get('get-generated-code-list')
   getGeneratedCodeListOfUser(@UserInfo() user: User, @Query() payload: any) {

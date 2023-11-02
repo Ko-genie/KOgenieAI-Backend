@@ -194,7 +194,6 @@ export async function saveAudioLocally(file: any, filePath: string) {
   });
 }
 
-
 export async function paginationMetaData(
   model: string,
   payload: any,
@@ -478,6 +477,19 @@ export async function generatePromptForTranslate(
   language: string,
 ) {
   const prompt = `Please translate this text into ${language} language. My text is ${text}`;
+  return prompt;
+}
+export async function generatePromptForJson(
+  topic: string,
+ 
+) {
+  const prompt = `Please generate a json data only give me result of json. topic is ${topic} i need 10 data's, must provide an object in array and minimum 2 data in the array object's, Prepare data like this [
+    {
+      "key": "value",
+      "key": "value",
+      "key": "value"
+    }
+  ]`;
   return prompt;
 }
 
