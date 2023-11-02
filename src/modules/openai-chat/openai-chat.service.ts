@@ -339,6 +339,9 @@ export class OpenAiChatService {
           userOpenAiChatId: userOpenAiChat.id,
           total_words: wordCount,
         },
+        include: {
+          UserOpenAiChat: true,
+        },
       });
 
       await this.paymentService.updateUserUsedWords(
