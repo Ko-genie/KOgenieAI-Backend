@@ -340,9 +340,22 @@ export class OpenAiChatService {
           total_words: wordCount,
         },
         include: {
-          UserOpenAiChat: true,
+          UserOpenAiChat: {
+            include: {
+              OpenAiChatCategory: {
+                select: {
+                  image_url: true,
+                },
+              },
+            },
+          },
         },
       });
+
+      openAiChat.UserOpenAiChat.OpenAiChatCategory.image_url = openAiChat
+        .UserOpenAiChat?.OpenAiChatCategory?.image_url
+        ? addPhotoPrefix(openAiChat.UserOpenAiChat.OpenAiChatCategory.image_url)
+        : openAiChat.UserOpenAiChat.OpenAiChatCategory.image_url;
 
       await this.paymentService.updateUserUsedWords(
         userPackageData.id,
