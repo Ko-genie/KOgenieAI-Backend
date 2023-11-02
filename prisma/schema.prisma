@@ -48,6 +48,7 @@ model User {
   GeneratedTranscription GeneratedTranscription[]
   UserOpenAiChat         UserOpenAiChat[]
   UserOpenAiChatMessages UserOpenAiChatMessages[]
+  CsvDocument            CsvDocument[]
 }
 
 model Package {
@@ -312,6 +313,18 @@ model Review {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model CsvDocument {
+  id               Int      @id @default(autoincrement())
+  title            String   @db.Text()
+  topic            String   @db.LongText()
+  result           String?  @db.LongText()
+  total_used_words BigInt   @default(0) @db.BigInt()
+  user             User     @relation(fields: [user_id], references: [id])
+  user_id          Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 }
 
 model FeatureOfAI {

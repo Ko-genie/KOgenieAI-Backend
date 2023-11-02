@@ -80,6 +80,20 @@ export class SubscriptionGuard implements CanActivate {
         );
       }
     }
+     if (type === 'csv') {
+       if (word_limit_exceed) {
+         throw new ForbiddenException('Word limit exceeded.');
+       }
+       if (
+         !available_features.includes(
+           coreConstant.AVAILABLE_FEATURES.TOPIC_TO_SPREDSHEET_GENERATOR,
+         )
+       ) {
+         throw new ForbiddenException(
+           'Ai Spredsheet generator feature is not available for your package.',
+         );
+       }
+     }
     if (type === 'translation') {
       if (word_limit_exceed) {
         throw new ForbiddenException('Word limit exceeded.');

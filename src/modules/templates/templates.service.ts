@@ -1103,7 +1103,7 @@ export class TemplateService {
         );
       }
 
-      const promot: string = await generatePromptForCode(
+      const prompt: string = await generatePromptForCode(
         payload.description,
         payload.coding_language,
         payload.coding_level,
@@ -1111,7 +1111,7 @@ export class TemplateService {
 
       await this.openaiService.init();
       const responseOpenAi = await this.openaiService.textCompletion(
-        promot,
+        prompt,
         1,
         userPackageData.model,
       );
@@ -1131,7 +1131,7 @@ export class TemplateService {
       const saveGeneratedCode = await this.prisma.generatedCode.create({
         data: {
           title: payload.title,
-          prompt: promot,
+          prompt: prompt,
           result: resultOfPrompt,
           total_used_words: wordCount,
           user_id: user.id,
@@ -1218,7 +1218,41 @@ export class TemplateService {
       processException(error);
     }
   }
+  async getGeneratedCsvListOfUser(user: User, payload: any) {
+    try {
+      const paginate = await paginatioOptions(payload);
+      const whereClause = {
+        user_id: user.id,
+        OR: {
+          title: {
+            contains: payload.search ? payload.search : '',
+          },
+        },
+      };
 
+      const csvDocuments = await this.prisma.csvDocument.findMany({
+        where: whereClause,
+        ...paginate,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      const paginationMeta = await paginationMetaData(
+        'csvDocument',
+        payload,
+        whereClause,
+      );
+
+      const data = {
+        list: csvDocuments,
+        meta: paginationMeta,
+      };
+      return successResponse('Generated code list', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getGeneratedCodeListOfUser(user: User, payload: any) {
     try {
       const paginate = await paginatioOptions(payload);
@@ -1265,6 +1299,26 @@ export class TemplateService {
         where: whereCondition,
       });
 
+      if (!generatedCodeDetails) {
+        return errorResponse('Invalid request!');
+      }
+      return successResponse('Generated code details', generatedCodeDetails);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getGeneratedCsvDetails(id: number, user?: User) {
+    try {
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+
+      let generatedCodeDetails = await this.prisma.csvDocument.findFirst({
+        where: whereCondition,
+      });
       if (!generatedCodeDetails) {
         return errorResponse('Invalid request!');
       }
@@ -1329,7 +1383,33 @@ export class TemplateService {
       processException(error);
     }
   }
+  async deleteGeneratedCsv(id: number, user: User) {
+    try {
+      const whereCondition = {
+        id: id,
+        ...(user && user.role === coreConstant.USER_ROLE_USER
+          ? { user_id: user.id }
+          : {}),
+      };
+      const documentDetails = await this.prisma.csvDocument.findFirst({
+        where: whereCondition,
+      });
 
+      if (!documentDetails) {
+        return errorResponse('Invalid request!');
+      }
+
+      await this.prisma.csvDocument.delete({
+        where: {
+          id: documentDetails.id,
+        },
+      });
+
+      return successResponse('Translated Document is deleted successfully!');
+    } catch (error) {
+      processException(error);
+    }
+  }
   async updateDocumentByUser(user: User, payload: UpdateDocumentDto) {
     try {
       const documentDetails = await this.prisma.myDocuments.findFirst({
@@ -1407,14 +1487,14 @@ export class TemplateService {
         );
       }
 
-      const promot: string = await generatePromptForTranslate(
+      const prompt: string = await generatePromptForTranslate(
         payload.text,
         payload.language,
       );
 
       await this.openaiService.init();
       const responseOpenAi = await this.openaiService.textCompletion(
-        promot,
+        prompt,
         1,
         userPackageData.model,
       );
@@ -1437,7 +1517,7 @@ export class TemplateService {
             title: payload.title,
             text: payload.text,
             language: payload.language,
-            prompt: promot,
+            prompt: prompt,
             result: resultOfPrompt,
             total_used_words: wordCount,
             user_id: user.id,
@@ -1476,15 +1556,14 @@ export class TemplateService {
         );
       }
 
-      const promot: string = await generatePromptForJson(
-        payload.topic,
-      );
+      const prompt: string = await generatePromptForJson(payload.topic);
 
       await this.openaiService.init();
-      const responseOpenAi = await this.openaiService.textCompletion(
-        promot,
+      const responseOpenAi = await this.openaiService.textCompletionCustomToken(
+        prompt,
         1,
         userPackageData.model,
+        1000,
       );
 
       if (!responseOpenAi) {
@@ -1499,27 +1578,23 @@ export class TemplateService {
         wordCount,
       );
 
-      // const saveGeneratedTranslation =
-      //   await this.prisma.textTranslateDocument.create({
-      //     data: {
-      //       title: payload.title,
-      //       text: payload.text,
-      //       language: payload.language,
-      //       prompt: promot,
-      //       result: resultOfPrompt,
-      //       total_used_words: wordCount,
-      //       user_id: user.id,
-      //     },
-      //   });
+      await this.prisma.csvDocument.create({
+        data: {
+          title: payload.topic,
+          result: resultOfPrompt,
+          total_used_words: wordCount,
+          topic: payload.topic,
+          user_id: user.id,
+        },
+      });
 
-      // await createNewUsesHistory(
-      //   user.id,
-      //   coreConstant.AVAILABLE_FEATURES.TRANSLATION,
-      //   payload.title,
-      //   wordCount,
-      //   0,
-      // );
-      console.log(resultOfPrompt, 'resultOfPrompt');
+      await createNewUsesHistory(
+        user.id,
+        coreConstant.AVAILABLE_FEATURES.TOPIC_TO_SPREDSHEET_GENERATOR,
+        payload.topic,
+        wordCount,
+        0,
+      );
       return successResponse(
         'Generate Transaltion is done successfully!',
         resultOfPrompt,

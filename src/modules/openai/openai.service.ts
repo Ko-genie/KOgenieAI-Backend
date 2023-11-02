@@ -47,6 +47,29 @@ export class OpenAi {
     });
     return completion;
   }
+  async textCompletionCustomToken(
+    prompt: string,
+    number_of_result: number,
+    model_name: string,
+    max_tokens:number,
+  ): Promise<any> {
+    const response: any = await getAdminSettingsData(OpenAISettingSlugs);
+    const completion = await this.openai.chat.completions.create({
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      model: model_name ? model_name : 'gpt-3.5-turbo',
+      temperature: Number(response?.open_ai_temperature)
+        ? Number(response?.open_ai_temperature)
+        : 0,
+      max_tokens: max_tokens,
+      n: Number(number_of_result),
+    });
+    return completion;
+  }
   async imageGenerate(
     prompt: string,
     image_size: '256x256' | '512x512' | '1024x1024',

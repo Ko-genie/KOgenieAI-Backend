@@ -62,8 +62,9 @@ export const coreConstant = {
     IMAGE_GENERATION: 2,
     CODE: 3,
     TRANSLATION: 4,
-    TRANSCRIPTION:5,
+    TRANSCRIPTION: 5,
     CHAT_BOT: 6,
+    TOPIC_TO_SPREDSHEET_GENERATOR: 7,
   },
 };
 

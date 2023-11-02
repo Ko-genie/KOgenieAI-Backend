@@ -131,7 +131,7 @@ export class UserTemplateController {
   ) {
     return this.templateService.generateOpenAiCode(user, payload);
   }
-  // @Subscription('code')
+  @Subscription('csv')
   @Post('generate-csv')
   generateJsonForCsv(@UserInfo() user: User, @Body() payload: JsonGenerate) {
     return this.templateService.generateJsonForCsv(user, payload);
@@ -140,15 +140,29 @@ export class UserTemplateController {
   getGeneratedCodeListOfUser(@UserInfo() user: User, @Query() payload: any) {
     return this.templateService.getGeneratedCodeListOfUser(user, payload);
   }
-
+  @Get('get-generated-csv-list')
+  getGeneratedCsvListOfUser(
+    @UserInfo() user: User,
+    @Query() payload: paginateInterface,
+  ) {
+    return this.templateService.getGeneratedCsvListOfUser(user, payload);
+  }
   @Get('get-generated-code-details-:id')
   getGeneratedCodeDetails(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.getGeneratedCodeDetails(id, user);
+  }
+  @Get('get-generated-csv-details-:id')
+  getGeneratedCsvDetails(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.getGeneratedCsvDetails(id, user);
   }
 
   @Delete('delete-generated-code-:id')
   deleteGeneratedCode(@Param('id') id: number, @UserInfo() user: User) {
     return this.templateService.deleteGeneratedCode(id, user);
+  }
+  @Delete('delete-generated-csv-:id')
+  deleteGeneratedCsv(@Param('id') id: number, @UserInfo() user: User) {
+    return this.templateService.deleteGeneratedCsv(id, user);
   }
   @Post('update-document-user')
   updateDocumentByUser(

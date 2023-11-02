@@ -10,6 +10,7 @@ export function Subscription(
     | 'code'
     | 'translation'
     | 'transcription'
+    | 'csv'
     | 'chat_bot' = 'image',
 ) {
   return applyDecorators(
