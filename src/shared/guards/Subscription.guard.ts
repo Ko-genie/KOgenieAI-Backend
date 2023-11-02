@@ -23,7 +23,9 @@ export class SubscriptionGuard implements CanActivate {
     const user = request.user;
     const response: any = await getAdminSettingsData(OpenAISettingSlugs);
     if (!response.open_ai_secret) {
-      throw new ForbiddenException('Admin has not set the settings for open ai!');
+      throw new ForbiddenException(
+        'Admin has not set the settings for open ai!',
+      );
     }
     const type =
       this.reflector.get<string>('subscriptionType', context.getHandler()) ||
@@ -80,20 +82,20 @@ export class SubscriptionGuard implements CanActivate {
         );
       }
     }
-     if (type === 'csv') {
-       if (word_limit_exceed) {
-         throw new ForbiddenException('Word limit exceeded.');
-       }
-       if (
-         !available_features.includes(
-           coreConstant.AVAILABLE_FEATURES.TOPIC_TO_SPREDSHEET_GENERATOR,
-         )
-       ) {
-         throw new ForbiddenException(
-           'Ai Spredsheet generator feature is not available for your package.',
-         );
-       }
-     }
+    if (type === 'csv') {
+      if (word_limit_exceed) {
+        throw new ForbiddenException('Word limit exceeded.');
+      }
+      if (
+        !available_features.includes(
+          coreConstant.AVAILABLE_FEATURES.TOPIC_TO_SPREDSHEET_GENERATOR,
+        )
+      ) {
+        throw new ForbiddenException(
+          'Ai spreadsheet generator feature is not available for your package.',
+        );
+      }
+    }
     if (type === 'translation') {
       if (word_limit_exceed) {
         throw new ForbiddenException('Word limit exceeded.');
@@ -123,16 +125,18 @@ export class SubscriptionGuard implements CanActivate {
       }
     }
 
-     if (type === 'chat_bot') {
-       if (word_limit_exceed) {
-         throw new ForbiddenException('Word limit exceeded.');
-       }
-       if (!available_features.includes(coreConstant.AVAILABLE_FEATURES.CHAT_BOT)) {
-         throw new ForbiddenException(
-           'Ai chat bot feature is not available for your package.',
-         );
-       }
-     }
+    if (type === 'chat_bot') {
+      if (word_limit_exceed) {
+        throw new ForbiddenException('Word limit exceeded.');
+      }
+      if (
+        !available_features.includes(coreConstant.AVAILABLE_FEATURES.CHAT_BOT)
+      ) {
+        throw new ForbiddenException(
+          'Ai chat bot feature is not available for your package.',
+        );
+      }
+    }
 
     return true;
   }

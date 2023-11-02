@@ -1751,12 +1751,18 @@ export class TemplateService {
           }
         : {};
 
-      const usesHistoryList = await this.prisma.usesHistory.findMany({
+      let usesHistoryList: any = await this.prisma.usesHistory.findMany({
         where: whereClause,
         include: {
           User: true,
         },
         ...paginate,
+      });
+      let updatedDAta = [];
+      usesHistoryList.map((item) => {
+        let data = item;
+        data.User.photo = addPhotoPrefix(data.User.photo);
+        updatedDAta.push(data);
       });
 
       const paginationMeta = await paginationMetaData(
@@ -1766,7 +1772,7 @@ export class TemplateService {
       );
 
       const data = {
-        list: usesHistoryList,
+        list: updatedDAta,
         meta: paginationMeta,
       };
       return successResponse('Uses history list!', data);
