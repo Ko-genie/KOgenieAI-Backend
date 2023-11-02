@@ -515,3 +515,13 @@ export async function createNewUsesHistory(
     processException(error);
   }
 }
+
+export async function createSlug(categoryName): Promise<string> {
+  // Remove leading and trailing white spaces
+  categoryName = categoryName.trim();
+
+  // Replace spaces with hyphens and convert to lowercase
+  const slug = categoryName.replace(/\s+/g, '-').toLowerCase();
+
+  return slug;
+}

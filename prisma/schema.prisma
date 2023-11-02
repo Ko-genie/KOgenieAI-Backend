@@ -46,6 +46,8 @@ model User {
   Review                 Review[]
   UsesHistory            UsesHistory[]
   GeneratedTranscription GeneratedTranscription[]
+  UserOpenAiChat         UserOpenAiChat[]
+  UserOpenAiChatMessages UserOpenAiChatMessages[]
 }
 
 model Package {
@@ -361,4 +363,54 @@ model BlogCategory {
   name      String @db.VarChar(255)
   image_url String @db.VarChar(255)
   status    Int    @db.SmallInt()
+}
+
+model OpenAiChatCategory {
+  id            Int     @id @default(autoincrement())
+  name          String  @db.VarChar(255)
+  slug          String  @db.VarChar(255)
+  description   String  @db.MediumText()
+  role          String  @db.VarChar(255)
+  human_name    String  @db.VarChar(255)
+  color         String  @db.VarChar(255)
+  prompt_prefix String? @db.MediumText()
+  help_with     String  @db.MediumText()
+  status        Int     @default(0) @db.SmallInt()
+  image_url     String? @db.VarChar(255)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  UserOpenAiChat UserOpenAiChat[]
+}
+
+model UserOpenAiChat {
+  id                   Int                @id @default(autoincrement())
+  title                String             @db.VarChar(255)
+  total_words          BigInt             @default(0) @db.BigInt()
+  User                 User               @relation(fields: [userId], references: [id])
+  userId               Int
+  OpenAiChatCategory   OpenAiChatCategory @relation(fields: [openAiChatCategoryId], references: [id])
+  openAiChatCategoryId Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  UserOpenAiChatMessages UserOpenAiChatMessages[]
+}
+
+model UserOpenAiChatMessages {
+  id          Int     @id @default(autoincrement())
+  role        String  @db.VarChar(255)
+  content     String  @db.Text()
+  response    String? @db.LongText()
+  total_words Int     @default(0) @db.Int()
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  User             User           @relation(fields: [userId], references: [id])
+  userId           Int
+  UserOpenAiChat   UserOpenAiChat @relation(fields: [userOpenAiChatId], references: [id])
+  userOpenAiChatId Int
 }

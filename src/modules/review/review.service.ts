@@ -108,6 +108,10 @@ export class ReviewService {
           id: id,
         },
       });
+
+      reviewDetails.user_image_url = addPhotoPrefix(
+        reviewDetails.user_image_url,
+      );
       if (!reviewDetails) {
         return errorResponse('Invalid request');
       }

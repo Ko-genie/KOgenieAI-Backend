@@ -62,6 +62,8 @@ export const coreConstant = {
     IMAGE_GENERATION: 2,
     CODE: 3,
     TRANSLATION: 4,
+    TRANSCRIPTION:5,
+    CHAT_BOT: 6,
   },
 };
 
@@ -131,4 +133,10 @@ export const DefaultPaginationMetaData = {
   perPage: 0,
   prev: null,
   next: null,
+};
+
+export const RoleTypeForOpenAiChat = {
+  System: 'system',
+  Assistant: 'assistant',
+  User: 'user',
 };

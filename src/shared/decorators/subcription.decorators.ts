@@ -4,7 +4,13 @@ import { SubscriptionGuard } from '../guards/Subscription.guard';
 export const SUBSCRIPTION_KEY = 'subscriptionType';
 
 export function Subscription(
-  type: 'text' | 'image' | 'code' | 'translation' | 'transcription' = 'image',
+  type:
+    | 'text'
+    | 'image'
+    | 'code'
+    | 'translation'
+    | 'transcription'
+    | 'chat_bot' = 'image',
 ) {
   return applyDecorators(
     SetMetadata(SUBSCRIPTION_KEY, type),

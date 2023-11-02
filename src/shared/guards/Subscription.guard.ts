@@ -70,7 +70,11 @@ export class SubscriptionGuard implements CanActivate {
       if (word_limit_exceed) {
         throw new ForbiddenException('Word limit exceeded.');
       }
-      if (!available_features.includes(coreConstant.AVAILABLE_FEATURES.CODE)) {
+      if (
+        !available_features.includes(
+          coreConstant.AVAILABLE_FEATURES.TRANSCRIPTION,
+        )
+      ) {
         throw new ForbiddenException(
           'Ai speech to text feature is not available for your package.',
         );
@@ -104,6 +108,17 @@ export class SubscriptionGuard implements CanActivate {
         );
       }
     }
+
+     if (type === 'chat_bot') {
+       if (word_limit_exceed) {
+         throw new ForbiddenException('Word limit exceeded.');
+       }
+       if (!available_features.includes(coreConstant.AVAILABLE_FEATURES.CHAT_BOT)) {
+         throw new ForbiddenException(
+           'Ai chat bot feature is not available for your package.',
+         );
+       }
+     }
 
     return true;
   }
