@@ -132,6 +132,45 @@ export async function emailAppName(): Promise<string> {
   const app_name = await appName();
   return app_name ? '[' + app_name + ']' : '';
 }
+export function isArrayofObjects(arr) {
+  if (!Array.isArray(arr)) {
+    return false;
+  }
+
+  for (const element of arr) {
+    if (
+      typeof element !== 'object' ||
+      element === null ||
+      Array.isArray(element)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+export function isValidArrayOfObjectsStringChecker(jsonString) {
+  try {
+    const parsedData = JSON.parse(jsonString);
+    console.log(parsedData, 'parsedData');
+    if (!Array.isArray(parsedData)) {
+      return false;
+    }
+
+    for (const element of parsedData) {
+      if (
+        typeof element !== 'object' ||
+        element === null ||
+        Array.isArray(element)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export async function formatLimitOffset(payload: any) {
   let limit = payload.limit ? Math.abs(parseInt(payload.limit)) : 10;

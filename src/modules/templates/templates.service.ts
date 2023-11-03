@@ -17,6 +17,7 @@ import {
   createNewUsesHistory,
   saveAudioLocally,
   generatePromptForJson,
+  isValidArrayOfObjectsStringChecker,
 } from 'src/shared/helpers/functions';
 import { AddNewCategoryDto } from './dto/add-new-category.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -1571,6 +1572,12 @@ export class TemplateService {
       }
 
       const resultOfPrompt = responseOpenAi.choices[0].message.content;
+      const check = isValidArrayOfObjectsStringChecker(resultOfPrompt);
+      if (check === false) {
+        return errorResponse(
+          'Our service is busy currently please try again later!',
+        );
+      }
       const wordCount = wordCountMultilingual(resultOfPrompt);
 
       await this.paymentService.updateUserUsedWords(
@@ -1595,10 +1602,7 @@ export class TemplateService {
         wordCount,
         0,
       );
-      return successResponse(
-        'Generate Transaltion is done successfully!',
-        resultOfPrompt,
-      );
+      return successResponse('Data generated successfully!', resultOfPrompt);
     } catch (error) {
       processException(error);
     }
