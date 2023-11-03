@@ -88,6 +88,7 @@ export class AppModule implements NestModule {
         { path: '/auth/google-login', method: RequestMethod.POST },
         { path: '/user/generate-transcription', method: RequestMethod.POST },
         { path: '/user/generate-csv', method: RequestMethod.POST },
+        { path: '/user/send-openai-chat-message', method: RequestMethod.POST },
       )
       .forRoutes('*');
   }
