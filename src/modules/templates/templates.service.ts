@@ -1765,7 +1765,9 @@ export class TemplateService {
       let updatedDAta = [];
       usesHistoryList.map((item) => {
         let data = item;
-        data.User.photo = addPhotoPrefix(data.User.photo);
+        data.User.photo = data.User?.photo
+          ? addPhotoPrefix(data.User.photo)
+          : null;
         updatedDAta.push(data);
       });
 
