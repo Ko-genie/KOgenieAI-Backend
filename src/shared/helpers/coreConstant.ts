@@ -51,6 +51,7 @@ export const coreConstant = {
     STRIPE: 1,
     PAYPAL: 2,
     BRAINTREE: 3,
+    RAZORPAY: 3,
   },
   PACKAGE_DURATION: {
     WEEKLY: 1,

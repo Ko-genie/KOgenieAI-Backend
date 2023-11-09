@@ -24,6 +24,7 @@ import {
   LandingPageSlugs,
   OpenAISettingSlugs,
   OpenAISettingWithoutSecretSlugs,
+  PaymentMethodRazorpaySettingsSlugs,
   PaymentMethodStripeSettingsSlugs,
   SMTPSettingsSlugs,
   TermsConditionSlugs,
@@ -37,6 +38,7 @@ import { coreConstant } from 'src/shared/helpers/coreConstant';
 import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.dto';
 import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
 import { UpdateBraintreeSettingsData } from './dto/update-braintree-settings-data.dto';
+import { UpdatePaymentMethodRazorpaySettingsDto } from './dto/update-payment-razorpay-settings.dto';
 
 @Injectable()
 export class SettingService {
@@ -469,7 +471,44 @@ export class SettingService {
       processException(error);
     }
   }
+  async updatePaymentRazorpaySettings(
+    payload: UpdatePaymentMethodRazorpaySettingsDto,
+  ) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
 
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(
+        PaymentMethodRazorpaySettingsSlugs,
+      );
+
+      return successResponse(
+        'Razorpay payment method settings is updated successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getPaymentMethodRazorpaySettingsData() {
+    try {
+      const data = await getAdminSettingsData(
+        PaymentMethodRazorpaySettingsSlugs,
+      );
+
+      return successResponse('Stripe payment method settings data!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
   async getPaymentMethodStripeSettingsData() {
     try {
       const data = await getAdminSettingsData(PaymentMethodStripeSettingsSlugs);

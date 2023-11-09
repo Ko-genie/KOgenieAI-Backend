@@ -190,4 +190,32 @@ export class PaymentsController {
   getMyTransactionList(@UserInfo() user: User, @Query() payload: any) {
     return this.paymentsService.getMyTransactionList(user, payload);
   }
+  @Post('razorpay-create-order')
+  razorpayCreateOrder(
+    @Body('amount') amount: number,
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.razorpayCreateOrder(amount, packageId, user);
+  }
+  @Post('razorpay-capture-subscribe')
+  capturePayment(
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+    @Body('orderId') orderId: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.razorpaycapturePayment(
+      orderId,
+      user,
+      packageId,
+    );
+  }
+  @Post('razorpay-capture-package-to-subscription')
+  razorPaysubscription(
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+    @Body('orderId') orderId: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.razorPaysubscription(orderId, user, packageId);
+  }
 }

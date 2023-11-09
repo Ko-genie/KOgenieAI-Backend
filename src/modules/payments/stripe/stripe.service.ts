@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { getAdminSettingsData } from 'src/shared/helpers/functions';
 import { PaymentMethodStripeSettingsSlugs } from 'src/shared/constants/array.constants';

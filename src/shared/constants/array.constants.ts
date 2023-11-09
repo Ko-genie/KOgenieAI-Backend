@@ -123,6 +123,7 @@ export const PaymentMethodStripeSettingsSlugs = [
   'pm_stripe_client_id_live',
   'pm_stripe_secret_key_live',
 ];
+export const PaymentMethodRazorpaySettingsSlugs = ['key_id', 'key_secret'];
 
 export const GoogleAuthCredentialsSlugs = [
   'google_auth_client_id',
