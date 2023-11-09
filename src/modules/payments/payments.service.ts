@@ -928,6 +928,12 @@ export class PaymentsService {
   }
   async razorpayCreateOrder(amount, packageId, user): Promise<ResponseModel> {
     try {
+      const paymentData: any = await getAdminSettingsData(
+        PaymentMethodRazorpaySettingsSlugs,
+      );
+      if (!paymentData.key_id && !paymentData.key_secret) {
+        return errorResponse('Credential not provided for razorpay');
+      }
       this.razorPay.init();
       const data: any = await getAdminSettingsData(
         PaymentMethodRazorpaySettingsSlugs,
@@ -1082,7 +1088,7 @@ export class PaymentsService {
       );
       return successResponse('Package added successfully');
     } catch (error) {
-      processException(error)
+      processException(error);
     }
   }
   // capturePayment;

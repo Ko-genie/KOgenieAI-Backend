@@ -10,7 +10,9 @@ export class RazorpayService {
     const data: any = await getAdminSettingsData(
       PaymentMethodRazorpaySettingsSlugs,
     );
-
+    if (!data.key_id && !data.key_secret) {
+      return;
+    }
     this.razorpay = new Razorpay({
       key_id: data.key_id,
       key_secret: data.key_secret,
@@ -40,7 +42,6 @@ export class RazorpayService {
       );
       return payment;
     } catch (error) {
-      console.log(error, 'errorerrorerrorerror');
       throw new Error('Error capturing payment');
     }
   }
