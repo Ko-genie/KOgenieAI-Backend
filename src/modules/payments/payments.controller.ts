@@ -218,4 +218,39 @@ export class PaymentsController {
   ): Promise<ResponseModel> {
     return this.paymentsService.razorPaysubscription(orderId, user, packageId);
   }
+  @Post('paystack-create-payment')
+  payStackCreatePayment(
+    @Body('amount') amount: number,
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+    @Body('type') type: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.payStackCreatePayment(
+      amount,
+      packageId,
+      user,
+      type,
+    );
+  }
+  @Post('paystack-capture-subscribe')
+  paystackcapturePayment(
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+    @Body('referance') referance: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.paystackSubscription(
+      referance,
+      user,
+      packageId,
+    );
+  }
+  @Post('paystack-capture-package-to-subscription')
+  paystackSubscription(
+    @UserInfo() user: User,
+    @Body('packageId') packageId: string,
+    @Body('referance') referance: string,
+  ): Promise<ResponseModel> {
+    return this.paymentsService.paystackAddPackage(referance, user, packageId);
+  }
+  ;
 }

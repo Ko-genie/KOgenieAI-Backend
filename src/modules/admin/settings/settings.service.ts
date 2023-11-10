@@ -24,6 +24,7 @@ import {
   LandingPageSlugs,
   OpenAISettingSlugs,
   OpenAISettingWithoutSecretSlugs,
+  PaymentMethodPaystackSettingsSlugs,
   PaymentMethodRazorpaySettingsSlugs,
   PaymentMethodStripeSettingsSlugs,
   SMTPSettingsSlugs,
@@ -39,6 +40,7 @@ import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.d
 import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
 import { UpdateBraintreeSettingsData } from './dto/update-braintree-settings-data.dto';
 import { UpdatePaymentMethodRazorpaySettingsDto } from './dto/update-payment-razorpay-settings.dto';
+import { UpdatePaymentMethodPaystackSettingsDto } from './dto/update-payment-paystack-settings.dto';
 
 @Injectable()
 export class SettingService {
@@ -505,6 +507,44 @@ export class SettingService {
       );
 
       return successResponse('Stripe payment method settings data!', data);
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async updatePaymentPaystackSettings(
+    payload: UpdatePaymentMethodPaystackSettingsDto,
+  ) {
+    try {
+      const keyValuePairs = Object.keys(payload).map((key) => ({
+        key,
+        value: payload[key],
+      }));
+
+      await Promise.all(
+        keyValuePairs.map(async (element) => {
+          await this.updateOrCreate(element.key, element.value);
+        }),
+      );
+
+      const data = await getAdminSettingsData(
+        PaymentMethodPaystackSettingsSlugs,
+      );
+
+      return successResponse(
+        'Paystack payment method settings is updated successfully!',
+        data,
+      );
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async getPaymentMethodPaystackSettingsData() {
+    try {
+      const data = await getAdminSettingsData(
+        PaymentMethodPaystackSettingsSlugs,
+      );
+
+      return successResponse('Paystack payment method settings data!', data);
     } catch (error) {
       processException(error);
     }

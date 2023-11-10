@@ -32,6 +32,7 @@ import {
   PaymentMethodStripeSettingsSlugs,
 } from 'src/shared/constants/array.constants';
 import { RazorpayService } from './razorpay/razorpay.service';
+import { PayStackService } from './paystack/paystack.service';
 
 @Injectable()
 export class PaymentsService {
@@ -39,6 +40,7 @@ export class PaymentsService {
   stripe = new StripeService();
   braintreeService = new BraintreeService();
   razorPay = new RazorpayService();
+  payStackService = new PayStackService();
 
   async createPackageService(
     packageInfo: CreatePaymentDto,
@@ -1091,7 +1093,174 @@ export class PaymentsService {
       processException(error);
     }
   }
-  // capturePayment;
+  async paystackSubscription(
+    referance,
+    user: User,
+    packageId,
+  ): Promise<ResponseModel> {
+    try {
+      if (!packageId || !referance) {
+        return errorResponse('Invalid data please provide data properly');
+      }
+      const orderValid = await this.payStackService.verifyPayment(referance);
+      console.log(orderValid, 'orderValid');
+      if (!orderValid.status) {
+        return errorResponse('Invalid verification code');
+      }
+      const { package_valid, package: SubcribedPackage } =
+        await this.getUserPackage(user);
+      if (!package_valid) {
+        return errorResponse(
+          'Please subscribe before adding a package to subscription',
+        );
+      }
+      const getPackageToAdd = await this.prisma.package.findFirst({
+        where: {
+          id: Number(packageId),
+          type: coreConstant.PACKAGE_TYPES.PACKAGE,
+        },
+      });
+      if (!getPackageToAdd) {
+        return errorResponse('Package not found!');
+      }
+
+      const userPurchasedPackage =
+        await this.prisma.userPurchasedPackage.findUnique({
+          where: {
+            id: Number(SubcribedPackage.id),
+          },
+        });
+      if (!userPurchasedPackage) {
+        return errorResponse('User package not found!');
+      }
+
+      const existingFeatures =
+        userPurchasedPackage.available_features.split(',');
+      const newFeatures = getPackageToAdd.available_features.split(',');
+      const mergedFeatures = [...existingFeatures, ...newFeatures];
+
+      const updatedAvailableFeatures = mergedFeatures.join(',');
+
+      const userUpdatedPackage = await this.prisma.userPurchasedPackage.update({
+        where: {
+          id: Number(SubcribedPackage.id),
+        },
+        data: {
+          total_words:
+            Number(SubcribedPackage.total_words) +
+            Number(getPackageToAdd.total_words),
+          total_images:
+            Number(SubcribedPackage.total_images) +
+            Number(getPackageToAdd.total_images),
+          available_features: updatedAvailableFeatures,
+        },
+      });
+      if (!userUpdatedPackage) {
+        return errorResponse('Purchase failed!');
+      }
+
+      await this.addTransaction(
+        coreConstant.PAYMENT_METHODS.RAZORPAY,
+        getPackageToAdd.id,
+        user.id,
+        Number(getPackageToAdd.price),
+      );
+      return successResponse('Package added successfully');
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async paystackAddPackage(
+    referance,
+    user: User,
+    packageId,
+  ): Promise<ResponseModel> {
+    try {
+       if (!packageId || !referance) {
+         return errorResponse('Invalid data please provide data properly');
+       }
+       const orderValid = await this.payStackService.verifyPayment(referance);
+       console.log(orderValid, 'orderValid');
+       if (!orderValid.status) {
+         return errorResponse('Invalid verification code');
+       }
+       const { package_valid, package: SubcribedPackage } =
+         await this.getUserPackage(user);
+       if (!package_valid) {
+         return errorResponse(
+           'Please subscribe before adding a package to subscription',
+         );
+       }
+      if (!packageId) {
+        return errorResponse('No package id provided');
+      }
+      const packageData: Package | null = await this.prisma.package.findFirst({
+        where: {
+          id: Number(packageId),
+          soft_delete: false,
+          status: coreConstant.ACTIVE,
+        },
+      });
+      if (!packageData) {
+        return errorResponse("Package can't be found");
+      }
+      const start_date = new Date();
+      const duration =
+        packageData.duration === coreConstant.PACKAGE_DURATION.WEEKLY
+          ? 7
+          : packageData.duration === coreConstant.PACKAGE_DURATION.MONTHLY
+          ? 30
+          : 365;
+      const end_date = new Date(start_date);
+      end_date.setDate(end_date.getDate() + duration);
+      const purchedPackage = await this.prisma.userPurchasedPackage.create({
+        data: {
+          start_date: start_date,
+          end_date: end_date,
+          status: coreConstant.ACTIVE,
+          total_words: packageData.total_words,
+          total_images: packageData.total_images,
+          user_id: user.id,
+          package_id: packageData.id,
+          payment_method: coreConstant.PAYMENT_METHODS.STRIPE,
+          available_features: packageData.available_features,
+        },
+      });
+
+      if (!purchedPackage) {
+        return errorResponse("Package can't be purchased");
+      }
+      await this.addTransaction(
+        coreConstant.PAYMENT_METHODS.RAZORPAY,
+        packageData.id,
+        user.id,
+        Number(packageData.price),
+      );
+      return successResponse('Package Purchase successfully');
+    } catch (error) {
+      processException(error);
+    }
+  }
+  async payStackCreatePayment(
+    amount,
+    packageId,
+    user: User,
+    type,
+  ): Promise<ResponseModel> {
+    try {
+      const response = await this.payStackService.initiatePayment(
+        amount,
+        user.email,
+        packageId,
+        type,
+      );
+      return successResponse('Payment created successfully', response);
+    } catch (error) {
+      processException(error);
+    }
+  }
+
+
   async addPackageToSubscriptionBraintree(
     amount: number,
     paymentMethodNonce: string,

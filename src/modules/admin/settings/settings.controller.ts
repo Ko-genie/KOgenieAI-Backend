@@ -15,6 +15,7 @@ import { UpdateGithubAuthSettingsDto } from './dto/update-github-auth-settings.d
 import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
 import { UpdateBraintreeSettingsData } from './dto/update-braintree-settings-data.dto';
 import { UpdatePaymentMethodRazorpaySettingsDto } from './dto/update-payment-razorpay-settings.dto';
+import { UpdatePaymentMethodPaystackSettingsDto } from './dto/update-payment-paystack-settings.dto';
 
 @IsAdmin()
 @Controller('admin-settings')
@@ -103,6 +104,16 @@ export class SettingController {
   @Get('get-payment-razorpay-settings-data')
   getPaymentMethodRazorpaySettingsData(): Promise<ResponseModel> {
     return this.settingService.getPaymentMethodRazorpaySettingsData();
+  }
+  @Post('update-payment-paystack-settings')
+  updatePaymentpaystackSettings(
+    @Body() payload: UpdatePaymentMethodPaystackSettingsDto,
+  ) {
+    return this.settingService.updatePaymentPaystackSettings(payload);
+  }
+  @Get('get-payment-paystack-settings-data')
+  getPaymentMethodpaystackSettingsData(): Promise<ResponseModel> {
+    return this.settingService.getPaymentMethodPaystackSettingsData();
   }
   @Get('get-payment-stripe-settings-data')
   getPaymentMethodStripeSettingsData(): Promise<ResponseModel> {
