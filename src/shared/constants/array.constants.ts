@@ -124,7 +124,11 @@ export const PaymentMethodStripeSettingsSlugs = [
   'pm_stripe_secret_key_live',
 ];
 export const PaymentMethodRazorpaySettingsSlugs = ['key_id', 'key_secret'];
-export const PaymentMethodPaystackSettingsSlugs = ['public_key', 'key_secret'];
+export const PaymentMethodPaystackSettingsSlugs = [
+  'public_key',
+  'key_secret',
+  'redirect_url',
+];
 
 export const GoogleAuthCredentialsSlugs = [
   'google_auth_client_id',

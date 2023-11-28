@@ -1,4 +1,10 @@
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ModeStatusArray } from 'src/shared/constants/array.constants';
 
 export class UpdatePaymentMethodPaystackSettingsDto {
@@ -9,4 +15,8 @@ export class UpdatePaymentMethodPaystackSettingsDto {
   @IsNotEmpty()
   @IsString()
   key_secret: string;
+
+  @IsNotEmpty()
+  @IsString()
+  redirect_url: string;
 }

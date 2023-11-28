@@ -54,7 +54,9 @@ export class PayStackService {
         reference: `${Math.floor(
           Math.random() * 1000000000 + 1,
         )}_${type}_${reference}`,
-        callback_url: 'http://localhost:3001/upgrade',
+        callback_url: credential.redirect_url
+          ? credential.redirect_url
+          : 'http://localhost:3001/upgrade',
       };
 
       const headers = {
