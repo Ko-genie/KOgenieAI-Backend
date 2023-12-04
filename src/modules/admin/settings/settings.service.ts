@@ -375,7 +375,7 @@ export class SettingService {
         'test-mail.hbs',
       );
       return response;
-      // return successResponse('Test mail is send successfully!');
+      
     } catch (error) {
       processException(error);
     }

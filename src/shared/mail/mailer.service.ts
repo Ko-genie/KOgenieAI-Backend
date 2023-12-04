@@ -6,7 +6,12 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { readFile } from 'fs';
 import { SMTPSettingsSlugs } from '../constants/array.constants';
-import { getAdminSettingsData, processException } from '../helpers/functions';
+import {
+  addPhotoPrefix,
+  getAdminSettingsData,
+  processException,
+  successResponse,
+} from '../helpers/functions';
 
 const readFileAsync = promisify(readFile);
 
@@ -62,10 +67,12 @@ export class MailerService {
       const footerTemplate = await this.loadTemplate('footerTemplate.hbs');
       const htmlTemplate = await this.loadTemplate(template);
 
+      const siteLogo: any = await getAdminSettingsData('site_logo');
+
       const data = {
         context: context,
         frontEndUrl: process.env.FRONTEND_URL,
-        logoUrl: process.env.BACKEND_URL + '/uploads/logo/logo.jpg',
+        logoUrl: addPhotoPrefix(siteLogo.site_logo),
         currentDate: new Date().toLocaleDateString(),
       };
 
@@ -87,7 +94,8 @@ export class MailerService {
         html: finalHtml,
       };
 
-      return this.transporter.sendMail(options);
+      this.transporter.sendMail(options);
+      return successResponse('Mail is sent successfully!');
     } catch (error) {
       console.error(error);
       processException(error);
