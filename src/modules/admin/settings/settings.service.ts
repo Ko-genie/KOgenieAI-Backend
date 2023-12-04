@@ -11,9 +11,7 @@ import { UpdateGeneralSettingsDto } from './dto/update-general-settings.dt';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { updateSMTPSettingsDto } from './dto/update-smtp-settings.dt';
-import { NotificationService } from 'src/shared/notification/notification.service';
 import { User } from '@prisma/client';
-import { SendTestMail } from 'src/notifications/user/test-mail';
 import {
   BraintreeCredentialsSlugs,
   CommonSettingsSlugs,
@@ -41,12 +39,13 @@ import { UpdateLandingPageDataDto } from './dto/update-landing-page-data.dto';
 import { UpdateBraintreeSettingsData } from './dto/update-braintree-settings-data.dto';
 import { UpdatePaymentMethodRazorpaySettingsDto } from './dto/update-payment-razorpay-settings.dto';
 import { UpdatePaymentMethodPaystackSettingsDto } from './dto/update-payment-paystack-settings.dto';
+import { MailerService } from 'src/shared/mail/mailer.service';
 
 @Injectable()
 export class SettingService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly notificationService: NotificationService,
+    private readonly mailService: MailerService,
   ) {}
 
   async userListByCountryWise() {
@@ -368,14 +367,15 @@ export class SettingService {
     payload: {
       email: string;
     },
-  ): Promise<Promise<ResponseModel>[]> {
+  ) {
     try {
-      const mailData = {
-        email: payload.email,
-      };
-      const response: Promise<ResponseModel>[] =
-        await this.notificationService.sendTo(new SendTestMail(mailData), user);
+      const response = this.mailService.sendMail(
+        payload.email,
+        'test',
+        'test-mail.hbs',
+      );
       return response;
+      // return successResponse('Test mail is send successfully!');
     } catch (error) {
       processException(error);
     }

@@ -4,11 +4,11 @@ import { PublicController } from './public.controller';
 import { PublicService } from './public.service';
 import { TrustedOrganizationService } from '../admin/trusted-organization/trusted.service';
 import { SettingService } from '../admin/settings/settings.service';
-import { NotificationService } from 'src/shared/notification/notification.service';
 import { ReviewService } from '../review/review.service';
 import { PaymentsService } from '../payments/payments.service';
 import { FeatureAiService } from '../feature-ai/feature-ai.service';
 import { SocialMediaService } from '../social-media/social-media.service';
+import { MailerService } from 'src/shared/mail/mailer.service';
 
 @Module({
   imports: [PrismaModule],
@@ -17,11 +17,11 @@ import { SocialMediaService } from '../social-media/social-media.service';
     PublicService,
     TrustedOrganizationService,
     SettingService,
-    NotificationService,
     ReviewService,
     PaymentsService,
     FeatureAiService,
     SocialMediaService,
+    MailerService,
   ],
   exports: [PublicService],
 })

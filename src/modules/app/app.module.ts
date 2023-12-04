@@ -1,14 +1,12 @@
 import { Module, NestModule, RequestMethod } from '@nestjs/common';
 import { MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { MailConfig } from 'src/shared/configs/mail.config';
 import { UsersModule } from '../users/users.module';
-import { MailModule } from 'src/shared/mail/mail.module';
 import { ApiSecretCheckMiddleware } from 'src/shared/middlewares/apisecret.middleware';
 import { FilesModule } from '../file/files.module';
 import { coreConstant } from 'src/shared/helpers/coreConstant';
@@ -26,6 +24,7 @@ import { FeatureAiModule } from '../feature-ai/feature-ai.module';
 import { ProgramingLanguageModule } from '../programing-language/programing-language.module';
 import { SocialMediaModule } from '../social-media/social-media.module';
 import { OpenAiChatModule } from '../openai-chat/openai-chat.module';
+import { MailerService } from 'src/shared/mail/mailer.service';
 
 @Module({
   imports: [
@@ -37,7 +36,6 @@ import { OpenAiChatModule } from '../openai-chat/openai-chat.module';
     PrismaModule,
     AuthModule,
     UsersModule,
-    MailModule,
     FilesModule,
     SettingsModule,
     PaymentsModule,

@@ -6,10 +6,8 @@ import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { LoginResponse } from './dto/login.response';
 import { RefreshTokenPayload } from './types/refresh-token-payload';
 import { JwtService } from '@nestjs/jwt';
-
 import { User, UserTokens } from '@prisma/client';
 import { InvalidEmailOrPasswordException } from './exceptions/invalid-email-or-password.exception.';
-
 import { InvalidRefreshTokenException } from './exceptions/invalid-refresh-token.exception';
 import { compare } from 'bcrypt';
 import { v4 as uuidV4 } from 'uuid';
@@ -26,7 +24,6 @@ import {
   successResponse,
 } from 'src/shared/helpers/functions';
 import { PrismaService } from '../prisma/prisma.service';
-import { MailService } from 'src/shared/mail/mail.service';
 import { getTokenExpirationDate } from 'src/shared/utils/getTokenExpirationDate';
 import {
   accessJwtConfig,

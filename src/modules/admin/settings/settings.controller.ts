@@ -68,7 +68,7 @@ export class SettingController {
     payload: {
       email: string;
     },
-  ): Promise<Promise<ResponseModel>[]> {
+  ) {
     return this.settingService.sendTestMail(user, payload);
   }
 

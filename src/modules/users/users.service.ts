@@ -13,16 +13,12 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponse } from './dto/user-response';
 import { User } from '@prisma/client';
-
-import { ForgotPassMailNotification } from 'src/notifications/user/forgot-pass-mail-notification';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   DefaultPaginationMetaData,
   coreConstant,
 } from 'src/shared/helpers/coreConstant';
 import { UserVerificationCodeService } from '../verification_code/user-verify-code.service';
-import { NotificationService } from 'src/shared/notification/notification.service';
-import { SignupVerificationMailNotification } from 'src/notifications/user/signup-verification-mail-notification';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { use } from 'passport';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -39,7 +35,6 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userCodeService: UserVerificationCodeService,
-    private readonly notificationService: NotificationService,
   ) {}
   openaiService = new OpenAi();
   async getProfile(user: UserEntity): Promise<ResponseModel> {
@@ -128,10 +123,10 @@ export class UsersService {
         };
         await this.userCodeService.createUserCode(codeData);
 
-        this.notificationService.send(
-          new SignupVerificationMailNotification(mailData),
-          user,
-        );
+        // this.notificationService.send(
+        //   new SignupVerificationMailNotification(mailData),
+        //   user,
+        // );
         return successResponse('New user created successfully', user);
       }
       return successResponse('New user created successfully', user);
@@ -281,10 +276,10 @@ export class UsersService {
           verification_code: mailKey,
         };
         await this.userCodeService.createUserCode(codeData);
-        this.notificationService.send(
-          new ForgotPassMailNotification(mailData),
-          user,
-        );
+        // this.notificationService.send(
+        //   new ForgotPassMailNotification(mailData),
+        //   user,
+        // );
       } else {
         return successResponse('User not found', []);
       }
