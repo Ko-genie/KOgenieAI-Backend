@@ -68,11 +68,12 @@ export class MailerService {
       const htmlTemplate = await this.loadTemplate(template);
 
       const siteLogo: any = await getAdminSettingsData('site_logo');
+      const siteLogoFullUrl = siteLogo.site_logo?addPhotoPrefix(siteLogo.site_logo):null;
 
       const data = {
         context: context,
         frontEndUrl: process.env.FRONTEND_URL,
-        logoUrl: addPhotoPrefix(siteLogo.site_logo),
+        logoUrl: siteLogoFullUrl,
         currentDate: new Date().toLocaleDateString(),
       };
 

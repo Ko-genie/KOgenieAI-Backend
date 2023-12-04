@@ -28,6 +28,7 @@ import { randomUUID } from 'crypto';
 import { OpenAi } from '../openai/openai.service';
 import { ChangePasswordDto } from '../auth/dto/change-password.dto';
 import { compare } from 'bcrypt';
+import { MailerService } from 'src/shared/mail/mailer.service';
 
 // export type User = any;
 @Injectable()
@@ -35,6 +36,7 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userCodeService: UserVerificationCodeService,
+    private readonly mailService: MailerService,
   ) {}
   openaiService = new OpenAi();
   async getProfile(user: UserEntity): Promise<ResponseModel> {
@@ -118,15 +120,18 @@ export class UsersService {
         };
         await this.userCodeService.createUserCode(codeData);
 
-        const mailData = {
-          verification_code: mailKey,
-        };
         await this.userCodeService.createUserCode(codeData);
 
-        // this.notificationService.send(
-        //   new SignupVerificationMailNotification(mailData),
-        //   user,
-        // );
+        this.mailService.sendMail(
+          user.email,
+          'New Registration',
+          'otp-email.hbs',
+          {
+            name: user.first_name + ' ' + user.last_name,
+            verification_code: mailKey,
+          },
+        );
+
         return successResponse('New user created successfully', user);
       }
       return successResponse('New user created successfully', user);
@@ -272,14 +277,18 @@ export class UsersService {
           code: mailKey,
           type: coreConstant.VERIFICATION_TYPE_EMAIL,
         };
-        const mailData = {
-          verification_code: mailKey,
-        };
+
         await this.userCodeService.createUserCode(codeData);
-        // this.notificationService.send(
-        //   new ForgotPassMailNotification(mailData),
-        //   user,
-        // );
+
+        this.mailService.sendMail(
+          user.email,
+          'Password Reset',
+          'reset-password.hbs',
+          {
+            name: user.first_name + ' ' + user.last_name,
+            verification_code: mailKey,
+          },
+        );
       } else {
         return successResponse('User not found', []);
       }
