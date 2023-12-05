@@ -8,6 +8,7 @@ import { readFile } from 'fs';
 import { SMTPSettingsSlugs } from '../constants/array.constants';
 import {
   addPhotoPrefix,
+  errorResponse,
   getAdminSettingsData,
   processException,
   successResponse,
@@ -108,6 +109,8 @@ export class MailerService {
       return successResponse('Mail is sent successfully!');
     } catch (error) {
       processException(error);
+      return errorResponse('Configuration Problem', error.message);
+      
     }
   }
 }
