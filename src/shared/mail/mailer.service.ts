@@ -33,30 +33,37 @@ export class MailerService {
   }
 
   private async setupTemplates() {
-    this.smtpConfig = await getAdminSettingsData(SMTPSettingsSlugs);
-    const handlebarsOptions = {
-      viewEngine: {
-        extname: '.hbs',
-        layoutsDir: path.join(__dirname, 'templates'),
-        defaultLayout: 'template',
-      },
-      viewPath: path.join(__dirname, 'templates'),
-    };
+    try {
+      this.smtpConfig = await getAdminSettingsData(SMTPSettingsSlugs);
+      const handlebarsOptions = {
+        viewEngine: {
+          extname: '.hbs',
+          layoutsDir: path.join(__dirname, 'templates'),
+          defaultLayout: 'template',
+        },
+        viewPath: path.join(__dirname, 'templates'),
+      };
 
-    this.transporter = nodemailer.createTransport({
-      host: this.smtpConfig.smtp_host,
-      port: this.smtpConfig.smtp_port,
-      secure: false,
-      auth: {
-        user: this.smtpConfig.smtp_user_name,
-        pass: this.smtpConfig.smtp_password,
-      },
-    });
+      this.transporter = nodemailer.createTransport({
+        host: this.smtpConfig.smtp_host,
+        port: this.smtpConfig.smtp_port,
+        secure: this.smtpConfig.smtp_encryption === 'SSL' ? true : false,
+        auth: {
+          user: this.smtpConfig.smtp_user_name,
+          pass: this.smtpConfig.smtp_password,
+        },
+        pool: true,
+        connectionTimeout: 5000,
+      });
 
-    this.transporter.use(
-      'compile',
-      nodemailerExpressHandlebars(handlebarsOptions),
-    );
+      this.transporter.use(
+        'compile',
+        nodemailerExpressHandlebars(handlebarsOptions),
+      );
+      return successResponse('Configuration successfully setup!');
+    } catch (error) {
+      processException(error);
+    }
   }
 
   async sendMail(to: string, subject: string, template: string, context?: any) {
@@ -68,7 +75,9 @@ export class MailerService {
       const htmlTemplate = await this.loadTemplate(template);
 
       const siteLogo: any = await getAdminSettingsData('site_logo');
-      const siteLogoFullUrl = siteLogo.site_logo?addPhotoPrefix(siteLogo.site_logo):null;
+      const siteLogoFullUrl = siteLogo.site_logo
+        ? addPhotoPrefix(siteLogo.site_logo)
+        : null;
 
       const data = {
         context: context,
@@ -89,18 +98,16 @@ export class MailerService {
       const finalHtml = renderedHeader + renderedContent + renderedFooter;
 
       const options: nodemailer.SendMailOptions = {
-        from: 'your-email@example.com',
+        from: this.smtpConfig.smtp_sender_email,
         to,
         subject,
         html: finalHtml,
       };
 
-      this.transporter.sendMail(options);
+      await this.transporter.sendMail(options);
       return successResponse('Mail is sent successfully!');
     } catch (error) {
-      console.error(error);
       processException(error);
-      throw error;
     }
   }
 }
