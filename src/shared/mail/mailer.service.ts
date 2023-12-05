@@ -98,7 +98,7 @@ export class MailerService {
       const finalHtml = renderedHeader + renderedContent + renderedFooter;
 
       const options: nodemailer.SendMailOptions = {
-        from: this.smtpConfig.smtp_sender_email,
+        from: await this.smtpConfig.smtp_sender_email,
         to,
         subject,
         html: finalHtml,
