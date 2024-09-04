@@ -17,8 +17,8 @@ async function bootstrap() {
   app.setGlobalPrefix(API_PREFIX);
   app.use(
     cors({
-      // origin: process.env.FRONTEND_URL,
-      origin: '*',
+      origin: process.env.FRONTEND_URL,
+      // origin: '*',
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,
     }),
@@ -40,7 +40,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
-  );
+  );  
   await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();
