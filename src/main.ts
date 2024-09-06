@@ -18,7 +18,10 @@ async function bootstrap() {
   app.use(
     cors({
       // origin: process.env.FRONTEND_URL,
-      origin: '*',
+      origin: [
+        'https://kogenie.com', // Allow your frontend origin
+        'https://admin.kogenie.com', // Allow requests from your admin panel too
+      ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,
     }),
