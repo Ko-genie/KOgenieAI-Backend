@@ -23,6 +23,7 @@ async function bootstrap() {
         'https://admin.kogenie.com', // Allow requests from your admin panel too
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Apisecretkeycheck'],
       credentials: true,
     }),
   );
