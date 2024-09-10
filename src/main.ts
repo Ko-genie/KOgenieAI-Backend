@@ -18,12 +18,8 @@ async function bootstrap() {
   app.use(
     cors({
       // origin: process.env.FRONTEND_URL,
-      origin: [
-        'https://kogenie.com', // Allow your frontend origin
-        'https://admin.kogenie.com', // Allow requests from your admin panel too
-      ],
+      origin: '*',
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'Apisecretkeycheck'],
       credentials: true,
     }),
   );
@@ -44,7 +40,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
-  );  
+  );
   await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();

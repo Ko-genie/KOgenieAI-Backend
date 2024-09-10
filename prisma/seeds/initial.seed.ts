@@ -19,18 +19,6 @@ export async function initialSeed(prisma: PrismaClient) {
           email_verified: coreConstant.IS_VERIFIED,
         },
         {
-          email: 'singhavanish642@gmail.com',
-          password: (
-            await hashedPassword(coreConstant.COMMON_PASSWORD)
-          ).toString(),
-          first_name: 'Avanish',
-          last_name: 'Singh',
-          user_name: 'avanish',
-          role: coreConstant.USER_ROLE_ADMIN,
-          status: coreConstant.STATUS_ACTIVE,
-          email_verified: coreConstant.IS_VERIFIED,
-        },
-        {
           email: 'user@email.com',
           password: (
             await hashedPassword(coreConstant.COMMON_PASSWORD)
